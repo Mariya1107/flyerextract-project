@@ -4,15 +4,15 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 from .models import Country, Region, Flyer, Product
 from .serializers import CountrySerializer, RegionSerializer, FlyerSerializer, ProductSerializer
+import json
+import base64
+import openai
+from openai import OpenAI
+from django.conf import settings
 
-import pytesseract
-import numpy as np
-import cv2
-import re
-from fuzzywuzzy import process
-import string
+# Set OpenAI API key
+client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 # --------------------------- COUNTRY / REGION / FLYER APIs ---------------------------
 
@@ -42,83 +42,48 @@ class ProductListByFlyer(generics.ListAPIView):
     def get_queryset(self):
         return Product.objects.filter(flyer_id=self.kwargs['flyer_id'])
 
-# --------------------------- Clean Noise Helper ---------------------------
+# --------------------------- GPT-4 Vision Extraction ---------------------------
 
-def clean_name(raw_words):
-    cleaned = []
-    for word in raw_words:
-        word = word.strip(string.punctuation)
-        if re.match(r'^[a-zA-Z][a-zA-Z\-]*$', word):
-            cleaned.append(word)
-    return cleaned
+def extract_with_gpt(image_file):
+    print("🔍 Starting GPT Vision extraction...")
 
-# --------------------------- OCR Dual-Pass Extraction ---------------------------
-def extract_name_price(image_file):
-    image_array = np.asarray(bytearray(image_file.read()), dtype=np.uint8)
-    img = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
+    image_bytes = image_file.read()
     image_file.seek(0)
 
-    if img is None:
-        return "Unknown Product", "0"
+    base64_image = base64.b64encode(image_bytes).decode('utf-8')
 
-    # ---------- Preprocessing for full image (price) ----------
-    def preprocess_full(img):
-        resized = cv2.resize(img, None, fx=5, fy=5, interpolation=cv2.INTER_CUBIC)
-        gray = cv2.cvtColor(resized, cv2.COLOR_BGR2GRAY)
-        contrast = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8)).apply(gray)
-        sharpen = cv2.filter2D(contrast, -1, np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]]))
-        _, thresholded = cv2.threshold(sharpen, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-        cv2.imwrite("debug_full.jpg", thresholded)
-        return thresholded
+    try:
+        response = client.chat.completions.create(
+              model="gpt-4o",
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Extract the product name and price from this image. Respond with only JSON like: {\"name\": \"Product Name\", \"price\": 99.99}"
+                        },
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/jpeg;base64,{base64_image}"
+                            }
+                        }
+                    ]
+                }
+            ],
+            max_tokens=150,
+        )
 
-    processed_full = preprocess_full(img)
-    full_text = pytesseract.image_to_string(processed_full, lang='eng', config='--psm 11')
-    print("🧾 Full OCR Text:\n", full_text)
+        content = response.choices[0].message.content
+        print("✅ GPT Response:\n", content)
+        parsed = json.loads(content)
+        return parsed.get("name", "Unknown Product"), parsed.get("price", "0")
 
-    price = "0"
-    price_match = re.search(r'(₹|Rs\.?)\s?(\d{2,5})', full_text)
-    if price_match:
-        price = price_match.group(2)
-    else:
-        number_match = re.search(r'\b\d{2,5}\b', full_text)
-        if number_match:
-            price = number_match.group(0)
-
-    # ---------- Bottom OCR for product name ----------
-    def preprocess_bottom(img):
-        h = img.shape[0]
-        bottom_crop = img[int(h * 0.4):, :]
-        resized = cv2.resize(bottom_crop, None, fx=10, fy=10, interpolation=cv2.INTER_CUBIC)
-        gray = cv2.cvtColor(resized, cv2.COLOR_BGR2GRAY)
-        contrast = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8)).apply(gray)
-        sharpen = cv2.filter2D(contrast, -1, np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]]))
-        _, thresholded = cv2.threshold(sharpen, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-        cv2.imwrite("debug_bottom.jpg", thresholded)
-        return thresholded
-
-    processed_bottom = preprocess_bottom(img)
-    data = pytesseract.image_to_data(
-        processed_bottom, lang='eng', config='--psm 11', output_type=pytesseract.Output.DICT
-    )
-    words = data.get("text", [])
-    confidences = data.get("conf", [])
-    tops = data.get("top", [])
-
-    # Filter good words: confidence > 40, alphabetic only
-    filtered = [
-        (word.strip(), top)
-        for word, conf, top in zip(words, confidences, tops)
-        if word.strip() and conf != '-1' and float(conf) > 60 and word.isalpha()
-    ]
-    filtered.sort(key=lambda x: x[1])  # sort by vertical order (top)
-
-    clean_words = [w for w, _ in filtered]
-    print("🧹 Clean OCR Words:", clean_words)
-
-    # Build longest sequence of clean words
-    name = " ".join(clean_words[:5]) if clean_words else "Unknown Product"
-    return name.strip(), price
-
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise Exception(f"GPT Vision error: {str(e)}")
 
 # --------------------------- Upload Product API ---------------------------
 
@@ -137,8 +102,11 @@ def upload_cropped_product(request):
         return Response({"error": "Flyer not found."}, status=404)
 
     try:
-        name, price = extract_name_price(image_file)
+        name, price = extract_with_gpt(image_file)
     except Exception as e:
+        import traceback
+        print("❌ Error during product upload:")
+        traceback.print_exc()
         return Response({"error": f"OCR processing failed: {str(e)}"}, status=500)
 
     product = Product.objects.create(
@@ -154,16 +122,17 @@ def upload_cropped_product(request):
         "name": name,
         "price": price
     })
-from fuzzywuzzy import fuzz
+
+
+# --------------------------- Search Products API ---------------------------
 
 @api_view(['GET'])
 def search_products(request):
-    query = request.GET.get('q', '')  # Get the search keyword from query params
+    query = request.GET.get('q', '')
     if query:
-        # Case-insensitive search for products where the name contains the query anywhere
         products = Product.objects.filter(name__icontains=query)
     else:
-        products = Product.objects.all()  # return all if no query
+        products = Product.objects.all()
 
     serializer = ProductSerializer(products, many=True)
     return Response(serializer.data)

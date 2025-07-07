@@ -17,14 +17,14 @@ const FlyerDetail = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    axios.get('http://127.0.0.1:8000/api/flyers/all/')
-      .then(res => {
-        const match = res.data.find(f => f.id === parseInt(flyerId));
-        if (match) setFlyer(match);
-      });
+    axios.get('http://127.0.0.1:8000/api/flyers/all/').then(res => {
+      const match = res.data.find(f => f.id === parseInt(flyerId));
+      if (match) setFlyer(match);
+    });
 
-    axios.get(`http://127.0.0.1:8000/api/products/${flyerId}/`)
-      .then(res => setProducts(res.data));
+    axios.get(`http://127.0.0.1:8000/api/products/${flyerId}/`).then(res => {
+      setProducts(res.data);
+    });
   }, [flyerId]);
 
   const onDocumentLoadSuccess = ({ numPages }) => {
@@ -33,11 +33,15 @@ const FlyerDetail = () => {
   };
 
   const handleNext = () => {
-    if (currentPage < numPages) setCurrentPage(prev => prev + 1);
+    if (currentPage < numPages) {
+      setCurrentPage(prev => prev + 1);
+    }
   };
 
   const handlePrev = () => {
-    if (currentPage > 1) setCurrentPage(prev => prev - 1);
+    if (currentPage > 1) {
+      setCurrentPage(prev => prev - 1);
+    }
   };
 
   const filteredProducts = products.filter(p =>
@@ -50,7 +54,7 @@ const FlyerDetail = () => {
     <div style={styles.page}>
       {/* Header */}
       <div style={styles.header}>
-        <h1 style={styles.logo}><span style={{ color: "#9F00FF" }}></span>FLYER VIEW</h1>
+        <h1 style={styles.logo}>FLYER VIEW</h1>
         <div style={styles.rightHeader}>
           <input
             type="text"
@@ -59,47 +63,81 @@ const FlyerDetail = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             style={styles.searchInput}
           />
-          <button style={styles.backBtn} onClick={() => navigate("/")}>⬅ Back to Home</button>
+          <button style={styles.backBtn} onClick={() => navigate("/")}>
+            ⬅ Back to Home
+          </button>
         </div>
       </div>
 
       {/* Flyer Info */}
       <div style={styles.flyerInfo}>
         <h2 style={styles.flyerTitle}>{flyer.title}</h2>
-        <p style={styles.subtext}><strong>Store:</strong> {flyer.store.name}</p>
+        <p style={styles.subtext}>
+          <strong>Store:</strong> {flyer.store.name}
+        </p>
       </div>
 
-      {/* PDF */}
-      {flyer.pdf && flyer.pdf.endsWith('.pdf') ? (
-        <div style={styles.pdfContainer}>
-          <Document
-            file={{ url: flyer.pdf }}
-            onLoadSuccess={onDocumentLoadSuccess}
-            onLoadError={(error) => {
-              console.error("PDF load error:", error.message);
-              alert("Error loading PDF.");
-            }}
-          >
-            <Page pageNumber={currentPage} width={420} />
-          </Document>
+      {/* PDF Viewer */}
+{flyer?.pdf && flyer.pdf.endsWith('.pdf') ? (
+  <>
+    <div style={styles.pdfContainer}>
+      <Document
+        file={{ url: flyer.pdf }}
+        onLoadSuccess={({ numPages }) => {
+          setNumPages(numPages);
+          console.log("PDF loaded with", numPages, "pages");
+        }}
+        loading={<p>Loading PDF...</p>}
+        onLoadError={(error) => {
+          console.error("PDF load error:", error.message);
+          alert("Error loading PDF.");
+        }}
+      >
+        {[...Array(numPages)].map((_, index) =>
+          index + 1 === currentPage ? (
+            <Page
+              key={`page_${index + 1}`}
+              pageNumber={index + 1}
+              width={420}
+              onRenderSuccess={() => console.log(`✅ Rendered page ${index + 1}`)}
+            />
+          ) : null
+        )}
+      </Document>
+    </div>
 
-          {numPages > 1 && (
-            <div style={styles.pdfNav}>
-              <button style={styles.navBtn} onClick={handlePrev} disabled={currentPage === 1}>
-                ◀ Previous
-              </button>
-              <span style={styles.pageInfo}>Page {currentPage} of {numPages}</span>
-              <button style={styles.navBtn} onClick={handleNext} disabled={currentPage === numPages}>
-                Next ▶
-              </button>
-            </div>
-          )}
-        </div>
-      ) : (
-        <p style={styles.error}>⚠️ PDF not available or invalid.</p>
-      )}
+    {numPages > 1 && (
+      <div style={styles.pdfNav}>
+        <button
+          style={styles.navBtn}
+          onClick={() => {
+            console.log("⬅ Going to page", currentPage - 1);
+            setCurrentPage((p) => Math.max(1, p - 1));
+          }}
+          disabled={currentPage === 1}
+        >
+          ◀ Prev
+        </button>
+        <span style={styles.pageInfo}>Page {currentPage} / {numPages}</span>
+        <button
+          style={styles.navBtn}
+          onClick={() => {
+            console.log("➡ Going to page", currentPage + 1);
+            setCurrentPage((p) => Math.min(numPages, p + 1));
+          }}
+          disabled={currentPage === numPages}
+        >
+          Next ▶
+        </button>
+      </div>
+    )}
+  </>
+) : (
+  <p style={styles.error}>⚠️ PDF not available or invalid.</p>
+)}
 
-      {/* Product Header + View All */}
+
+      {/* Product Section */}
       <div style={styles.productsHeader}>
         <h2 style={styles.sectionTitle}>🛍️ Products</h2>
         {filteredProducts.length > 6 && (
@@ -112,7 +150,6 @@ const FlyerDetail = () => {
         )}
       </div>
 
-      {/* Product Display */}
       {filteredProducts.length === 0 ? (
         <p style={styles.subtext}>No matching products found.</p>
       ) : (
@@ -126,7 +163,7 @@ const FlyerDetail = () => {
               />
               <div style={styles.productInfo}>
                 <strong style={{ fontSize: "16px" }}>{p.name}</strong>
-                <p style={{ color: "#555", margin: "6px 0 0" }}>AED {p.price}</p>
+                <p style={{ color: "#555", margin: "6px 0 0" }}>Price {p.price}</p>
               </div>
             </div>
           ))}
@@ -144,7 +181,9 @@ const FlyerDetail = () => {
       </div>
     </div>
   ) : (
-    <p style={{ padding: '30px', fontSize: '18px' }}>⏳ Loading flyer details...</p>
+    <p style={{ padding: '30px', fontSize: '18px' }}>
+      ⏳ Loading flyer details...
+    </p>
   );
 };
 
@@ -257,8 +296,6 @@ const styles = {
     overflowX: "auto",
     gap: "20px",
     paddingBottom: "10px",
-    scrollbarWidth: "none", // for Firefox
-    msOverflowStyle: "none", // for IE
   },
   productCard: {
     backgroundColor: "#fff",
