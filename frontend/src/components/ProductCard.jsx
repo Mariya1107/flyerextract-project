@@ -12,7 +12,7 @@ const ProductCard = ({ product }) => {
       />
       <div className="product-info">
         <strong className="product-name">{product.name}</strong>
-        <p className="product-price">AED {product.price}</p>
+        <p className="product-price">Price {product.price}</p>
       </div>
     </div>
   );

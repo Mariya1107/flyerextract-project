@@ -106,7 +106,7 @@ const CropUploader = () => {
 
   return (
     <div style={{ padding: 20 }}>
-      <h2>🖼️ Crop Product from Flyer</h2>
+      <h2>Crop Product from Flyer</h2>
 
       {flyer?.pdf && (
         <>
