@@ -45,6 +45,8 @@ class ProductListByFlyer(generics.ListAPIView):
 # --------------------------- GPT-4 Vision Extraction ---------------------------
 
 def extract_with_gpt(image_file):
+    import traceback
+    import json
     print("🔍 Starting GPT Vision extraction...")
 
     image_bytes = image_file.read()
@@ -54,7 +56,7 @@ def extract_with_gpt(image_file):
 
     try:
         response = client.chat.completions.create(
-              model="gpt-4o",
+            model="gpt-4o",
             messages=[
                 {
                     "role": "user",
@@ -77,13 +79,19 @@ def extract_with_gpt(image_file):
 
         content = response.choices[0].message.content
         print("✅ GPT Response:\n", content)
-        parsed = json.loads(content)
+
+        # 🧼 Remove markdown formatting if present
+        cleaned = content.strip()
+        if cleaned.startswith("```"):
+            cleaned = cleaned.strip("`").replace("json", "").strip()
+
+        parsed = json.loads(cleaned)
         return parsed.get("name", "Unknown Product"), parsed.get("price", "0")
 
     except Exception as e:
-        import traceback
         traceback.print_exc()
         raise Exception(f"GPT Vision error: {str(e)}")
+
 
 # --------------------------- Upload Product API ---------------------------
 

@@ -1,17 +1,60 @@
-.country-card {
-  background-color: white;
-  border-radius: 12px;
-  text-align: center;
-  padding: 15px;
-  transition: box-shadow 0.2s ease;
+/* src/pages/Home.css */
+
+.main-header {
+  background-color: #fff;
+  padding: 25px 30px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-left .logo {
+  width: 120px;
+}
+
+.nav-center {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  font-weight: 600;
+  font-size: 16.4px;
+}
+.nav-center a:hover {
+  color: #FF1493;; /* Pink color on hover */
+  transition: color 0.3s ease;
+}
+.nav-center a {
+  color: #2c2c2c;
+  text-decoration: none;
+}
+
+.header-right {
+  display: flex;
+  gap: 15px;
+}
+
+.btn-signin,
+.btn-joinus {
+  border: none;
+  padding: 10px 20px;        /* Increased padding for more height/width */
+  font-size: 15px;         /* Match nav-center font size */
+  font-weight: 400;   
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
   cursor: pointer;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
 }
 
-.country-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+.btn-signin {
+  background-color: #eee;
 }
 
-.country-card.selected {
-  border: 2px solid #9F00FF;
+.btn-joinus {
+  background: linear-gradient(90deg, #ff2bb2, #1e90ff);
+  color: white;
 }

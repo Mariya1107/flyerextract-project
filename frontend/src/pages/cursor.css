@@ -1,0 +1,47 @@
+.xb-cursor {
+  visibility: hidden;
+  position: fixed;
+  pointer-events: none;
+  z-index: 999999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+  top: 0;
+  left: 0;
+}
+
+.xb-cursor .xb-cursor-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+.xb-cursor .xb-cursor--follower {
+  position: absolute;
+  background-color:#FF1493; /* Replace with your primary color */
+  opacity: 0.25;
+  border-radius: 100%;
+  width: 3.0rem;
+  height: 3.0rem;
+  transition: transform 0.3s ease, opacity 0.3s ease, background-color 0.1s ease;
+}
+
+.xb-cursor.is-enabled {
+  visibility: visible;
+}
+
+.xb-cursor.is-hidden .xb-cursor-wrapper {
+  transform: scale(0) !important;
+}
+
+.xb-cursor.is-mouse-down .xb-cursor-wrapper {
+  transform: scale(0.8);
+}
+
+.xb-cursor.is-active .xb-cursor--follower {
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.12);
+  transform: scale(4);
+  opacity: 0;
+}
