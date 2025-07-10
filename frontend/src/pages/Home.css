@@ -3,7 +3,7 @@
 .main-header {
   background-color: #fff;
   padding: 25px 30px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .container {
@@ -23,10 +23,12 @@
   font-weight: 600;
   font-size: 16.4px;
 }
+
 .nav-center a:hover {
-  color: #FF1493;; /* Pink color on hover */
+  color: #ff1493;
   transition: color 0.3s ease;
 }
+
 .nav-center a {
   color: #2c2c2c;
   text-decoration: none;
@@ -40,9 +42,9 @@
 .btn-signin,
 .btn-joinus {
   border: none;
-  padding: 10px 20px;        /* Increased padding for more height/width */
-  font-size: 15px;         /* Match nav-center font size */
-  font-weight: 400;   
+  padding: 10px 20px;
+  font-size: 15px;
+  font-weight: 400;
   border-radius: 6px;
   display: flex;
   align-items: center;
@@ -57,4 +59,122 @@
 .btn-joinus {
   background: linear-gradient(90deg, #ff2bb2, #1e90ff);
   color: white;
+}
+
+/* Hero Section */
+.hero-section {
+  background: linear-gradient(140deg, #f4f4ff 10%, #ffffff 90%);
+  padding: 80px 0;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.hero-section .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row;
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.hero-content {
+  flex: 1;
+  position: relative;
+  z-index: 2;
+}
+
+.hero-section h1 {
+  font-size: 44px;
+  font-weight: 700;
+  color: #1c1c1c;
+  margin-bottom: 12px;
+}
+
+.hero-section .sub-title {
+  font-size: 18px;
+  color: #555;
+  margin-bottom: 30px;
+}
+
+.banner-form {
+  background: #fff;
+  padding: 18px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  position: relative;
+  z-index: 2;
+  max-width: 100%;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.banner-form .d-md-flex {
+  flex-wrap: wrap;
+  gap: 12px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.banner-form .input-group {
+  flex: none;
+  width: 280px;
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 4px 8px;
+  background: #fff;
+}
+
+.banner-form .input-group-text {
+  border: none;
+  background: transparent;
+  padding: 0 8px;
+  color: #777;
+  font-size: 18px;
+}
+
+.banner-form .form-control {
+  border: none;
+  outline: none;
+  font-size: 15px;
+  padding: 8px;
+  flex: 1;
+  background: transparent;
+}
+
+.banner-form .btn {
+  padding: 10px 22px;
+  font-weight: 600;
+  font-size: 15px;
+  border-radius: 8px;
+  background: linear-gradient(to right, #ff2bb2, #1e90ff);
+  color: #fff;
+  border: none;
+  transition: background 0.3s ease;
+  white-space: nowrap;
+}
+
+.shape-06,
+.shape-03,
+.shape-04,
+.shape-05 {
+  display: none; /* Hide background shapes if broken */
+}
+
+@keyframes floatX {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(10px);
+  }
+}
+
+.floating-x {
+  animation: floatX 3.5s ease-in-out infinite;
 }

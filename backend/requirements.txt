@@ -1,0 +1,11 @@
+Django>=4.2
+djangorestframework
+Pillow
+python-dotenv
+openai
+PyMuPDF==1.23.16           # for PDF image extraction (fits your use case)
+pytesseract
+opencv-python
+numpy
+psycopg2-binary            # PostgreSQL support
+django-cors-headers
