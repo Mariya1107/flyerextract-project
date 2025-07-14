@@ -16,9 +16,9 @@ export default function CountrySelector() {
       {/* Header */}
       <div className="flex justify-between items-center mb-10">
         <div className="text-2xl font-bold text-purple-700">
-          <span className="text-4xl">🅓</span>4D ONLINE
+          <span className="text-4xl">extract</span>pdf
         </div>
-        <div className="text-sm text-gray-600">English / العربية ⌄</div>
+        <div className="text-sm text-gray-600"></div>
       </div>
 
       {/* Title */}
