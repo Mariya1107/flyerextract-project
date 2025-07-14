@@ -165,13 +165,14 @@
   font-size: 32px;
   font-weight: 800;
   margin-bottom: 20px;
-  
+  padding-left: 300px;
 }
 .category-section .sub-title {
   font-size: 15px;
   color: #666;
   margin: 0 auto 50px;
   max-width: 700px;
+  padding-left: 270px;
 }
 
 .text-linear-primary {
@@ -476,6 +477,9 @@
   text-decoration: none;
   border: none;
 }
+.business-section .btn-linear-primary {
+  margin-left: 24px; /* Adjust the value as needed */
+}
 /* Image column */
 .business-section .business-img {
   display: flex;
@@ -498,6 +502,7 @@
   padding: 60px 0;
   background-color: #fff;
   border-top: 1px solid #eee;
+  margin-left: -100px; 
 }
 
 /* Accordion header and button */

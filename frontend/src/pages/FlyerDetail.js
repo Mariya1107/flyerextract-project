@@ -99,7 +99,7 @@ const FlyerDetail = () => {
               key={`page_${index + 1}`}
               pageNumber={index + 1}
               width={420}
-              onRenderSuccess={() => console.log(`✅ Rendered page ${index + 1}`)}
+              onRenderSuccess={() => console.log(` Rendered page ${index + 1}`)}
             />
           ) : null
         )}
@@ -133,13 +133,13 @@ const FlyerDetail = () => {
     )}
   </>
 ) : (
-  <p style={styles.error}>⚠️ PDF not available or invalid.</p>
+  <p style={styles.error}> PDF not available or invalid.</p>
 )}
 
 
       {/* Product Section */}
       <div style={styles.productsHeader}>
-        <h2 style={styles.sectionTitle}>🛍️ Products</h2>
+        <h2 style={styles.sectionTitle}> Products</h2>
         {filteredProducts.length > 6 && (
           <button
             style={styles.viewAllBtn}

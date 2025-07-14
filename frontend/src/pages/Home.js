@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Footer from "../components/Footer";
 
-
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 
@@ -13,29 +12,29 @@ import {
   faUser,
   faSearch,
   faMapPin,
+  faArrowRight,
 } from "@fortawesome/free-solid-svg-icons";
 
 import "./Home.css";
 import "./cursor.css";
 
 const Home = () => {
-  useEffect(() => {
-    const jquery = document.createElement("script");
-    jquery.src = "https://code.jquery.com/jquery-3.6.0.min.js";
-    jquery.onload = () => {
-      const cursorJs = document.createElement("script");
-      cursorJs.src = `${process.env.PUBLIC_URL}/cursor.js`;
-      cursorJs.async = true;
-      document.body.appendChild(cursorJs);
-    };
-    document.body.appendChild(jquery);
+useEffect(() => {
+  const jquery = document.createElement("script");
+  jquery.src = "https://code.jquery.com/jquery-3.6.0.min.js";
+  jquery.onload = () => {
+    const cursorJs = document.createElement("script");
+    cursorJs.src = `${process.env.PUBLIC_URL}/cursor.js`;
+    cursorJs.async = true;
+    cursorJs.defer = true;
+    document.body.appendChild(cursorJs);
+  };
+  document.body.appendChild(jquery);
 
-    return () => {
-      document
-        .querySelectorAll('script[src*="jquery"],script[src*="cursor.js"]')
-        .forEach((s) => s.remove());
-    };
-  }, []);
+  return () => {
+    document.querySelectorAll('script[src*="jquery"],script[src*="cursor.js"]').forEach((s) => s.remove());
+  };
+}, []);
 
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState("signup");
@@ -195,12 +194,10 @@ const Home = () => {
         <div className="container">
           <div className="text-center mb-4">
             <h2 className="mb-1">
-              Explore our{" "}
-              <span className="text-linear-primary">Categories</span>
+              Explore our <span className="text-linear-primary">Categories</span>
             </h2>
             <p className="sub-title">
-              Service categories help organize and structure the offerings on a
-              marketplace, making it easier for users to find what they need.
+              Service categories help organize and structure the offerings on a marketplace.
             </p>
           </div>
 
@@ -223,111 +220,16 @@ const Home = () => {
 
           <div className="text-center mt-4">
             <Link to="/categories" className="btn btn-dark">
-              View All <i className="ti ti-arrow-right ms-2"></i>
+              View All <FontAwesomeIcon icon={faArrowRight} className="ms-2" />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* AUTH MODAL */}
-      {showAuthModal && (
-        <div className="modal-overlay" onClick={() => setShowAuthModal(false)}>
-          <div className="auth-modal" onClick={(e) => e.stopPropagation()}>
-            <h3>{authMode === "signup" ? "Join Us" : "Sign In"}</h3>
-
-            {authMode === "signup" ? (
-              <>
-                <input
-                  type="text"
-                  name="firstname"
-                  placeholder="First Name"
-                  value={formData.firstname}
-                  onChange={handleChange}
-                />
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Email"
-                  value={formData.email}
-                  onChange={handleChange}
-                />
-                <PhoneInput
-                  placeholder="Phone Number"
-                  defaultCountry="IN"
-                  value={formData.phone}
-                  onChange={handlePhoneChange}
-                />
-                <input
-                  type="text"
-                  name="username"
-                  placeholder="Username"
-                  value={formData.username}
-                  onChange={handleChange}
-                />
-                <input
-                  type="password"
-                  name="password"
-                  placeholder="Password (min 8 characters)"
-                  value={formData.password}
-                  onChange={handleChange}
-                />
-                <button onClick={handleSignup} className="btn btn-dark">
-                  Sign Up
-                </button>
-              </>
-            ) : (
-              <>
-                <input
-                  type="text"
-                  name="signinUser"
-                  placeholder="Username or Email"
-                  value={formData.signinUser}
-                  onChange={handleChange}
-                />
-                <input
-                  type="password"
-                  name="signinPass"
-                  placeholder="Password"
-                  value={formData.signinPass}
-                  onChange={handleChange}
-                />
-                <button onClick={handleSignin} className="btn btn-dark">
-                  Sign In
-                </button>
-              </>
-            )}
-
-            <p style={{ marginTop: "10px" }}>
-              {authMode === "signup" ? (
-                <>
-                  Already have an account?{" "}
-                  <span
-                    onClick={() => setAuthMode("signin")}
-                    className="auth-toggle"
-                  >
-                    Sign In
-                  </span>
-                </>
-              ) : (
-                <>
-                  Don't have an account?{" "}
-                  <span
-                    onClick={() => setAuthMode("signup")}
-                    className="auth-toggle"
-                  >
-                    Join Us
-                  </span>
-                </>
-              )}
-            </p>
-          </div>
-        </div>
-      )}
       {/* Business Section */}
       <section className="section business-section bg-black">
         <div className="container">
           <div className="row align-items-center">
-            {/* LEFT COLUMN: Text Content */}
             <div className="col-md-6">
               <div className="section-header mb-md-0 mb-4">
                 <h2 className="text-white display-4">
@@ -340,12 +242,11 @@ const Home = () => {
                   photography and tutoring.
                 </p>
                 <a href="#" className="btn btn-linear-primary">
-                  <i className="ti ti-user-filled me-2"></i>Join Us
+                  <FontAwesomeIcon icon={faUser} className="me-2" />
+                  Join Us
                 </a>
               </div>
             </div>
-
-            {/* RIGHT COLUMN: Image */}
             <div className="col-md-6 text-md-end">
               <div className="business-img">
                 <img
@@ -359,11 +260,12 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* Cities Section */}
       <section className="section info-section">
         <div className="container">
           <div className="accordion-item border-0 bg-transparent">
             <div className="popular-cities-header d-flex align-items-center justify-content-between w-100">
-
               <h2 className="fw-bold m-0 mb-0">Popular Cities</h2>
               <button
                 className="toggle-button"
@@ -371,23 +273,17 @@ const Home = () => {
                 aria-label="Toggle Cities"
               >
                 <span className={`dropdown-arrow ${isCitiesOpen ? "open" : ""}`} />
-
               </button>
-
             </div>
-
-            {/* Horizontal line */}
             <hr style={{ borderTop: "1px solid lightgray", margin: "10px 0" }} />
-
             {isCitiesOpen && (
               <div className="accordion-body px-0 pt-3">
                 <div className="row row-cols-xl-6 row-cols-md-4 row-cols-sm-2 row-cols-1">
                   {[
-                    "Detroit", "Greensboro", "Kansas City", "Memphis",
-                    "El Paso", "Harrisburg", "Las Vegas", "Miami",
-                    "Fort Lauderdale", "Hartford", "Long Beach", "Milwaukee",
-                    "Fort Worth", "Houston", "Los Angeles", "Minneapolis",
-                    "Fresno", "Indianapolis", "Louisville", "Modesto",
+                    "Detroit", "Greensboro", "Kansas City", "Memphis", "El Paso",
+                    "Harrisburg", "Las Vegas", "Miami", "Fort Lauderdale", "Hartford",
+                    "Long Beach", "Milwaukee", "Fort Worth", "Houston", "Los Angeles",
+                    "Minneapolis", "Fresno", "Indianapolis", "Louisville", "Modesto",
                     "Grand Rapids", "Jacksonville", "Madison", "Nashville"
                   ].map((city, idx) => (
                     <div className="col" key={idx}>
@@ -403,11 +299,50 @@ const Home = () => {
         </div>
       </section>
 
-
+      {/* Footer */}
       <Footer />
 
-    </>
+      {/* Auth Modal */}
+      {showAuthModal && (
+        <div className="modal-overlay" onClick={() => setShowAuthModal(false)}>
+          <div className="auth-modal" onClick={(e) => e.stopPropagation()}>
+            <h3>{authMode === "signup" ? "Join Us" : "Sign In"}</h3>
+            {authMode === "signup" ? (
+              <>
+                <input type="text" name="firstname" placeholder="First Name" value={formData.firstname} onChange={handleChange} />
+                <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} />
+                <PhoneInput placeholder="Phone Number" defaultCountry="IN" value={formData.phone} onChange={handlePhoneChange} />
+                <input type="text" name="username" placeholder="Username" value={formData.username} onChange={handleChange} />
+                <input type="password" name="password" placeholder="Password (min 8 characters)" value={formData.password} onChange={handleChange} />
+                <button onClick={handleSignup} className="btn btn-dark">Sign Up</button>
+              </>
+            ) : (
+              <>
+                <input type="text" name="signinUser" placeholder="Username or Email" value={formData.signinUser} onChange={handleChange} />
+                <input type="password" name="signinPass" placeholder="Password" value={formData.signinPass} onChange={handleChange} />
+                <button onClick={handleSignin} className="btn btn-dark">Sign In</button>
+              </>
+            )}
+            <p style={{ marginTop: "10px" }}>
+              {authMode === "signup" ? (
+                <>Already have an account? <span onClick={() => setAuthMode("signin")} className="auth-toggle">Sign In</span></>
+              ) : (
+                <>Don't have an account? <span onClick={() => setAuthMode("signup")} className="auth-toggle">Join Us</span></>
+              )}
+            </p>
+          </div>
+        </div>
+      )}
+      {/* Custom Cursor Element */}
+<div className="tx-js-cursor xb-cursor">
+  <div className="xb-cursor-wrapper">
+    <div className="tx-js-follower xb-cursor--follower"></div>
+    <div className="tx-js-label"></div>
+    <div className="tx-js-icon"></div>
+  </div>
+</div>
 
+    </>
   );
 };
 
