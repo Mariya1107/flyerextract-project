@@ -144,3 +144,4 @@ def search_products(request):
 
     serializer = ProductSerializer(products, many=True)
     return Response(serializer.data)
+

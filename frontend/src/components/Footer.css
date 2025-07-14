@@ -1,0 +1,174 @@
+.footer {
+  background: #f9f9f9;
+  padding: 60px 0 30px;
+  font-family: sans-serif;
+}
+
+.footer-top.container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.footer-columns {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+.footer-col {
+  flex: 1 1 180px;
+  min-width: 180px;
+}
+
+.footer-col h5 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 40px;
+}
+
+.footer-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-col ul li {
+  margin-bottom: 23px;
+}
+
+.footer-col ul li a {
+  color: #444;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.footer-col ul li a:hover {
+  color: #1e90ff;
+}
+
+.subscribe input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.subscribe button {
+  background: linear-gradient(to right, #ff2bb2, #1e90ff);
+  color: white;
+  border: none;
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.download-label {
+  margin-top: 10px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.app-icons img {
+  height: 32px;
+  margin-right: 10px;
+}
+
+/* Meta row */
+.footer-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 40px;
+}
+
+.social-icons {
+  display: flex;
+  gap: 12px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.social-icons img {
+  height: 28px;
+}
+
+/* Dropdown mock */
+.dropdowns {
+  display: flex;
+  gap: 20px;
+}
+
+.dropdown span {
+  font-weight: 500;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.dropdown ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 5px;
+}
+
+.flag {
+  height: 18px;
+  margin-right: 8px;
+}
+
+/* Bottom bar */
+.footer-bottom {
+  border-top: 1px solid #ddd;
+  padding-top: 20px;
+  margin-top: 40px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  flex-wrap: wrap;
+}
+
+.bottom-links {
+  display: flex;
+  gap: 15px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.bottom-links li a {
+  text-decoration: none;
+  color: #555;
+}
+
+.bottom-links li a:hover {
+  color: #1e90ff;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .footer-columns {
+    flex-direction: column;
+  }
+
+  .footer-meta {
+    flex-direction: column;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+  }
+}
+.footer-columns {
+  margin-left: -359px; /* Shift all columns slightly to the left */
+}
