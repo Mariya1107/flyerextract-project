@@ -26,5 +26,6 @@ urlpatterns = [
     path('api/', include('flyers.urls')),  # 👈 Add this line
     path('api/products/upload/', upload_cropped_product, name='upload_cropped_product'),
     path('api/products/search/', views.search_products),
+    path('api/accounts/', include('accounts.urls')),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
