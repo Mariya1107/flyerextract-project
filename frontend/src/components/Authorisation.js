@@ -1,31 +1,100 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Authorisation.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
+import BASE_URL from "../config";
 
 const Authorisation = ({
   showAuthModal,
   setShowAuthModal,
   authMode,
   setAuthMode,
-  formData,
-  handleChange,
-  handlePhoneChange,
-  handleSignup,
-  handleSignin,
+  setUserData,
 }) => {
+  const [formData, setFormData] = useState({
+    firstname: "",
+    email: "",
+    phone: "",
+    gender: "",
+    username: "",
+    password: "",
+    signinUser: "",
+    signinPass: "",
+  });
+
+  const handleChange = (e) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleSignup = async () => {
+    try {
+      const res = await axios.post(`${BASE_URL}/accounts/register/`, {
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+        full_name: formData.firstname,
+        phone: formData.phone,
+        gender: formData.gender,
+      });
+
+      setUserData({
+        firstname: formData.firstname,
+        email: formData.email,
+        phone: formData.phone,
+        gender: formData.gender,
+        username: formData.username,
+      });
+
+      alert("Registered successfully!");
+      setAuthMode("signin");
+    } catch (error) {
+      console.error(error);
+      alert(error.response?.data?.error || "Signup failed");
+    }
+  };
+
+  const handleSignin = async () => {
+    try {
+      const res = await axios.post(`${BASE_URL}/accounts/login/`, {
+        username: formData.signinUser,
+        password: formData.signinPass,
+      });
+      localStorage.setItem("token", res.data.token);
+
+      setUserData({
+        firstname: formData.signinUser,
+        email: "demo@example.com",
+        phone: "+123456789",
+        gender: "Not specified",
+        username: formData.signinUser,
+      });
+
+      alert("Login successful!");
+      setShowAuthModal(false);
+    } catch (error) {
+      console.error(error);
+      alert(error.response?.data?.error || "Login failed");
+    }
+  };
+
   return (
     showAuthModal && (
       <div className="auth-backdrop" onClick={() => setShowAuthModal(false)}>
         <div className="auth-modal" onClick={(e) => e.stopPropagation()}>
           {authMode === "signin" ? (
             <>
-              <button className="auth-close-btn" onClick={() => setShowAuthModal(false)}>
+              <button
+                className="auth-close-btn"
+                onClick={() => setShowAuthModal(false)}
+              >
                 <FontAwesomeIcon icon={faTimes} />
               </button>
 
               <h2 className="auth-title">Welcome</h2>
-              <p className="auth-subtitle">Enter your credentials to access your account</p>
+              <p className="auth-subtitle">
+                Enter your credentials to access your account
+              </p>
 
               <div className="auth-field">
                 <label className="auth-label">User Name</label>
@@ -41,7 +110,6 @@ const Authorisation = ({
               <div className="auth-field">
                 <div className="auth-label-row">
                   <label className="auth-label">Password</label>
-                  <a href="#" className="forgot-password">Forgot Password?</a>
                 </div>
                 <input
                   type="password"
@@ -52,32 +120,28 @@ const Authorisation = ({
                 />
               </div>
 
-              <div className="auth-options">
-                <label><input type="checkbox" /> Remember Me</label>
-                <label><input type="checkbox" /> Sign in with OTP</label>
-              </div>
-
-              <button className="auth-btn-gradient" onClick={handleSignin}>Sign In</button>
-
-              <div className="divider">Or sign in with</div>
-
-              <div className="social-buttons">
-                <button className="social-btn google">
-                  <img src="/assets/img/google-icon.svg" alt="Google" /> Google
-                </button>
-                <button className="social-btn facebook">
-                  <img src="/assets/img/facebook-icon.svg" alt="Facebook" /> Facebook
-                </button>
-              </div>
+              <button
+                className="auth-btn-gradient"
+                onClick={handleSignin}
+              >
+                Sign In
+              </button>
 
               <p className="signup-redirect">
                 Don’t have an account?{" "}
-                <span onClick={() => setAuthMode("signup")}>Join us Today</span>
+                <span onClick={() => setAuthMode("signup")}>
+                  Join us Today
+                </span>
               </p>
             </>
           ) : (
-            <div style={{ maxHeight: "75vh", overflowY: "auto", paddingRight: "6px" }}>
-              <button className="auth-close-btn" onClick={() => setShowAuthModal(false)}>
+            <div
+              style={{ maxHeight: "75vh", overflowY: "auto", paddingRight: "6px" }}
+            >
+              <button
+                className="auth-close-btn"
+                onClick={() => setShowAuthModal(false)}
+              >
                 <FontAwesomeIcon icon={faTimes} />
               </button>
 
@@ -154,18 +218,9 @@ const Authorisation = ({
                 />
               </div>
 
-              <button className="auth-btn-gradient" onClick={handleSignup}>Sign Up</button>
-
-              <div className="divider">Or sign up with</div>
-
-              <div className="social-buttons">
-                <button className="social-btn google">
-                  <img src="/assets/img/google-icon.svg" alt="Google" /> Google
-                </button>
-                <button className="social-btn facebook">
-                  <img src="/assets/img/facebook-icon.svg" alt="Facebook" /> Facebook
-                </button>
-              </div>
+              <button className="auth-btn-gradient" onClick={handleSignup}>
+                Sign Up
+              </button>
 
               <p className="signup-redirect">
                 Already have an account?{" "}

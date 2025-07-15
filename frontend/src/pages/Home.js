@@ -17,37 +17,51 @@ import {
 
 import "./Home.css";
 import "./cursor.css";
+
 import Authorisation from "../components/Authorisation";
 const Home = () => {
-useEffect(() => {
-  const jquery = document.createElement("script");
-  jquery.src = "https://code.jquery.com/jquery-3.6.0.min.js";
-  jquery.onload = () => {
-    const cursorJs = document.createElement("script");
-    cursorJs.src = `${process.env.PUBLIC_URL}/cursor.js`;
-    cursorJs.async = true;
-    cursorJs.defer = true;
-    document.body.appendChild(cursorJs);
-  };
-  document.body.appendChild(jquery);
-
-  return () => {
-    document.querySelectorAll('script[src*="jquery"],script[src*="cursor.js"]').forEach((s) => s.remove());
-  };
-}, []);
-
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState("signup");
-const [formData, setFormData] = useState({
-  firstname: "",
-  email: "",
-  phone: "",
-  gender: "",
-  username: "",
-  password: "",
-  signinUser: "",
-  signinPass: "",
-});
+  const [userData, setUserData] = useState(null);
+
+  console.log("userData at render:", userData); // ✅ Move it here safely
+
+  const [formData, setFormData] = useState({
+    firstname: "",
+    email: "",
+    phone: "",
+    gender: "",
+    username: "",
+    password: "",
+    signinUser: "",
+    signinPass: "",
+  });
+
+  useEffect(() => {
+    const jquery = document.createElement("script");
+    jquery.src = "https://code.jquery.com/jquery-3.6.0.min.js";
+    jquery.onload = () => {
+      const cursorJs = document.createElement("script");
+      cursorJs.src = `${process.env.PUBLIC_URL}/cursor.js`;
+      cursorJs.async = true;
+      cursorJs.defer = true;
+      document.body.appendChild(cursorJs);
+    };
+    document.body.appendChild(jquery);
+
+    return () => {
+      document
+        .querySelectorAll('script[src*="jquery"],script[src*="cursor.js"]')
+        .forEach((s) => s.remove());
+    };
+  }, []);
+
+
+
+  useEffect(() => {
+    console.log("userData changed:", userData);
+  }, [userData]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -58,30 +72,49 @@ const [formData, setFormData] = useState({
   };
 
   const handleSignup = () => {
-    const { firstname, email, phone, username, password } = formData;
+    console.log("🔐 Signup handler called");
+    const { firstname, email, phone, username, password, gender } = formData;
     if (!firstname || !email || !phone || !username || password.length < 8) {
       alert("Please fill all fields correctly.");
       return;
     }
+
+    setUserData({
+      firstname,
+      email,
+      phone,
+      gender,
+      username,
+      profileImage: null,
+    });
+
     console.log("Signup Data:", formData);
     setShowAuthModal(false);
   };
 
-const handleSignin = () => {
-  const { signinUser, signinPass } = formData;
+  const handleSignin = () => {
+     console.log("🔑 Signin handler called");
+    const { signinUser, signinPass } = formData;
 
-  if (!signinUser || signinPass.length < 8) {
-    alert("Invalid credentials.");
-    return;
-  }
+    if (!signinUser || signinPass.length < 8) {
+      alert("Invalid credentials.");
+      return;
+    }
 
-  // ✅ Temporary confirmation
-  alert(`Logged in as ${signinUser}`);
-  console.log("Signin Data:", { signinUser, signinPass });
+    setUserData({
+      firstname: signinUser,
+      email: "demo@example.com",
+      phone: "+123456789",
+      gender: "Not specified",
+      username: signinUser,
+      profileImage: null,
+    });
 
-  setShowAuthModal(false);
-};
+    alert(`Logged in as ${signinUser}`);
+    console.log("Signin Data:", { signinUser, signinPass });
 
+    setShowAuthModal(false);
+  };
 
   const navigate = useNavigate();
   const [isCitiesOpen, setIsCitiesOpen] = useState(true);
@@ -124,29 +157,35 @@ const handleSignin = () => {
             <a href="/admin">Admin</a>
           </nav>
 
-          <div className="header-right">
-            <button
-              className="btn-signin"
-              onClick={() => {
-                setAuthMode("signin");
-                setShowAuthModal(true);
-              }}
-            >
-              <FontAwesomeIcon icon={faLock} /> Sign In
-            </button>
+<div className="header-right">
+  {/* Sign In Button */}
+  <button
+    className="btn-signin"
+    onClick={() => {
+      setAuthMode("signin");
+      setShowAuthModal(true);
+    }}
+  >
+  
+    <FontAwesomeIcon icon={faLock} /> Sign In
+  </button>
 
-            <button
-              className="btn-joinus"
-              onClick={() => {
-                setAuthMode("signup");
-                setShowAuthModal(true);
-              }}
-            >
-              <FontAwesomeIcon icon={faUser} /> Join Us
-            </button>
-          </div>
+  {/* Join Us Button */}
+  <button
+    className="btn-joinus"
+    onClick={() => {
+      setAuthMode("signup");
+      setShowAuthModal(true);
+    }}
+  >
+    <FontAwesomeIcon icon={faUser} /> Join Us
+  </button>
+</div>
+
+
         </div>
       </header>
+
 
       {/* HERO */}
       <section className="hero-section" id="home">
@@ -309,16 +348,12 @@ const handleSignin = () => {
       <Footer />
 
       {/* Auth Modal */}
-     <Authorisation
+<Authorisation
   showAuthModal={showAuthModal}
   setShowAuthModal={setShowAuthModal}
   authMode={authMode}
   setAuthMode={setAuthMode}
-  formData={formData}
-  handleChange={handleChange}
-  handlePhoneChange={handlePhoneChange}
-  handleSignup={handleSignup}
-  handleSignin={handleSignin}
+  setUserData={setUserData}
 />
 
       {/* Custom Cursor Element */}
