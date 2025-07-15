@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Footer from "../components/Footer";
-
 import ProviderModal from "../components/ProviderModal";
-
+import AdminLogin from "../components/AdminLogin"; // ✅ Keep AdminLogin
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 
@@ -21,15 +20,13 @@ import "./Home.css";
 import "./cursor.css";
 
 import Authorisation from "../components/Authorisation";
+
 const Home = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState("signup");
   const [userData, setUserData] = useState(null);
-  const [showProviderModal, setShowProviderModal] = useState(false); 
-
-  
-
-  console.log("userData at render:", userData); // ✅ Move it here safely
+  const [showProviderModal, setShowProviderModal] = useState(false);
+  const [showAdminModal, setShowAdminModal] = useState(false); // ✅ Added
 
   const [formData, setFormData] = useState({
     firstname: "",
@@ -41,6 +38,24 @@ const Home = () => {
     signinUser: "",
     signinPass: "",
   });
+
+  const navigate = useNavigate();
+  const [isCitiesOpen, setIsCitiesOpen] = useState(true);
+
+  const categories = [
+    { id: 1, title: "SUPERMARKET 1", products: 9874, icon: "category-01.svg" },
+    { id: 2, title: "SUPERMARKET 2", products: 787, icon: "category-02.svg" },
+    { id: 3, title: "SUPERMARKET 3", products: 2357, icon: "category-13.svg" },
+    { id: 4, title: "SUPERMARKET 4", products: 1260, icon: "category-04.svg" },
+    { id: 5, title: "SUPERMARKET 5", products: 4546, icon: "category-05.svg" },
+    { id: 6, title: "SUPERMARKET 6", products: 2546, icon: "category-06.svg" },
+    { id: 7, title: "SUPERMARKET 7", products: 4547, icon: "category-07.svg" },
+    { id: 8, title: "SUPERMARKET 8", products: 4787, icon: "category-08.svg" },
+    { id: 9, title: "SUPERMARKET 9", products: 1457, icon: "category-09.svg" },
+    { id: 10, title: "SUPERMARKET 10", products: 4157, icon: "category-10.svg" },
+    { id: 11, title: "SUPERMARKET 11", products: 5477, icon: "category-11.svg" },
+    { id: 12, title: "SUPERMARKET 12", products: 7457, icon: "category-12.svg" },
+  ];
 
   useEffect(() => {
     const jquery = document.createElement("script");
@@ -61,12 +76,6 @@ const Home = () => {
     };
   }, []);
 
-
-
-  useEffect(() => {
-    console.log("userData changed:", userData);
-  }, [userData]);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -77,7 +86,6 @@ const Home = () => {
   };
 
   const handleSignup = () => {
-    console.log("🔐 Signup handler called");
     const { firstname, email, phone, username, password, gender } = formData;
     if (!firstname || !email || !phone || !username || password.length < 8) {
       alert("Please fill all fields correctly.");
@@ -93,12 +101,10 @@ const Home = () => {
       profileImage: null,
     });
 
-    console.log("Signup Data:", formData);
     setShowAuthModal(false);
   };
 
   const handleSignin = () => {
-    console.log("🔑 Signin handler called");
     const { signinUser, signinPass } = formData;
 
     if (!signinUser || signinPass.length < 8) {
@@ -116,28 +122,8 @@ const Home = () => {
     });
 
     alert(`Logged in as ${signinUser}`);
-    console.log("Signin Data:", { signinUser, signinPass });
-
     setShowAuthModal(false);
   };
-
-  const navigate = useNavigate();
-  const [isCitiesOpen, setIsCitiesOpen] = useState(true);
-
-  const categories = [
-    { id: 1, title: "SUPERMARKET 1", products: 9874, icon: "category-01.svg" },
-    { id: 2, title: "SUPERMARKET 2", products: 787, icon: "category-02.svg" },
-    { id: 3, title: "SUPERMARKET 3", products: 2357, icon: "category-13.svg" },
-    { id: 4, title: "SUPERMARKET 4", products: 1260, icon: "category-04.svg" },
-    { id: 5, title: "SUPERMARKET 5", products: 4546, icon: "category-05.svg" },
-    { id: 6, title: "SUPERMARKET 6", products: 2546, icon: "category-06.svg" },
-    { id: 7, title: "SUPERMARKET 7", products: 4547, icon: "category-07.svg" },
-    { id: 8, title: "SUPERMARKET 8", products: 4787, icon: "category-08.svg" },
-    { id: 9, title: "SUPERMARKET 9", products: 1457, icon: "category-09.svg" },
-    { id: 10, title: "SUPERMARKET 10", products: 4157, icon: "category-10.svg" },
-    { id: 11, title: "SUPERMARKET 11", products: 5477, icon: "category-11.svg" },
-    { id: 12, title: "SUPERMARKET 12", products: 7457, icon: "category-12.svg" },
-  ];
 
   return (
     <>
@@ -151,24 +137,34 @@ const Home = () => {
           </div>
 
           <nav className="nav-center">
-            {["Categories", "Home", "Services", "Customers", "Providers"].map((txt) => (
+            {["Categories", "Home", "Services", "Customers"].map((txt) => (
               <a href={`#${txt.toLowerCase()}`} key={txt}>
                 {txt} <FontAwesomeIcon icon={faChevronDown} />
               </a>
             ))}
-            <a href="#" onClick={(e) => { e.preventDefault(); setShowProviderModal(true); }}>
+
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                setShowProviderModal(true);
+              }}
+            >
               Become a Provider
             </a>
-            <a href="/admin">Admin</a>
+
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                setShowAdminModal(true);
+              }}
+            >
+              Admin
+            </a>
           </nav>
 
-          <ProviderModal
-            showModal={showProviderModal}
-            setShowModal={setShowProviderModal}
-          />
-
           <div className="header-right">
-            {/* Sign In Button */}
             <button
               className="btn-signin"
               onClick={() => {
@@ -176,11 +172,9 @@ const Home = () => {
                 setShowAuthModal(true);
               }}
             >
-
               <FontAwesomeIcon icon={faLock} /> Sign In
             </button>
 
-            {/* Join Us Button */}
             <button
               className="btn-joinus"
               onClick={() => {
@@ -191,11 +185,8 @@ const Home = () => {
               <FontAwesomeIcon icon={faUser} /> Join Us
             </button>
           </div>
-
-
         </div>
       </header>
-
 
       {/* HERO */}
       <section className="hero-section" id="home">
@@ -324,7 +315,7 @@ const Home = () => {
               <h2 className="fw-bold m-0 mb-0">Popular Cities</h2>
               <button
                 className="toggle-button"
-                onClick={() => setIsCitiesOpen(prev => !prev)}
+                onClick={() => setIsCitiesOpen((prev) => !prev)}
                 aria-label="Toggle Cities"
               >
                 <span className={`dropdown-arrow ${isCitiesOpen ? "open" : ""}`} />
@@ -366,7 +357,18 @@ const Home = () => {
         setUserData={setUserData}
       />
 
-      {/* Custom Cursor Element */}
+      {/* Provider Modal ✅ */}
+      <ProviderModal
+        showModal={showProviderModal}
+        setShowModal={setShowProviderModal}
+      />
+
+      {/* Admin Modal ✅ */}
+      {showAdminModal && (
+        <AdminLogin setShowAdminModal={setShowAdminModal} />
+      )}
+
+      {/* Custom Cursor */}
       <div className="tx-js-cursor xb-cursor">
         <div className="xb-cursor-wrapper">
           <div className="tx-js-follower xb-cursor--follower"></div>
@@ -374,7 +376,6 @@ const Home = () => {
           <div className="tx-js-icon"></div>
         </div>
       </div>
-
     </>
   );
 };
