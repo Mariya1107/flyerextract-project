@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Footer from "../components/Footer";
 import ProviderLogin from "../components/ProviderLogin"; 
-
+import AdminLogin from "../components/AdminLogin"; // 👈 Import
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 
@@ -25,6 +25,7 @@ const Home = () => {
   const [authMode, setAuthMode] = useState("signup");
   const [userData, setUserData] = useState(null);
   const [showProviderModal, setShowProviderModal] = useState(false);
+  const [showAdminModal, setShowAdminModal] = useState(false); // 👈 Add this
   console.log("userData at render:", userData); // ✅ Move it here safely
 
   const [formData, setFormData] = useState({
@@ -147,7 +148,7 @@ const Home = () => {
           </div>
 
 <nav className="nav-center">
-  {["Categories", "Home", "Services", "Customers"].map((txt) => (
+  {[ "Home",  "Customers"].map((txt) => (
     <a href={`#${txt.toLowerCase()}`} key={txt}>
       {txt} <FontAwesomeIcon icon={faChevronDown} />
     </a>
@@ -164,8 +165,19 @@ const Home = () => {
   </a>
 
   <a href="#become-provider">Become a Provider</a>
-  <a href="/admin">Admin</a>
+
+  {/* ✅ No custom inline style — this now looks the same as "Become a Provider" */}
+  <a
+    href="#"
+    onClick={(e) => {
+      e.preventDefault();
+      setShowAdminModal(true);
+    }}
+  >
+    Admin
+  </a>
 </nav>
+
 
 
 <div className="header-right">
@@ -371,6 +383,10 @@ const Home = () => {
   <div className="modal-overlay">
     <ProviderLogin setShowProviderModal={setShowProviderModal} />
   </div>
+  
+)}
+{showAdminModal && (
+  <AdminLogin setShowAdminModal={setShowAdminModal} />
 )}
       {/* Custom Cursor Element */}
 <div className="tx-js-cursor xb-cursor">

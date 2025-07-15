@@ -73,3 +73,23 @@ def user_profile(request):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=400)
+
+@api_view(['POST'])
+def login_admin(request):
+    username = request.data.get("username")
+    password = request.data.get("password")
+
+    user = authenticate(username=username, password=password)
+
+    if user:
+        # Check if user is provider, staff, and superuser
+        if user.is_provider and user.is_staff and user.is_superuser:
+            token, _ = Token.objects.get_or_create(user=user)
+            return Response({
+                "token": token.key,
+                "message": "Admin login successful"
+            })
+        else:
+            return Response({"error": "User does not have admin privileges"}, status=403)
+
+    return Response({"error": "Invalid credentials"}, status=400)
