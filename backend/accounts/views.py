@@ -22,7 +22,8 @@ def register_user(request):
             password=data['password'],
             full_name=data.get('full_name', ''),
             phone=data.get('phone', ''),
-            gender=data.get('gender', '')
+            gender=data.get('gender', ''),
+            is_provider=data.get('is_provider', False)  # ✅ You can set provider during registration
         )
         token, _ = Token.objects.get_or_create(user=user)
         return Response({"token": token.key, "message": "User registered successfully"})
@@ -36,7 +37,27 @@ def login_user(request):
     user = authenticate(username=username, password=password)
     if user:
         token, _ = Token.objects.get_or_create(user=user)
-        return Response({"token": token.key, "message": "Login successful"})
+        return Response({
+            "token": token.key,
+            "message": "Login successful",
+            "is_provider": user.is_provider
+        })
+    return Response({"error": "Invalid credentials"}, status=400)
+
+@api_view(['POST'])
+def login_provider(request):
+    username = request.data.get("username")
+    password = request.data.get("password")
+    user = authenticate(username=username, password=password)
+    if user:
+        if user.is_provider:
+            token, _ = Token.objects.get_or_create(user=user)
+            return Response({
+                "token": token.key,
+                "message": "Provider login successful"
+            })
+        else:
+            return Response({"error": "User is not a provider"}, status=403)
     return Response({"error": "Invalid credentials"}, status=400)
 
 @api_view(['GET', 'PUT'])
@@ -52,3 +73,23 @@ def user_profile(request):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=400)
+
+@api_view(['POST'])
+def login_admin(request):
+    username = request.data.get("username")
+    password = request.data.get("password")
+
+    user = authenticate(username=username, password=password)
+
+    if user:
+        # Check if user is provider, staff, and superuser
+        if user.is_provider and user.is_staff and user.is_superuser:
+            token, _ = Token.objects.get_or_create(user=user)
+            return Response({
+                "token": token.key,
+                "message": "Admin login successful"
+            })
+        else:
+            return Response({"error": "User does not have admin privileges"}, status=403)
+
+    return Response({"error": "Invalid credentials"}, status=400)
