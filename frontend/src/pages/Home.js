@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Footer from "../components/Footer";
+import ProviderLogin from "../components/ProviderLogin"; 
 
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
@@ -23,7 +24,7 @@ const Home = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState("signup");
   const [userData, setUserData] = useState(null);
-
+  const [showProviderModal, setShowProviderModal] = useState(false);
   console.log("userData at render:", userData); // ✅ Move it here safely
 
   const [formData, setFormData] = useState({
@@ -145,17 +146,27 @@ const Home = () => {
             </Link>
           </div>
 
-          <nav className="nav-center">
-            {["Categories", "Home", "Services", "Customers", "Providers"].map(
-              (txt) => (
-                <a href={`#${txt.toLowerCase()}`} key={txt}>
-                  {txt} <FontAwesomeIcon icon={faChevronDown} />
-                </a>
-              )
-            )}
-            <a href="#become-provider">Become a Provider</a>
-            <a href="/admin">Admin</a>
-          </nav>
+<nav className="nav-center">
+  {["Categories", "Home", "Services", "Customers"].map((txt) => (
+    <a href={`#${txt.toLowerCase()}`} key={txt}>
+      {txt} <FontAwesomeIcon icon={faChevronDown} />
+    </a>
+  ))}
+
+  <a
+    href="#"
+    onClick={(e) => {
+      e.preventDefault();
+      setShowProviderModal(true);
+    }}
+  >
+    Providers <FontAwesomeIcon icon={faChevronDown} />
+  </a>
+
+  <a href="#become-provider">Become a Provider</a>
+  <a href="/admin">Admin</a>
+</nav>
+
 
 <div className="header-right">
   {/* Sign In Button */}
@@ -355,7 +366,12 @@ const Home = () => {
   setAuthMode={setAuthMode}
   setUserData={setUserData}
 />
-
+{/* Provider Login Modal */}
+{showProviderModal && (
+  <div className="modal-overlay">
+    <ProviderLogin setShowProviderModal={setShowProviderModal} />
+  </div>
+)}
       {/* Custom Cursor Element */}
 <div className="tx-js-cursor xb-cursor">
   <div className="xb-cursor-wrapper">
