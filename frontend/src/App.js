@@ -5,6 +5,7 @@ import FlyerDetail from "./pages/FlyerDetail";
 import CropUploader from "./components/CropUploader";
 import FlyerList from "./pages/FlyerList";
 import BrochureViewer from "./pages/BrochureViewer";
+import ProviderLogin from "./components/ProviderLogin"; // ✅ Adjust path if needed
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/manual-upload/:flyerId" element={<CropUploader />} />
         <Route path="/brochure/:id" element={<BrochureViewer />} />
         <Route path="/flyers" element={<FlyerList />} />
+         <Route path="/provider-login" element={<ProviderLogin />} />
       </Routes>
     </Router>
     

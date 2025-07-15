@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.utils import timezone
 
-
 class CustomUserManager(BaseUserManager):
     def create_user(self, username, password=None, **extra_fields):
         if not username:
@@ -35,12 +34,16 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     )
     username = models.CharField(max_length=150, unique=True)
 
+    # ✅ New field for provider identification
+    is_provider = models.BooleanField(default=False)
+
+    # System fields
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)
-   
-    USERNAME_FIELD = 'username'  # ✅ Admin login will use username
-    REQUIRED_FIELDS = []  # ✅ No extra required fields during createsuperuser
+
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = []
 
     objects = CustomUserManager()
 

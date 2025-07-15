@@ -22,7 +22,8 @@ def register_user(request):
             password=data['password'],
             full_name=data.get('full_name', ''),
             phone=data.get('phone', ''),
-            gender=data.get('gender', '')
+            gender=data.get('gender', ''),
+            is_provider=data.get('is_provider', False)  # ✅ You can set provider during registration
         )
         token, _ = Token.objects.get_or_create(user=user)
         return Response({"token": token.key, "message": "User registered successfully"})
@@ -36,7 +37,27 @@ def login_user(request):
     user = authenticate(username=username, password=password)
     if user:
         token, _ = Token.objects.get_or_create(user=user)
-        return Response({"token": token.key, "message": "Login successful"})
+        return Response({
+            "token": token.key,
+            "message": "Login successful",
+            "is_provider": user.is_provider
+        })
+    return Response({"error": "Invalid credentials"}, status=400)
+
+@api_view(['POST'])
+def login_provider(request):
+    username = request.data.get("username")
+    password = request.data.get("password")
+    user = authenticate(username=username, password=password)
+    if user:
+        if user.is_provider:
+            token, _ = Token.objects.get_or_create(user=user)
+            return Response({
+                "token": token.key,
+                "message": "Provider login successful"
+            })
+        else:
+            return Response({"error": "User is not a provider"}, status=403)
     return Response({"error": "Invalid credentials"}, status=400)
 
 @api_view(['GET', 'PUT'])
