@@ -17,11 +17,7 @@ function App() {
         <Route path="/flyers" element={<FlyerList />} />
       </Routes>
     </Router>
-    
   );
 }
-
-
-
 
 export default App;

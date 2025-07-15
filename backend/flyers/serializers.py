@@ -1,5 +1,9 @@
-from rest_framework import serializers
+
 from .models import Country, Region, Store, Flyer, Product
+from rest_framework import serializers
+from .models import ProviderApplication
+
+
 
 
 class CountrySerializer(serializers.ModelSerializer):
@@ -57,3 +61,9 @@ class ProductSerializer(serializers.ModelSerializer):
             'flyer'
             # Removed: 'advantages', 'how_to_use', 'in_stock', 'created_at'
         ]
+
+
+class ProviderApplicationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProviderApplication
+        fields = '__all__'

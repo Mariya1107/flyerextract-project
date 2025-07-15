@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Footer from "../components/Footer";
 
+import ProviderModal from "../components/ProviderModal";
+
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 
@@ -23,6 +25,9 @@ const Home = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState("signup");
   const [userData, setUserData] = useState(null);
+  const [showProviderModal, setShowProviderModal] = useState(false); 
+
+  
 
   console.log("userData at render:", userData); // ✅ Move it here safely
 
@@ -93,7 +98,7 @@ const Home = () => {
   };
 
   const handleSignin = () => {
-     console.log("🔑 Signin handler called");
+    console.log("🔑 Signin handler called");
     const { signinUser, signinPass } = formData;
 
     if (!signinUser || signinPass.length < 8) {
@@ -146,41 +151,46 @@ const Home = () => {
           </div>
 
           <nav className="nav-center">
-            {["Categories", "Home", "Services", "Customers", "Providers"].map(
-              (txt) => (
-                <a href={`#${txt.toLowerCase()}`} key={txt}>
-                  {txt} <FontAwesomeIcon icon={faChevronDown} />
-                </a>
-              )
-            )}
-            <a href="#become-provider">Become a Provider</a>
+            {["Categories", "Home", "Services", "Customers", "Providers"].map((txt) => (
+              <a href={`#${txt.toLowerCase()}`} key={txt}>
+                {txt} <FontAwesomeIcon icon={faChevronDown} />
+              </a>
+            ))}
+            <a href="#" onClick={(e) => { e.preventDefault(); setShowProviderModal(true); }}>
+              Become a Provider
+            </a>
             <a href="/admin">Admin</a>
           </nav>
 
-<div className="header-right">
-  {/* Sign In Button */}
-  <button
-    className="btn-signin"
-    onClick={() => {
-      setAuthMode("signin");
-      setShowAuthModal(true);
-    }}
-  >
-  
-    <FontAwesomeIcon icon={faLock} /> Sign In
-  </button>
+          <ProviderModal
+            showModal={showProviderModal}
+            setShowModal={setShowProviderModal}
+          />
 
-  {/* Join Us Button */}
-  <button
-    className="btn-joinus"
-    onClick={() => {
-      setAuthMode("signup");
-      setShowAuthModal(true);
-    }}
-  >
-    <FontAwesomeIcon icon={faUser} /> Join Us
-  </button>
-</div>
+          <div className="header-right">
+            {/* Sign In Button */}
+            <button
+              className="btn-signin"
+              onClick={() => {
+                setAuthMode("signin");
+                setShowAuthModal(true);
+              }}
+            >
+
+              <FontAwesomeIcon icon={faLock} /> Sign In
+            </button>
+
+            {/* Join Us Button */}
+            <button
+              className="btn-joinus"
+              onClick={() => {
+                setAuthMode("signup");
+                setShowAuthModal(true);
+              }}
+            >
+              <FontAwesomeIcon icon={faUser} /> Join Us
+            </button>
+          </div>
 
 
         </div>
@@ -348,22 +358,22 @@ const Home = () => {
       <Footer />
 
       {/* Auth Modal */}
-<Authorisation
-  showAuthModal={showAuthModal}
-  setShowAuthModal={setShowAuthModal}
-  authMode={authMode}
-  setAuthMode={setAuthMode}
-  setUserData={setUserData}
-/>
+      <Authorisation
+        showAuthModal={showAuthModal}
+        setShowAuthModal={setShowAuthModal}
+        authMode={authMode}
+        setAuthMode={setAuthMode}
+        setUserData={setUserData}
+      />
 
       {/* Custom Cursor Element */}
-<div className="tx-js-cursor xb-cursor">
-  <div className="xb-cursor-wrapper">
-    <div className="tx-js-follower xb-cursor--follower"></div>
-    <div className="tx-js-label"></div>
-    <div className="tx-js-icon"></div>
-  </div>
-</div>
+      <div className="tx-js-cursor xb-cursor">
+        <div className="xb-cursor-wrapper">
+          <div className="tx-js-follower xb-cursor--follower"></div>
+          <div className="tx-js-label"></div>
+          <div className="tx-js-icon"></div>
+        </div>
+      </div>
 
     </>
   );
