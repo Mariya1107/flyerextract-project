@@ -118,6 +118,21 @@ const Authorisation = ({
               </div>
 
               <div className="auth-field">
+                <label className="auth-label">Gender</label>
+                <select
+                  name="gender"
+                  value={formData.gender || ""}
+                  onChange={handleChange}
+                  className="auth-input"
+                >
+                  <option value="">Select</option>
+                  <option value="female">Female</option>
+                  <option value="male">Male</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div className="auth-field">
                 <label className="auth-label">Username</label>
                 <input
                   type="text"
