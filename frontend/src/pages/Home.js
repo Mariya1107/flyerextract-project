@@ -17,7 +17,7 @@ import {
 
 import "./Home.css";
 import "./cursor.css";
-
+import Authorisation from "../components/Authorisation";
 const Home = () => {
 useEffect(() => {
   const jquery = document.createElement("script");
@@ -38,16 +38,16 @@ useEffect(() => {
 
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState("signup");
-  const [formData, setFormData] = useState({
-    firstname: "",
-    email: "",
-    phone: "",
-    username: "",
-    password: "",
-    signinUser: "",
-    signinPass: "",
-  });
-
+const [formData, setFormData] = useState({
+  firstname: "",
+  email: "",
+  phone: "",
+  gender: "",
+  username: "",
+  password: "",
+  signinUser: "",
+  signinPass: "",
+});
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -67,15 +67,21 @@ useEffect(() => {
     setShowAuthModal(false);
   };
 
-  const handleSignin = () => {
-    const { signinUser, signinPass } = formData;
-    if (!signinUser || signinPass.length < 8) {
-      alert("Invalid credentials.");
-      return;
-    }
-    console.log("Signin Data:", { signinUser, signinPass });
-    setShowAuthModal(false);
-  };
+const handleSignin = () => {
+  const { signinUser, signinPass } = formData;
+
+  if (!signinUser || signinPass.length < 8) {
+    alert("Invalid credentials.");
+    return;
+  }
+
+  // ✅ Temporary confirmation
+  alert(`Logged in as ${signinUser}`);
+  console.log("Signin Data:", { signinUser, signinPass });
+
+  setShowAuthModal(false);
+};
+
 
   const navigate = useNavigate();
   const [isCitiesOpen, setIsCitiesOpen] = useState(true);
@@ -303,36 +309,18 @@ useEffect(() => {
       <Footer />
 
       {/* Auth Modal */}
-      {showAuthModal && (
-        <div className="modal-overlay" onClick={() => setShowAuthModal(false)}>
-          <div className="auth-modal" onClick={(e) => e.stopPropagation()}>
-            <h3>{authMode === "signup" ? "Join Us" : "Sign In"}</h3>
-            {authMode === "signup" ? (
-              <>
-                <input type="text" name="firstname" placeholder="First Name" value={formData.firstname} onChange={handleChange} />
-                <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} />
-                <PhoneInput placeholder="Phone Number" defaultCountry="IN" value={formData.phone} onChange={handlePhoneChange} />
-                <input type="text" name="username" placeholder="Username" value={formData.username} onChange={handleChange} />
-                <input type="password" name="password" placeholder="Password (min 8 characters)" value={formData.password} onChange={handleChange} />
-                <button onClick={handleSignup} className="btn btn-dark">Sign Up</button>
-              </>
-            ) : (
-              <>
-                <input type="text" name="signinUser" placeholder="Username or Email" value={formData.signinUser} onChange={handleChange} />
-                <input type="password" name="signinPass" placeholder="Password" value={formData.signinPass} onChange={handleChange} />
-                <button onClick={handleSignin} className="btn btn-dark">Sign In</button>
-              </>
-            )}
-            <p style={{ marginTop: "10px" }}>
-              {authMode === "signup" ? (
-                <>Already have an account? <span onClick={() => setAuthMode("signin")} className="auth-toggle">Sign In</span></>
-              ) : (
-                <>Don't have an account? <span onClick={() => setAuthMode("signup")} className="auth-toggle">Join Us</span></>
-              )}
-            </p>
-          </div>
-        </div>
-      )}
+     <Authorisation
+  showAuthModal={showAuthModal}
+  setShowAuthModal={setShowAuthModal}
+  authMode={authMode}
+  setAuthMode={setAuthMode}
+  formData={formData}
+  handleChange={handleChange}
+  handlePhoneChange={handlePhoneChange}
+  handleSignup={handleSignup}
+  handleSignin={handleSignin}
+/>
+
       {/* Custom Cursor Element */}
 <div className="tx-js-cursor xb-cursor">
   <div className="xb-cursor-wrapper">
