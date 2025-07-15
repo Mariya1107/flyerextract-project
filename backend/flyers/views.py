@@ -1,7 +1,6 @@
 from rest_framework import generics
-from rest_framework.decorators import api_view, parser_classes
-from rest_framework.parsers import MultiPartParser
-from rest_framework.response import Response
+
+
 from .models import Country, Region, Flyer, Product
 from .serializers import CountrySerializer, RegionSerializer, FlyerSerializer, ProductSerializer
 import json
@@ -9,6 +8,46 @@ import base64
 import openai
 from openai import OpenAI
 from django.conf import settings
+from rest_framework.decorators import api_view, parser_classes
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.response import Response
+from rest_framework import status
+from .serializers import ProviderApplicationSerializer
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from .models import ProviderApplication
+
+@csrf_exempt
+def become_provider(request):
+    if request.method == "POST":
+        name = request.POST.get("full_name")
+        email = request.POST.get("email")
+        phone = request.POST.get("phone")
+        gender = request.POST.get("gender")
+        company_name = request.POST.get("company_name")
+        address = request.POST.get("address")
+        gst_number = request.POST.get("gst_number")
+        
+        
+        document = request.FILES.get("document")
+
+        if not all([name, email, phone, company_name]):
+            return JsonResponse({"message": "Missing required fields."}, status=400)
+
+        ProviderApplication.objects.create(
+            full_name=name,
+            email=email,
+            phone=phone,
+            gender=gender,
+            company_name=company_name,
+            address=address,
+            gst_number=gst_number,
+            document=document,
+        )
+        return JsonResponse({"message": "Application submitted!"})
+
+    return JsonResponse({"message": "Invalid request"}, status=400)
+
 
 # Set OpenAI API key
 client = OpenAI(api_key=settings.OPENAI_API_KEY)
@@ -144,4 +183,15 @@ def search_products(request):
 
     serializer = ProductSerializer(products, many=True)
     return Response(serializer.data)
+
+
+@api_view(['POST'])
+def become_provider(request):
+    print("Incoming data:", request.data)
+    serializer = ProviderApplicationSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({'message': 'Application submitted successfully.'}, status=201)
+    else:
+        return Response(serializer.errors, status=400)
 

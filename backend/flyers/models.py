@@ -39,3 +39,32 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+
+
+from django.db import models
+
+class ProviderApplication(models.Model):
+    GENDER_CHOICES = [
+        ('male', 'Male'),
+        ('female', 'Female'),
+    ]
+
+  
+
+
+class ProviderApplication(models.Model):
+    full_name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone = models.CharField(max_length=15)
+    gender = models.CharField(max_length=10, blank=True)
+    company_name = models.CharField(max_length=100)
+    address = models.TextField()
+    gst_number = models.CharField(max_length=50, blank=True)
+    document = models.FileField(upload_to="provider_docs/")
+    submitted_at = models.DateTimeField(auto_now_add=True)
+    reviewed = models.BooleanField(default=False)
+    
+
+    def __str__(self):
+        return f"{self.full_name} ({self.company_name})"
