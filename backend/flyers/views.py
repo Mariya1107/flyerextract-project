@@ -17,6 +17,10 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from .models import ProviderApplication
 
+
+
+
+
 @csrf_exempt
 def become_provider(request):
     if request.method == "POST":
@@ -185,13 +189,40 @@ def search_products(request):
     return Response(serializer.data)
 
 
+
 @api_view(['POST'])
-def become_provider(request):
-    print("Incoming data:", request.data)
+@parser_classes([MultiPartParser, FormParser])  # Required for file upload
+def submit_provider_application(request):
     serializer = ProviderApplicationSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
-        return Response({'message': 'Application submitted successfully.'}, status=201)
-    else:
-        return Response(serializer.errors, status=400)
+        return Response({'message': 'Application submitted successfully'}, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@csrf_exempt
+
+
+def become_provider(request):
+    if request.method == "POST":
+        full_name = request.POST.get('full_name')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        gender = request.POST.get('gender')
+        company_name = request.POST.get('company_name')
+        address = request.POST.get('address')
+        gst_number = request.POST.get('gst_number')
+        document = request.FILES.get('document')
+
+        ProviderApplication.objects.create(
+            full_name=full_name,
+            email=email,
+            phone=phone,
+            gender=gender,
+            company_name=company_name,
+            address=address,
+            gst_number=gst_number,
+            document=document
+        )
+        return JsonResponse({'message': 'Application submitted successfully!'})
+    else:
+        return JsonResponse({'error': 'Only POST allowed'}, status=405)

@@ -4,11 +4,14 @@ from .models import ProviderApplication
 
 
 
+
+
 admin.site.register(Country)
 admin.site.register(Region)
 admin.site.register(Store)
 admin.site.register(Flyer)
 admin.site.register(Product)
+
 
 @admin.register(ProviderApplication)
 class ProviderApplicationAdmin(admin.ModelAdmin):
