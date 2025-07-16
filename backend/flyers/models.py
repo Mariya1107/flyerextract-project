@@ -24,7 +24,8 @@ class Flyer(models.Model):
     store = models.ForeignKey(Store, on_delete=models.CASCADE)
     region = models.ForeignKey(Region, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
-    pdf = models.FileField(upload_to='flyers/')
+    pdf = models.FileField(upload_to='flyers/pdfs/', blank=True, null=True)
+    image = models.ImageField(upload_to='flyers/images/', blank=True, null=True)
     created_at = models.DateField(auto_now_add=True)
     expires_at = models.DateField()
 

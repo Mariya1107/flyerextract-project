@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
+import BASE_URL from '../config';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
@@ -15,40 +16,44 @@ const FlyerDetail = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [showAll, setShowAll] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    axios.get('http://127.0.0.1:8000/api/flyers/all/').then(res => {
-      const match = res.data.find(f => f.id === parseInt(flyerId));
-      if (match) setFlyer(match);
-    });
+    document.title = flyer?.title ? `Flyer | ${flyer.title}` : 'Flyer Detail';
+  }, [flyer]);
 
-    axios.get(`http://127.0.0.1:8000/api/products/${flyerId}/`).then(res => {
-      setProducts(res.data);
-    });
+  useEffect(() => {
+    setLoading(true);
+    axios
+      .get(`${BASE_URL}flyers/all/`)
+      .then(res => {
+        const match = res.data.find(f => f.id === parseInt(flyerId));
+        if (match) setFlyer(match);
+        else setError('Flyer not found.');
+      })
+      .catch(() => setError('Failed to fetch flyer.'))
+      .finally(() => setLoading(false));
+
+    axios
+      .get(`${BASE_URL}products/${flyerId}/`)
+      .then(res => setProducts(res.data))
+      .catch(() => console.error('Failed to fetch products.'));
   }, [flyerId]);
-
-  const onDocumentLoadSuccess = ({ numPages }) => {
-    setNumPages(numPages);
-    setCurrentPage(1);
-  };
-
-  const handleNext = () => {
-    if (currentPage < numPages) {
-      setCurrentPage(prev => prev + 1);
-    }
-  };
-
-  const handlePrev = () => {
-    if (currentPage > 1) {
-      setCurrentPage(prev => prev - 1);
-    }
-  };
 
   const filteredProducts = products.filter(p =>
     p.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const displayedProducts = showAll ? filteredProducts : filteredProducts.slice(0, 6);
+
+  if (loading) {
+    return <p style={styles.loading}>⏳ Loading flyer details...</p>;
+  }
+
+  if (error) {
+    return <p style={styles.error}>{error}</p>;
+  }
 
   return flyer ? (
     <div style={styles.page}>
@@ -78,42 +83,30 @@ const FlyerDetail = () => {
       </div>
 
       {/* PDF Viewer */}
-{flyer?.pdf && flyer.pdf.endsWith('.pdf') ? (
+   {flyer.pdf && flyer.pdf.endsWith('.pdf') ? (
   <>
     <div style={styles.pdfContainer}>
       <Document
         file={{ url: flyer.pdf }}
-        onLoadSuccess={({ numPages }) => {
-          setNumPages(numPages);
-          console.log("PDF loaded with", numPages, "pages");
-        }}
+        onLoadSuccess={({ numPages }) => setNumPages(numPages)}
         loading={<p>Loading PDF...</p>}
         onLoadError={(error) => {
           console.error("PDF load error:", error.message);
           alert("Error loading PDF.");
         }}
-      >
-        {[...Array(numPages)].map((_, index) =>
-          index + 1 === currentPage ? (
-            <Page
-              key={`page_${index + 1}`}
-              pageNumber={index + 1}
-              width={420}
-              onRenderSuccess={() => console.log(` Rendered page ${index + 1}`)}
-            />
-          ) : null
-        )}
+            >
+        <Page
+          pageNumber={currentPage}
+          width={420}
+          onRenderSuccess={() => console.log(`Rendered page ${currentPage}`)}
+        />
       </Document>
     </div>
-
     {numPages > 1 && (
       <div style={styles.pdfNav}>
         <button
           style={styles.navBtn}
-          onClick={() => {
-            console.log("⬅ Going to page", currentPage - 1);
-            setCurrentPage((p) => Math.max(1, p - 1));
-          }}
+          onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
           disabled={currentPage === 1}
         >
           ◀ Prev
@@ -121,10 +114,7 @@ const FlyerDetail = () => {
         <span style={styles.pageInfo}>Page {currentPage} / {numPages}</span>
         <button
           style={styles.navBtn}
-          onClick={() => {
-            console.log("➡ Going to page", currentPage + 1);
-            setCurrentPage((p) => Math.min(numPages, p + 1));
-          }}
+          onClick={() => setCurrentPage(p => Math.min(numPages, p + 1))}
           disabled={currentPage === numPages}
         >
           Next ▶
@@ -132,14 +122,20 @@ const FlyerDetail = () => {
       </div>
     )}
   </>
+) : flyer.image ? (
+  <div style={{ textAlign: 'center', margin: '30px 0' }}>
+    <img
+      src={flyer.image}
+      alt={flyer.title}
+      style={{ width: '80%', maxWidth: '600px', borderRadius: '8px' }}
+    />
+  </div>
 ) : (
-  <p style={styles.error}> PDF not available or invalid.</p>
+  <p style={styles.error}>❌ PDF or Image not available.</p>
 )}
-
-
-      {/* Product Section */}
+      {/* Products */}
       <div style={styles.productsHeader}>
-        <h2 style={styles.sectionTitle}> Products</h2>
+        <h2 style={styles.sectionTitle}>Products</h2>
         {filteredProducts.length > 6 && (
           <button
             style={styles.viewAllBtn}
@@ -170,7 +166,7 @@ const FlyerDetail = () => {
         </div>
       )}
 
-      {/* Crop Uploader */}
+      {/* Crop Upload */}
       <div style={{ textAlign: "center", marginTop: "50px" }}>
         <button
           style={styles.addBtn}
@@ -180,11 +176,7 @@ const FlyerDetail = () => {
         </button>
       </div>
     </div>
-  ) : (
-    <p style={{ padding: '30px', fontSize: '18px' }}>
-      ⏳ Loading flyer details...
-    </p>
-  );
+  ) : null;
 };
 
 const styles = {
@@ -196,6 +188,16 @@ const styles = {
     backgroundColor: "#F9F9F9",
     borderRadius: "10px",
     boxShadow: "0 0 8px rgba(0,0,0,0.1)",
+  },
+  loading: {
+    padding: '30px',
+    fontSize: '18px',
+  },
+  error: {
+    color: "crimson",
+    textAlign: "center",
+    marginTop: "20px",
+    fontSize: "16px",
   },
   header: {
     display: "flex",
@@ -323,11 +325,6 @@ const styles = {
     fontSize: "16px",
     borderRadius: "8px",
     cursor: "pointer",
-  },
-  error: {
-    color: "crimson",
-    textAlign: "center",
-    marginTop: "20px",
   },
 };
 
