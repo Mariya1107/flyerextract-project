@@ -1,33 +1,25 @@
-"""
-URL configuration for config project.
 
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
+
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from flyers.views import upload_cropped_product
-from flyers import views
+from flyers.views import upload_cropped_product, search_products
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('flyers.urls')), 
-     # 👈 Add this line
+
+    # Main app (flyers) routes
+    path('', include('flyers.urls')),
+
+    # Product-related API endpoints
     path('api/products/upload/', upload_cropped_product, name='upload_cropped_product'),
-    path('api/products/search/', views.search_products),
+    path('api/products/search/', search_products, name='search_products'),
+
+    # Account-related endpoints
     path('api/accounts/', include('accounts.urls')),
-     
 ]
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# Serve media files during development
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

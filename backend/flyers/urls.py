@@ -1,8 +1,8 @@
 from django.urls import path
 from . import views
-
-from .views import FlyerListAll
 from .views import become_provider
+from .views import FlyerListAll
+from .views import submit_provider_application
 
 urlpatterns = [
     path('countries/', views.CountryList.as_view()),
@@ -10,8 +10,11 @@ urlpatterns = [
     path('flyers/<int:region_id>/', views.FlyerListByRegion.as_view()),
     path('products/<int:flyer_id>/', views.ProductListByFlyer.as_view()),
     path('flyers/all/', FlyerListAll.as_view()),
+    path('api/provider-apply/', submit_provider_application, name='provider-apply'),
+    
+    path('api/become-provider/', views.become_provider, name='become_provider'),
 
-    path('api/become-provider/', become_provider, name='become_provider'),
+   
 
     
     
