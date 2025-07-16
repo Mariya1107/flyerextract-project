@@ -1,12 +1,17 @@
-// components/ProductCard.jsx
 import React from 'react';
 import './ProductCard.css';
+import backendBaseURL from '../config'; // ✅ import your base URL
 
 const ProductCard = ({ product }) => {
+  // ✅ If product.image is relative, prepend it with backendBaseURL
+  const imageUrl = product.image?.startsWith('http')
+    ? product.image
+    : `${backendBaseURL}${product.image}`;
+
   return (
     <div className="product-card">
       <img
-        src={product.image || "https://via.placeholder.com/150"}
+        src={imageUrl || "https://via.placeholder.com/150"}
         alt={product.name}
         className="product-image"
       />

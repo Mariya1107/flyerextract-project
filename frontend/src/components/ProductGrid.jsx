@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import ProductCard from './ProductCard';
 import './ProductGrid.css';
+import backendBaseURL from '../config'; // ✅ Import global backend URL
 
 const ProductGrid = ({ searchQuery }) => {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
     axios
-      .get('http://localhost:8000/api/products/search/', {
+      .get(`${backendBaseURL}/api/products/search/`, {
         params: { q: searchQuery }
       })
       .then(res => setProducts(res.data))
