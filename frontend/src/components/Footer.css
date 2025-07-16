@@ -169,6 +169,16 @@
     gap: 10px;
   }
 }
-.footer-columns {
-  margin-left: -359px; 
+.footer-group-left {
+  display: flex;
+  gap: 40px;
+  margin-left: -320px; /* 🔧 adjust this value to control the left shift */
+}
+
+/* Optional: Keep it responsive */
+@media (max-width: 768px) {
+  .footer-group-left {
+    margin-left: 0;
+    flex-direction: column;
+  }
 }
