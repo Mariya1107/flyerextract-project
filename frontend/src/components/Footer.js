@@ -30,19 +30,21 @@ const Footer = () => {
   return (
     <footer className="footer">
       <div className="footer-top container">
-        <div className="footer-columns">
-          {footerSections.map((section, i) => (
-            <div className="footer-col" key={section.title + i}>
-              <h5>{section.title}</h5>
-              <ul>
-                {section.items.map((item, j) => (
-                  <li key={`${section.title}-${j}`}>
-                    <a href="#home">{item}</a>
-                  </li>
-                ))}
-              </ul>
-            </div>
+<div className="footer-columns">
+  <div className="footer-group-left">
+    {footerSections.map((section, i) => (
+      <div className="footer-col" key={section.title + i}>
+        <h5>{section.title}</h5>
+        <ul>
+          {section.items.map((item, j) => (
+            <li key={`${section.title}-${j}`}>
+              <a href="#home">{item}</a>
+            </li>
           ))}
+        </ul>
+      </div>
+    ))}
+  </div>
 
           <div className="footer-col subscribe">
             <h5>SignUp For Subscription</h5>
