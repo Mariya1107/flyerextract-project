@@ -2,6 +2,7 @@ import React from 'react';
 import './Footer.css';
 
 const Footer = () => {
+  // Updated to match the four link columns in the image
   const footerSections = [
     {
       title: "Product",
@@ -14,6 +15,10 @@ const Footer = () => {
     {
       title: "For Provider",
       items: ["About", "Contact us", "Careers", "Faq’s", "Blog"],
+    },
+    { // Added the fourth column from the image
+      title: "Support",
+      items: ["Getting started", "Help center", "Other Products", "Report a bug", "Chat support"],
     },
   ];
 
@@ -29,82 +34,59 @@ const Footer = () => {
 
   return (
     <footer className="footer">
-      <div className="footer-top container">
-<div className="footer-columns">
-  <div className="footer-group-left">
-    {footerSections.map((section, i) => (
-      <div className="footer-col" key={section.title + i}>
-        <h5>{section.title}</h5>
-        <ul>
-          {section.items.map((item, j) => (
-            <li key={`${section.title}-${j}`}>
-              <a href="#home">{item}</a>
-            </li>
-          ))}
-        </ul>
-      </div>
-    ))}
-  </div>
-
-          <div className="footer-col subscribe">
-            <h5>SignUp For Subscription</h5>
-            <input type="email" placeholder="Enter Email Address" />
-            <button type="submit">Subscribe</button>
-
-            <div className="download-label">Download Our App</div>
-            <div className="app-icons">
-              <img src="/assets/img/icons/app-store.svg" alt="App Store" />
-              <img src="/assets/img/icons/goolge-play.svg" alt="Google Play" />
-            </div>
-          </div>
-        </div>
-
-        <div className="footer-meta">
-          <ul className="social-icons">
-            {socialPlatforms.map((platform) => (
-              <li key={platform}>
-                <a href="#home">
-                  <img src={`/assets/img/icons/${platform}.svg`} alt={platform} />
-                </a>
-              </li>
+      <div className="container">
+        <div className="footer-top">
+          {/* A new wrapper for the link columns */}
+          <div className="footer-links-group">
+            {footerSections.map((section, i) => (
+              <div className="footer-col" key={`${section.title}-${i}`}>
+                <h5>{section.title}</h5>
+                <ul>
+                  {section.items.map((item, j) => (
+                    <li key={`${item}-${j}`}>
+                      <a href="#home">{item}</a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             ))}
-          </ul>
+          </div>
 
-          <div className="dropdowns">
-            <div className="dropdown">
-              <span>
-                <img src="/assets/img/flags/us.png" className="flag" alt="flag" />
-                English
-              </span>
-              <ul>
-                {languages.map(({ name, flag }) => (
-                  <li key={flag}>
-                    <a href="#home">
-                      <img src={`/assets/img/flags/${flag}.png`} className="flag" alt={flag} />
-                      {name}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+          {/* Renamed to a more specific class for card styling */}
+          <div className="subscribe-card">
+            <h5>SignUp For Subscription</h5>
+            <div className="subscribe-input-group">
+              <input type="email" placeholder="Enter Email Address" />
+              <button type="submit">Subscribe</button>
             </div>
 
-            <div className="dropdown">
-              <span>USD</span>
-              <ul>
-                {currencies.map((currency) => (
-                  <li key={currency}>
-                    <a href="#home">{currency}</a>
-                  </li>
-                ))}
-              </ul>
+            <h6 className="download-title">Download Our App</h6>
+            <div className="app-icons">
+              {/* Note: The image shows specific branded badges. You'll need to source these image assets. */}
+              <a href="#appstore"><img src="/assets/img/icons/app-store.svg" alt="App Store" /></a>
+              <a href="#playstore"><img src="/assets/img/icons/goolge-play.svg" alt="Google Play" /></a>
             </div>
           </div>
         </div>
+
+<div className="footer-meta">
+  <ul className="social-icons">
+    {socialPlatforms.map((platform) => (
+      <li key={platform}>
+        <a href="#home">
+          <img src={`/assets/img/icons/${platform}.svg`} alt={platform} />
+        </a>
+      </li>
+    ))}
+  </ul>
+</div>
+
 
         <div className="footer-bottom">
-          <p>&copy; 2025 - All Rights Reserved Gravity</p>
+          {/* Updated copyright text and year */}
+          <p>Copyright © 2024 - All Rights Reserved Gravity</p>
           <ul className="bottom-links">
-            <li><a href="#home">Terms and Conditions</a></li>
+            <li><a href="#home">Terms and Conditions </a></li>l
             <li><a href="#home">Privacy Policy</a></li>
           </ul>
         </div>
