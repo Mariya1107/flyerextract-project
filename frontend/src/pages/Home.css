@@ -275,6 +275,17 @@
   padding: 12px 28px;
   
 }
+.category-card {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 1rem;
+  background: #fff;
+  text-align: center;
+  transition: box-shadow 0.2s ease;
+}
+.category-card:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
 
 .text-linear-primary {
   background: linear-gradient(to right, #ff2bb2, #1e90ff);

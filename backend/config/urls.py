@@ -18,6 +18,7 @@ urlpatterns = [
 
     # Account-related endpoints
     path('api/accounts/', include('accounts.urls')),
+    
 ]
 
 # Serve media files during development

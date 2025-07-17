@@ -2,6 +2,8 @@
 from .models import Country, Region, Store, Flyer, Product
 from rest_framework import serializers
 from .models import ProviderApplication
+from rest_framework import generics
+
 
 
 
@@ -73,3 +75,17 @@ class ProviderApplicationSerializer(serializers.ModelSerializer):
 from rest_framework import serializers
 from .models import ProviderApplication
 
+
+from .models import Store
+class StoreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Store
+        fields = ['id', 'name', 'logo']
+
+
+
+from .serializers import StoreSerializer
+
+class StoreListView(generics.ListAPIView):
+    queryset = Store.objects.all()
+    serializer_class = StoreSerializer

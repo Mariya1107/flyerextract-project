@@ -6,19 +6,27 @@ import CropUploader from "./components/CropUploader";
 import FlyerList from "./pages/FlyerList";
 import BrochureViewer from "./pages/BrochureViewer";
 import ProviderLogin from "./components/ProviderLogin"; // ✅ Adjust path if needed
+import StoreFlyerList from './pages/StoreFlyerList';
+
+import FlyersByStore from './pages/FlyersByStore';
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/store/:storeName" element={<FlyersByStore />} />
         <Route path="/flyers/:flyerId" element={<FlyerDetail />} />
         <Route path="/manual-upload/:flyerId" element={<CropUploader />} />
+        <Route path="/flyer/:id" element={<FlyerDetail />} />
         <Route path="/brochure/:id" element={<BrochureViewer />} />
         <Route path="/flyers" element={<FlyerList />} />
-         <Route path="/provider-login" element={<ProviderLogin />} />
+        <Route path="/store/:storeId/flyers" element={<StoreFlyerList />} />
+
+        <Route path="/provider-login" element={<ProviderLogin />} />
       </Routes>
     </Router>
+
   );
 }
 

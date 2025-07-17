@@ -1,43 +1,47 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import BASE_URL from '../config'; // adjust the path if needed
 
 const FlyerList = () => {
+  const { store } = useParams(); // ✅ GET 'store' from route param
   const [flyers, setFlyers] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
+    async function fetchFlyers() {
+      try {
+        const response = await axios.get(`${BASE_URL}/api/flyers/store/${store}/`);
+        setFlyers(response.data);
+      } catch (error) {
+        console.error("Error fetching flyers:", error);
+      }
+    }
 
-    axios.get(`${BASE_URL}flyers/all/`)
-      .then(res => setFlyers(res.data))
-      .catch(err => console.error("Error fetching flyers:", err));
-  }, []);
+    if (store) {
+      fetchFlyers();
+    }
+  }, [store]);
 
- return (
+  return (
     <div style={styles.container}>
-      <h2 style={styles.heading}>📄 Available Brochures</h2>
+      <h2 style={styles.heading}>Flyers for Store: {store}</h2>
       <div style={styles.grid}>
-        {flyers.map(f => {
-          console.log("Flyer image URL:", f.image); // ✅ Check image value
-          return (
-            <div key={f.id} style={styles.card}>
-              <p style={styles.title}>{f.title}</p>
-              <img
-                src={f.image || "https://via.placeholder.com/200x280?text=No+Preview"}
-                alt={f.title}
-                style={styles.image}
-                onError={(e) => {
-                  console.warn("Image failed to load:", f.image);
-                  e.target.src = "https://via.placeholder.com/200x280?text=No+Preview";
-                }}
-              />
-              <button style={styles.btn} onClick={() => navigate(`/flyers/${f.id}`)}>
-                View Flyer →
-              </button>
-            </div>
-          );
-        })}
+        {flyers.map((flyer) => (
+          <div
+            key={flyer.id}
+            style={styles.card}
+            onClick={() => navigate(`/flyers/${flyer.id}/`)}
+          >
+            <img
+              src={flyer.thumbnail || flyer.image}
+              alt={flyer.title}
+              style={styles.image}
+            />
+            <div style={styles.title}>{flyer.title}</div>
+            <button style={styles.btn}>View Flyer</button>
+          </div>
+        ))}
       </div>
     </div>
   );

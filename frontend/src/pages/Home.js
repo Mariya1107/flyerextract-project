@@ -5,6 +5,10 @@ import ProviderLogin from "../components/ProviderLogin";
 import AdminLogin from "../components/AdminLogin"; // 👈 Import
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
+import axios from "axios";
+import BASE_URL from "../config";
+
+
 import ProviderModal1 from "../components/ProviderModal1";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -123,21 +127,27 @@ const Home = () => {
 
   const navigate = useNavigate();
   const [isCitiesOpen, setIsCitiesOpen] = useState(true);
+  const [stores, setStores] = useState([]);
 
-  const categories = [
-    { id: 1, title: "SUPERMARKET 1", products: 9874, icon: "category-01.svg" },
-    { id: 2, title: "SUPERMARKET 2", products: 787, icon: "category-02.svg" },
-    { id: 3, title: "SUPERMARKET 3", products: 2357, icon: "category-13.svg" },
-    { id: 4, title: "SUPERMARKET 4", products: 1260, icon: "category-04.svg" },
-    { id: 5, title: "SUPERMARKET 5", products: 4546, icon: "category-05.svg" },
-    { id: 6, title: "SUPERMARKET 6", products: 2546, icon: "category-06.svg" },
-    { id: 7, title: "SUPERMARKET 7", products: 4547, icon: "category-07.svg" },
-    { id: 8, title: "SUPERMARKET 8", products: 4787, icon: "category-08.svg" },
-    { id: 9, title: "SUPERMARKET 9", products: 1457, icon: "category-09.svg" },
-    { id: 10, title: "SUPERMARKET 10", products: 4157, icon: "category-10.svg" },
-    { id: 11, title: "SUPERMARKET 11", products: 5477, icon: "category-11.svg" },
-    { id: 12, title: "SUPERMARKET 12", products: 7457, icon: "category-12.svg" },
-  ];
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    axios.get("http://127.0.0.1:8000/stores/")
+      .then((res) => {
+        console.log("Fetched stores:", res.data);  // ✅ Check this shows the data
+        setStores(res.data);
+      })
+      .catch((err) => console.error("Error fetching stores", err));
+  }, []);
+
+  const allCategories = stores.map((store) => ({
+    id: store.id,
+    title: store.name.toUpperCase(),
+    icon: store.logo?.startsWith("http") ? store.logo : `${BASE_URL}${store.logo ?? ''}`,
+
+    products: "View Flyers",
+    isStore: true,
+  }));
 
   return (
     <>
@@ -274,6 +284,7 @@ const Home = () => {
       </section>
 
       {/* CATEGORY SECTION */}
+      {/* CATEGORY SECTION */}
       <section className="section category-section">
         <div className="container">
           <div className="text-center mb-4">
@@ -286,29 +297,43 @@ const Home = () => {
           </div>
 
           <div className="category-grid">
-            {categories.map((cat) => (
-              <div className="category-card" key={cat.id}>
+            {stores.map((store) => (
+              <div
+                className="category-card"
+                key={store.id}
+                onClick={() => navigate(`/flyers/${store.id}`)}
+              >
                 <div className="category-icon">
                   <img
-                    src={`/assets/img/icons/${cat.icon}`}
-                    alt={cat.title}
+                    src={
+                      store.logo?.startsWith("http")
+                        ? store.logo
+                        : `${BASE_URL}${store.logo}`
+                    }
+                    alt={store.name}
                     className="img-fluid"
+                    onError={(e) =>
+                    (e.target.src =
+                      "https://via.placeholder.com/100x100?text=Logo")
+                    }
                   />
                 </div>
-                <h6>{cat.title}</h6>
-                <p>{cat.products} Products</p>
-                <button onClick={() => navigate("/flyers")}>View All</button>
+                <h6>{store.name}</h6>
+                <p>View Flyers</p>
               </div>
             ))}
           </div>
 
-          <div className="text-center mt-4">
-            <Link to="/categories" className="btn btn-dark">
+          <div className="category-footer mt-4">
+            <Link to="/all-stores" className="btn btn-dark">
               View All <FontAwesomeIcon icon={faArrowRight} className="ms-2" />
             </Link>
           </div>
         </div>
       </section>
+
+
+
 
       {/* Business Section */}
       <section className="section business-section bg-black">

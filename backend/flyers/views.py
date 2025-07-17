@@ -16,8 +16,24 @@ from .serializers import ProviderApplicationSerializer
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from .models import ProviderApplication
+from rest_framework.views import APIView
 
 
+from rest_framework import generics
+from rest_framework.generics import ListAPIView
+from .models import Store
+from .serializers import StoreSerializer
+
+class StoreListView(generics.ListAPIView):
+    queryset = Store.objects.all()
+    serializer_class = StoreSerializer
+
+
+class FlyersByStoreView(APIView):
+    def get(self, request, store_name):
+        flyers = Flyer.objects.filter(store__iexact=store_name)
+        serializer = FlyerSerializer(flyers, many=True)
+        return Response(serializer.data)
 
 
 
@@ -226,3 +242,10 @@ def become_provider(request):
         return JsonResponse({'message': 'Application submitted successfully!'})
     else:
         return JsonResponse({'error': 'Only POST allowed'}, status=405)
+
+
+class BrochuresByStoreView(APIView):
+    def get(self, request, store):
+        brochures = Brochure.objects.filter(store__iexact=store)
+        serializer = BrochureSerializer(brochures, many=True)
+        return Response(serializer.data)
