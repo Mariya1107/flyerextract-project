@@ -84,14 +84,14 @@
   overflow-y: auto;
 }
 
-.main-header {
+.dashboard-main-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
 }
 
-.main-header h1 {
+.dashboard-main-header h1 {
   margin: 0;
   color: #1e293b;
   font-size: 1.75rem;
@@ -164,14 +164,14 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
-.chart-header {
+.dashboard-chart-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
 }
 
-.chart-header h3 {
+.dashboard-chart-header h3 {
   margin: 0;
   font-size: 1.1rem;
   color: #1e293b;

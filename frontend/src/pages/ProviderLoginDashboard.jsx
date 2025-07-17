@@ -123,7 +123,7 @@ const ProviderLoginDashboard = () => {
         </aside>
 
         <main className="main-content">
-          <header className="main-header" />
+          <header className="dashboard-main-header"/>
           <div className="stat-cards-grid">
             {statCards.map(card => (
               <div key={card.title} className="stat-card">
@@ -144,7 +144,7 @@ const ProviderLoginDashboard = () => {
 
           <div className="chart-grid">
             <div className="chart-container">
-              <div className="chart-header">
+              <div className="dashboard-chart-header">
                 <h3>Revenue</h3>
                 <select><option>Monthly</option><option>Yearly</option></select>
               </div>
@@ -152,7 +152,7 @@ const ProviderLoginDashboard = () => {
             </div>
 
             <div className="chart-container">
-              <div className="chart-header">
+             <div className="dashboard-chart-header">
                 <h3>Most popular providers</h3>
                 <select><option>Monthly</option><option>Yearly</option></select>
               </div>
