@@ -6,7 +6,7 @@ urlpatterns = [
     path('login/', login_user, name='login'),
     path('login/provider/', login_provider, name='provider-login'),
     path('login/admin/', login_admin, name='admin-login'),
-    path('accounts/', include('accounts.urls')),
+    
     
    
 ]
