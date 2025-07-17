@@ -39,7 +39,8 @@ class FlyerSerializer(serializers.ModelSerializer):
             'pdf',
             'image',
             'store',
-            'region'
+            'region',
+            
             # Removed: 'start_date', 'end_date', 'created_at'
         ]
 

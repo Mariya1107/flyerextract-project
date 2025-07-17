@@ -28,6 +28,7 @@ class Flyer(models.Model):
     image = models.ImageField(upload_to='flyers/images/', blank=True, null=True)
     created_at = models.DateField(auto_now_add=True)
     expires_at = models.DateField()
+    
 
     def __str__(self):
         return f"{self.title} - {self.region.name}"
