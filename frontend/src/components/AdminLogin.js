@@ -13,24 +13,37 @@ const AdminLogin = ({ setShowAdminModal }) => {
     setCredentials((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await axios.post(`${BASE_URL}api/accounts/login/admin/`, credentials);
-      
-      if (res.data && res.data.token) {
-        localStorage.setItem("adminToken", res.data.token);
-        alert("Admin login successful");
-        setShowAdminModal(false);
-        window.location.href = "/admin-dashboard"; // 👈 Or your desired route
-      } else {
-        alert("Login failed. Not an admin.");
-      }
-    } catch (err) {
-      console.error("Admin login failed:", err.response?.data || err.message);
-      alert("Login failed. Invalid credentials or not an admin.");
-    }
+const handleLogin = async (e) => {
+  e.preventDefault();
+  const cleanedCredentials = {
+    username: credentials.username.trim(),
+    password: credentials.password.trim(),
   };
+  try {
+    const res = await axios.post(`${BASE_URL}api/accounts/login/admin/`, cleanedCredentials);
+    console.log("Login response:", res.data);
+
+    const token = res.data.token || res.data.key;
+    if (token) {
+      localStorage.setItem("adminToken", token);
+      alert("Admin login successful");
+      setShowAdminModal(false);
+      window.location.href = "/admin-dashboard";
+    } else {
+      alert("Login failed. Not an admin.");
+    }
+  } catch (err) {
+    if (err.response) {
+      console.error("Error Response:", err.response.data);
+    } else if (err.request) {
+      console.error("No response received:", err.request);
+    } else {
+      console.error("Request setup error:", err.message);
+    }
+    alert("Login failed. Invalid credentials or not an admin.");
+  }
+};
+
 
   return (
     <div className="provider-modal-overlay">
