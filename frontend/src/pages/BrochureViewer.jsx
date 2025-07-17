@@ -43,7 +43,7 @@ const BrochureViewer = () => {
     // const blob = await (await fetch(croppedDataUrl)).blob();
     // const formData = new FormData();
     // formData.append("cropped_image", blob);
-    // await axios.post("/api/upload-cropped/", formData);
+    // await axios.post("/api/upload-cropped", formData);
   };
 
   return (

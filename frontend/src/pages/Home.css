@@ -79,7 +79,7 @@
   display: flex;
   align-items: flex-start;
   justify-content: flex-start;
-  min-height: 300px;
+  min-height: 200px;
 }
 
 .hero-left {
@@ -152,7 +152,7 @@
 
 /* ================= CATEGORY SECTION ================= */
 .category-section {
-  padding: 90px 20px 70px;
+  padding: 20px 20px 70px;
   
   background-color: #fff;
 }
@@ -165,14 +165,15 @@
   font-size: 32px;
   font-weight: 800;
   margin-bottom: 20px;
-  padding-left: 300px;
+ 
+  padding-left: 400px;
 }
 .category-section .sub-title {
   font-size: 15px;
   color: #666;
   margin: 0 auto 50px;
   max-width: 700px;
-  padding-left: 270px;
+  padding-left: 400px;
 }
 
 .text-linear-primary {
