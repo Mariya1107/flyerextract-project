@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import "./ProviderLogin.css";
-import BASE_URL from "../config";
+import BASE_URL from '../config';
 
 const ProviderLogin = ({ setShowProviderModal }) => {
   const [credentials, setCredentials] = useState({ username: "", password: "" });
