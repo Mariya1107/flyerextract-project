@@ -16,7 +16,7 @@ const ProviderLogin = ({ setShowProviderModal }) => {
 
   try {
     const res = await axios.post(
-      `${BASE_URL}/accounts/login/provider/`,
+      `${BASE_URL}api/accounts/login/provider/`,
       credentials,
       { headers: { "Content-Type": "application/json" } }
     );

@@ -16,7 +16,7 @@ const AdminLogin = ({ setShowAdminModal }) => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${BASE_URL}/accounts/login/admin/`, credentials);
+      const res = await axios.post(`${BASE_URL}api/accounts/login/admin/`, credentials);
       
       if (res.data && res.data.token) {
         localStorage.setItem("adminToken", res.data.token);
