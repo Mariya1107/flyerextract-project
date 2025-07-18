@@ -1,103 +1,68 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useNavigate, useParams } from 'react-router-dom';
-import BASE_URL from '../config'; // adjust the path if needed
+import { useParams } from 'react-router-dom';
+import BASE_URL from '../config';
+import { Link } from 'react-router-dom';
+import { Document, Page, pdfjs } from 'react-pdf';
+import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
+
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 const FlyerList = () => {
-  const { store } = useParams(); // ✅ GET 'store' from route param
+  const { id } = useParams(); // region ID from URL
   const [flyers, setFlyers] = useState([]);
-  const navigate = useNavigate();
+  const [numPages, setNumPages] = useState({});
 
   useEffect(() => {
-    async function fetchFlyers() {
-      try {
-        const response = await axios.get(`${BASE_URL}/api/flyers/store/${store}/`);
-        setFlyers(response.data);
-      } catch (error) {
-        console.error("Error fetching flyers:", error);
-      }
-    }
+    axios.get(`${BASE_URL}flyers/${id}/`)
+      .then((res) => {
+        setFlyers(res.data);
+      })
+      .catch((err) => {
+        console.error("Error fetching flyers:", err);
+      });
+  }, [id]);
 
-    if (store) {
-      fetchFlyers();
-    }
-  }, [store]);
+  const onDocumentLoadSuccess = (flyerId, { numPages }) => {
+    setNumPages(prev => ({ ...prev, [flyerId]: numPages }));
+  };
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.heading}>Flyers for Store: {store}</h2>
-      <div style={styles.grid}>
-        {flyers.map((flyer) => (
-          <div
-            key={flyer.id}
-            style={styles.card}
-            onClick={() => navigate(`/flyers/${flyer.id}/`)}
-          >
-            <img
-              src={flyer.thumbnail || flyer.image}
-              alt={flyer.title}
-              style={styles.image}
-            />
-            <div style={styles.title}>{flyer.title}</div>
-            <button style={styles.btn}>View Flyer</button>
-          </div>
-        ))}
+    <div>
+      <h2>Flyers in Region {id}</h2>
+      {flyers.length === 0 ? (
+        <p>No flyers found.</p>
+      ) : (
+        <ul>
+          {flyers.map((flyer) => (
+<li key={flyer.id} style={{ marginBottom: "30px" }}>
+  <Link to={`/flyers/${flyer.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+    <h3>{flyer.title}</h3>
+
+    {flyer.image ? (
+      <img src={flyer.image} alt={flyer.title} width="200" />
+    ) : (
+      <div style={{ width: '200px' }}>
+        <Document
+          file={flyer.pdf}
+          onLoadSuccess={(pdf) => onDocumentLoadSuccess(flyer.id, pdf)}
+          loading="Loading PDF..."
+        >
+          <Page pageNumber={1} width={200} />
+        </Document>
       </div>
+    )}
+
+    <p>Store: {flyer.store.name}</p>
+    <p>Region: {flyer.region.name}, {flyer.region.country.name}</p>
+  </Link>
+</li>
+
+          ))}
+        </ul>
+      )}
     </div>
   );
-};
-
-const styles = {
-  container: {
-    padding: "40px 20px",
-    maxWidth: "1200px",
-    margin: "auto",
-    fontFamily: "Segoe UI, sans-serif",
-    backgroundColor: "#F9F9F9",
-    borderRadius: "12px"
-  },
-  heading: {
-    fontSize: "28px",
-    marginBottom: "30px",
-    textAlign: "center",
-    color: "#333"
-  },
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-    gap: "24px"
-  },
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: "12px",
-    padding: "16px",
-    textAlign: "center",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-    transition: "transform 0.2s ease",
-    cursor: "pointer"
-  },
-  title: {
-    fontWeight: "bold",
-    fontSize: "16px",
-    marginBottom: "10px",
-    color: "#444"
-  },
-  image: {
-    width: "100%",
-    height: "280px",
-    objectFit: "cover",
-    borderRadius: "8px"
-  },
-  btn: {
-    marginTop: "10px",
-    padding: "10px 16px",
-    backgroundColor: "#9F00FF",
-    color: "#fff",
-    border: "none",
-    borderRadius: "6px",
-    cursor: "pointer",
-    fontWeight: "500"
-  }
 };
 
 export default FlyerList;

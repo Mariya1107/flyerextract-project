@@ -25,6 +25,7 @@ import "./Home.css";
 import "./cursor.css";
 
 import Authorisation from "../components/Authorisation";
+
 const Home = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState("signup");
@@ -301,7 +302,7 @@ const Home = () => {
               <div
                 className="category-card"
                 key={store.id}
-                onClick={() => navigate(`/flyers/${store.id}`)}
+                onClick={() => navigate(`/store/${store.id}/flyers`)}
               >
                 <div className="category-icon">
                   <img

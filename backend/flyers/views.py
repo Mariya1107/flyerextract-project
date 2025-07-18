@@ -35,7 +35,11 @@ class FlyersByStoreView(APIView):
         serializer = FlyerSerializer(flyers, many=True)
         return Response(serializer.data)
 
-
+@api_view(['GET'])
+def flyers_by_store_id(request, store_id):
+    flyers = Flyer.objects.filter(store__id=store_id)
+    serializer = FlyerSerializer(flyers, many=True)
+    return Response(serializer.data)
 
 @csrf_exempt
 def become_provider(request):
@@ -100,6 +104,8 @@ class ProductListByFlyer(generics.ListAPIView):
 
     def get_queryset(self):
         return Product.objects.filter(flyer_id=self.kwargs['flyer_id'])
+    
+    
 
 # --------------------------- GPT-4 Vision Extraction ---------------------------
 
