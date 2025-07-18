@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.utils import timezone
-
+from flyers.models import Store 
 class CustomUserManager(BaseUserManager):
     def create_user(self, username, password=None, **extra_fields):
         if not username:
@@ -36,6 +36,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     # ✅ New field for provider identification
     is_provider = models.BooleanField(default=False)
+    stores = models.ManyToManyField(Store, blank=True, related_name="providers")  # ✅ New field here
+
 
     # System fields
     is_active = models.BooleanField(default=True)

@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./ProviderModal1.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import backendBaseURL from "../config"; // ✅ import backend base URL
+import backendBaseURL from "../config";
 
 const ProviderModal1 = ({ showModal, setShowModal }) => {
   const [step, setStep] = useState(1);
+  const [stores, setStores] = useState([]);
   const [formData, setFormData] = useState({
     full_name: "",
     email: "",
@@ -14,8 +15,23 @@ const ProviderModal1 = ({ showModal, setShowModal }) => {
     company_name: "",
     address: "",
     gst_number: "",
+    store: "",
     document: null,
   });
+
+  useEffect(() => {
+    // Fetch stores on load
+    const fetchStores = async () => {
+      try {
+        const res = await fetch(`${backendBaseURL}/stores/`);
+        const data = await res.json();
+        setStores(data);
+      } catch (err) {
+        console.error("Failed to fetch stores", err);
+      }
+    };
+    fetchStores();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -35,6 +51,7 @@ const ProviderModal1 = ({ showModal, setShowModal }) => {
       company_name,
       address,
       gst_number,
+      store,
       document,
     } = formData;
 
@@ -46,6 +63,7 @@ const ProviderModal1 = ({ showModal, setShowModal }) => {
       company_name.trim() &&
       address.trim() &&
       gst_number.trim() &&
+      store &&
       document
     );
   };
@@ -73,7 +91,6 @@ const ProviderModal1 = ({ showModal, setShowModal }) => {
       alert(data.message || "Submitted successfully!");
       setShowModal(false);
 
-      // ✅ Reset form and step
       setFormData({
         full_name: "",
         email: "",
@@ -82,11 +99,12 @@ const ProviderModal1 = ({ showModal, setShowModal }) => {
         company_name: "",
         address: "",
         gst_number: "",
+        store: "",
         document: null,
       });
       setStep(1);
     } catch (err) {
-      console.error("❌ Error submitting provider form:", err);
+      console.error("Error submitting provider form:", err);
       alert("Submission failed");
     }
   };
@@ -161,6 +179,21 @@ const ProviderModal1 = ({ showModal, setShowModal }) => {
                 value={formData.gst_number}
                 onChange={handleChange}
               />
+            </div>
+            <div className="provider-field">
+              <label>Store</label>
+              <select
+                name="store"
+                value={formData.store}
+                onChange={handleChange}
+              >
+                <option value="">Select a store</option>
+                {stores.map((store) => (
+                  <option key={store.id} value={store.id}>
+                    {store.name}
+                  </option>
+                ))}
+              </select>
             </div>
           </>
         );
