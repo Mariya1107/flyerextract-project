@@ -7,6 +7,8 @@ import FlyerList from "./pages/FlyerList";
 import BrochureViewer from "./pages/BrochureViewer";
 import ProviderLogin from "./components/ProviderLogin"; // ✅ Adjust path if needed
 import StoreFlyerList from './pages/StoreFlyerList';
+// ✅ Adjust path if needed
+import ProviderLoginDashboard from './pages/ProviderLoginDashboard';
 
 import FlyersByStore from './pages/FlyersByStore';
 
@@ -24,6 +26,7 @@ function App() {
         <Route path="/store/:storeId/flyers" element={<StoreFlyerList />} />
 
         <Route path="/provider-login" element={<ProviderLogin />} />
+        <Route path="/provider-dashboard" element={<ProviderLoginDashboard />} />
       </Routes>
     </Router>
 
