@@ -139,7 +139,7 @@ const ProviderModal1 = ({ showModal, setShowModal }) => {
         return (
           <>
             <div className="provider-field">
-              <label>Company Name</label>
+              <label>store</label>
               <input
                 name="company_name"
                 value={formData.company_name}

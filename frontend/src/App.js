@@ -8,6 +8,9 @@ import FlyerList from "./pages/FlyerList";
 import BrochureViewer from "./pages/BrochureViewer";
 import ProviderLogin from "./components/ProviderLogin";
 import ProviderLoginDashboard from './pages/ProviderLoginDashboard';
+import UploadBrochure from "./pages/UploadBrochure";
+import EditBrochure from "./pages/EditBrochure";
+import ExtractProducts from "./pages/ExtractProducts"; // create these late
 
 function App() {
   return (
@@ -22,6 +25,9 @@ function App() {
           <Route path="/store/:id/flyers" element={<FlyerList />} />
           <Route path="/provider-login" element={<ProviderLogin />} />
           <Route path="/provider-dashboard" element={<ProviderLoginDashboard />} />
+          <Route path="/dashboard/upload-brochure" element={<UploadBrochure />} />
+          <Route path="/dashboard/edit-brochure" element={<EditBrochure />} />
+          <Route path="/dashboard/extract-products" element={<ExtractProducts />} />
         </Route>
       </Routes>
     </Router>

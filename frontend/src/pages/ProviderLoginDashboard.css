@@ -213,3 +213,92 @@
   font-size: 0.85rem;
   background-color: #f8fafc;
 }
+
+.logout-btn {
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 10px 25px;
+  cursor: pointer;
+
+}
+
+.logout-btn:hover {
+   background-color: #374151;
+  color: #ffffff;
+}
+.sidebar li button {
+  background: none;
+  border: none;
+  color: #fff;
+  width: 100%;
+  text-align: left;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.sidebar li button:hover {
+  background-color: #2a2f45;
+  color: #ffffff;
+}
+
+.sidebar li button.active {
+  background-color: #1e2233;
+  font-weight: bold;
+  color: #f0f0f0;
+}
+
+/* Sidebar dropdown container */
+.sidebar-item {
+  position: relative;
+}
+
+/* Main button */
+.dropdown-btn {
+  background-color: #333;
+  color: white;
+  padding: 12px 16px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  outline: none;
+}
+
+/* Dropdown content hidden by default */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  left: 0;
+  width: 100%;
+  background-color: #444;
+  z-index: 1;
+  flex-direction: column;
+}
+
+/* Dropdown links */
+.dropdown-content a {
+  color: white;
+  padding: 10px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+/* Hover behavior */
+.dropdown-btn:hover + .dropdown-content,
+.dropdown-content:hover {
+  display: flex;
+}
+
+.dropdown-content a:hover {
+  background-color: #555;
+}

@@ -1,6 +1,10 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import './ProviderLoginDashboard.css';
+import axios from "axios";
+import BASE_URL from "../config";
+import UploadBrochure from "./UploadBrochure";
+
 
 const Icon = ({ name }) => <div className="icon">{name.charAt(0)}</div>;
 
@@ -72,6 +76,9 @@ const ProvidersBarChart = () => {
 const ProviderLoginDashboard = () => {
   const navigate = useNavigate();
 
+  const [stores, setStores] = useState([]);
+  const [showProviders, setShowProviders] = useState(false);
+
   useEffect(() => {
     const token = localStorage.getItem("providerToken");
     if (!token) {
@@ -80,13 +87,33 @@ const ProviderLoginDashboard = () => {
     }
   }, [navigate]);
 
+  useEffect(() => {
+    axios.get(`${BASE_URL}/stores/`)
+      .then((res) => setStores(res.data))
+      .catch((err) => console.error("Error fetching stores", err));
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("providerToken");
+    navigate("/");
+  };
+  const handleBrochureClick = () => {
+    const storeId = localStorage.getItem("store_id");
+    console.log("Retrieved store ID:", storeId);
+    if (storeId) {
+      navigate(`/store/${storeId}/flyers`);
+    } else {
+      alert("Store not found. Please log in again.");
+    }
+  };
   const statCards = [
-    { title: 'Users', value: '30', change: 15, trend: 'up', color: '#3b82f6', data: [5, 10, 8, 14, 12, 18] },
-    { title: 'Providers', value: '25', change: 10, trend: 'up', color: '#ef4444', data: [18, 12, 16, 10, 14, 9] },
-    { title: 'Products', value: '18', change: 12, trend: 'up', color: '#22c55e', data: [8, 12, 9, 15, 11, 17] },
+    { title: 'Number of Brochures', value: '30', change: 15, trend: 'up', color: '#3b82f6', data: [5, 10, 8, 14, 12, 18] },
+    { title: 'Number of Products', value: '25', change: 10, trend: 'up', color: '#ef4444', data: [18, 12, 16, 10, 14, 9] },
+    { title: 'Number of users clicked ', value: '18', change: 12, trend: 'up', color: '#22c55e', data: [8, 12, 9, 15, 11, 17] },
     { title: 'Subscriptions', value: '$650', change: 20, trend: 'down', color: '#f97316', data: [17, 12, 19, 10, 15, 11] }
   ];
 
+  const location = useLocation();
   return (
     <div className="dashboard-wrapper">
       <div className="dashboard-container">
@@ -96,14 +123,41 @@ const ProviderLoginDashboard = () => {
           </div>
           <nav className="sidebar-nav">
             <ul>
-              <li><a href="#" className="active"><Icon name="D" /><span>Dashboard</span></a></li>
-              <li><a href="#"><Icon name="P" /><span>Providers</span></a></li>
-              <li><a href="#"><Icon name="B" /><span>Brochures</span></a></li>
-              <li><a href="#"><Icon name="U" /><span>Upload/Edit</span></a></li>
+              <li>
+                <button
+                  onClick={() => {
+                    window.location.href = "/provider-dashboard"; // forces full reload
+                  }}
+                  className="active"
+                >
+                  <Icon name="D" />
+                  <span>Dashboard</span>
+                </button>
+              </li>
+              <li><a href="#" onClick={() => setShowProviders(true)}><Icon name="P" /><span>Providers</span></a></li>
+              <li onClick={handleBrochureClick} style={{ cursor: "pointer" }}>
+                <Icon name="B" />
+                <span>Brochures</span>
+              </li>
+              <li>
+                <div className="sidebar-category">
+                  <span>Upload / Edit</span>
+                  <ul className="sidebar-submenu">
+                    <li onClick={() => navigate("/dashboard/upload-brochure")}>Upload Brochure</li>
+                    <li onClick={() => navigate("/dashboard/edit-brochure")}>Edit Brochure Details</li>
+                    <li onClick={() => navigate("/dashboard/extract-products")}>Extract Products</li>
+                  </ul>
+                </div>
+              </li>
               <li><a href="#"><Icon name="R" /><span>Reports</span></a></li>
               <li className="nav-separator"></li>
               <li><a href="#"><Icon name="E" /><span>Edit Profile</span></a></li>
-              <li><a href="#"><Icon name="L" /><span>Log Out</span></a></li>
+              <li>
+                <button onClick={handleLogout} className="logout-btn">
+                  <Icon name="L" />
+                  <span>Log Out</span>
+                </button>
+              </li>
             </ul>
           </nav>
         </aside>
@@ -114,41 +168,73 @@ const ProviderLoginDashboard = () => {
             <div className="profile-icon">P</div>
           </div>
 
-          <div className="stat-cards-grid">
-            {statCards.map(card => (
-              <div key={card.title} className="stat-card">
-                <div className="stat-card-info">
-                  <span className="stat-card-title">{card.title}</span>
-                  <span className="stat-card-value">{card.value}</span>
-                  <span className={`stat-card-change ${card.trend}`}>
-                    <span className="arrow">{card.trend === 'up' ? '↑' : '↓'}</span>
-                    {card.change}% Current Month
-                  </span>
+          {showProviders ? (
+            <div className="category-grid">
+              {stores.map((store) => (
+                <div
+                  className="category-card"
+                  key={store.id}
+                  onClick={() => navigate(`/store/${store.id}/flyers`)}
+                >
+                  <div className="category-icon">
+                    <img
+                      src={
+                        store.logo?.startsWith("http")
+                          ? store.logo
+                          : `${BASE_URL}${store.logo}`
+                      }
+                      alt={store.name}
+                      className="img-fluid"
+                      onError={(e) =>
+                      (e.target.src =
+                        "https://via.placeholder.com/100x100?text=Logo")
+                      }
+                    />
+                  </div>
+                  <h6>{store.name}</h6>
+                  <p>View Flyers</p>
                 </div>
-                <div className="sparkline-chart">
-                  <SparkLine data={card.data} color={card.color} />
+              ))}
+            </div>
+          ) : (
+            <>
+              <div className="stat-cards-grid">
+                {statCards.map(card => (
+                  <div key={card.title} className="stat-card">
+                    <div className="stat-card-info">
+                      <span className="stat-card-title">{card.title}</span>
+                      <span className="stat-card-value">{card.value}</span>
+                      <span className={`stat-card-change ${card.trend}`}>
+                        <span className="arrow">{card.trend === 'up' ? '↑' : '↓'}</span>
+                        {card.change}% Current Month
+                      </span>
+                    </div>
+                    <div className="sparkline-chart">
+                      <SparkLine data={card.data} color={card.color} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="chart-grid">
+                <div className="chart-container">
+                  <div className="dashboard-chart-header">
+                    <h3>Traffic to Page</h3>
+                    <select><option>Monthly</option><option>Yearly</option></select>
+                  </div>
+                  <RevenueChart />
+                </div>
+
+                <div className="chart-container">
+                  <div className="dashboard-chart-header">
+                    <h3>Most searched product</h3>
+                    <select><option>Monthly</option><option>Yearly</option></select>
+                  </div>
+                  <ProvidersBarChart />
                 </div>
               </div>
-            ))}
-          </div>
-
-          <div className="chart-grid">
-            <div className="chart-container">
-              <div className="dashboard-chart-header">
-                <h3>Revenue</h3>
-                <select><option>Monthly</option><option>Yearly</option></select>
-              </div>
-              <RevenueChart />
-            </div>
-
-            <div className="chart-container">
-              <div className="dashboard-chart-header">
-                <h3>Popular Providers</h3>
-                <select><option>Monthly</option><option>Yearly</option></select>
-              </div>
-              <ProvidersBarChart />
-            </div>
-          </div>
+            </>
+          )}
         </main>
       </div>
     </div>
