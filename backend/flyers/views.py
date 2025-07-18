@@ -255,3 +255,12 @@ class BrochuresByStoreView(APIView):
         brochures = Brochure.objects.filter(store__iexact=store)
         serializer = BrochureSerializer(brochures, many=True)
         return Response(serializer.data)
+
+@api_view(['POST'])
+@parser_classes([MultiPartParser, FormParser])
+def upload_flyer(request):
+    serializer = FlyerSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=201)
+    return Response(serializer.errors,status=400)

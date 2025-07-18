@@ -65,7 +65,7 @@ class ProviderApplication(models.Model):
     document = models.FileField(upload_to="provider_docs/")
     submitted_at = models.DateTimeField(auto_now_add=True)
     reviewed = models.BooleanField(default=False)
-    store = models.ForeignKey(Store, on_delete=models.SET_NULL, null=True, blank=True)  # ✅ New field
+    
     
 
     def __str__(self):
