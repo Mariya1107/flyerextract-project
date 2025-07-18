@@ -2,12 +2,10 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ProviderLoginDashboard.css';
 
-// --- Placeholder Icon Component ---
 const Icon = ({ name }) => <div className="icon">{name.charAt(0)}</div>;
 
-// --- SparkLine Chart Component ---
 const SparkLine = ({ data, color }) => (
-  <svg width="100" height="30" viewBox="0 0 100 30" style={{ overflow: 'visible' }}>
+  <svg width="100" height="30" viewBox="0 0 100 30">
     <path
       d={`M 0 ${30 - data[0]} C 10 ${30 - data[0]}, 10 ${30 - data[1]}, 20 ${30 - data[1]} S 30 ${30 - data[2]}, 40 ${30 - data[2]} S 50 ${30 - data[3]}, 60 ${30 - data[3]} S 70 ${30 - data[4]}, 80 ${30 - data[4]} S 90 ${30 - data[5]}, 100 ${30 - data[5]}`}
       fill="none"
@@ -17,17 +15,12 @@ const SparkLine = ({ data, color }) => (
   </svg>
 );
 
-// --- Revenue Area Chart Component ---
 const RevenueChart = () => (
   <svg width="100%" height="250" viewBox="0 0 500 250">
     <defs>
       <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
         <stop offset="0%" style={{ stopColor: 'rgba(135, 163, 232, 0.5)' }} />
         <stop offset="100%" style={{ stopColor: 'rgba(135, 163, 232, 0)' }} />
-      </linearGradient>
-      <linearGradient id="areaGradient2" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" style={{ stopColor: 'rgba(191, 207, 242, 0.6)' }} />
-        <stop offset="100%" style={{ stopColor: 'rgba(191, 207, 242, 0)' }} />
       </linearGradient>
     </defs>
     {[0, 60, 120, 180, 240].map(y => (
@@ -39,13 +32,7 @@ const RevenueChart = () => (
       strokeWidth="2"
       fill="url(#areaGradient)"
     />
-    <path
-      d="M 30 200 C 80 210, 130 180, 180 190 S 280 160, 330 150 S 430 120, 480 140"
-      stroke="#bfd0f2"
-      strokeWidth="2"
-      fill="url(#areaGradient2)"
-    />
-    {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July'].map((label, i) => (
+    {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'].map((label, i) => (
       <text key={label} x={30 + i * 75} y="250" fontSize="12" fill="#6c757d">
         {label}
       </text>
@@ -53,7 +40,6 @@ const RevenueChart = () => (
   </svg>
 );
 
-// --- Bar Chart Component ---
 const ProvidersBarChart = () => {
   const data = [150, 80, 175, 145, 170, 60, 195, 115, 185];
   const barWidth = 30;
@@ -83,7 +69,6 @@ const ProvidersBarChart = () => {
   );
 };
 
-// --- Main Dashboard Component ---
 const ProviderLoginDashboard = () => {
   const navigate = useNavigate();
 
@@ -96,9 +81,9 @@ const ProviderLoginDashboard = () => {
   }, [navigate]);
 
   const statCards = [
-    { title: 'User', value: '30', change: 15, trend: 'up', color: '#3b82f6', data: [5, 10, 8, 14, 12, 18] },
+    { title: 'Users', value: '30', change: 15, trend: 'up', color: '#3b82f6', data: [5, 10, 8, 14, 12, 18] },
     { title: 'Providers', value: '25', change: 10, trend: 'up', color: '#ef4444', data: [18, 12, 16, 10, 14, 9] },
-    { title: 'Number of products', value: '18', change: 12, trend: 'up', color: '#22c55e', data: [8, 12, 9, 15, 11, 17] },
+    { title: 'Products', value: '18', change: 12, trend: 'up', color: '#22c55e', data: [8, 12, 9, 15, 11, 17] },
     { title: 'Subscriptions', value: '$650', change: 20, trend: 'down', color: '#f97316', data: [17, 12, 19, 10, 15, 11] }
   ];
 
@@ -115,6 +100,7 @@ const ProviderLoginDashboard = () => {
               <li><a href="#"><Icon name="P" /><span>Providers</span></a></li>
               <li><a href="#"><Icon name="B" /><span>Brochures</span></a></li>
               <li><a href="#"><Icon name="U" /><span>Upload/Edit</span></a></li>
+              <li><a href="#"><Icon name="R" /><span>Reports</span></a></li>
               <li className="nav-separator"></li>
               <li><a href="#"><Icon name="E" /><span>Edit Profile</span></a></li>
               <li><a href="#"><Icon name="L" /><span>Log Out</span></a></li>
@@ -123,7 +109,11 @@ const ProviderLoginDashboard = () => {
         </aside>
 
         <main className="main-content">
-          <header className="dashboard-main-header"/>
+          <div className="dashboard-main-header">
+            <input type="text" className="search-bar" placeholder="Search in dashboard..." />
+            <div className="profile-icon">P</div>
+          </div>
+
           <div className="stat-cards-grid">
             {statCards.map(card => (
               <div key={card.title} className="stat-card">
@@ -152,8 +142,8 @@ const ProviderLoginDashboard = () => {
             </div>
 
             <div className="chart-container">
-             <div className="dashboard-chart-header">
-                <h3>Most popular providers</h3>
+              <div className="dashboard-chart-header">
+                <h3>Popular Providers</h3>
                 <select><option>Monthly</option><option>Yearly</option></select>
               </div>
               <ProvidersBarChart />
