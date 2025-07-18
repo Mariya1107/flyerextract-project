@@ -1,0 +1,67 @@
+/* ================= HEADER ================= */
+.main-header {
+  background-color: #fff;
+  padding: 25px 30px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;   
+  z-index: 1000;
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.header-left .logo {
+  width: 120px;
+}
+
+.nav-center {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  font-weight: 600;
+  font-size: 16.4px;
+}
+
+.nav-center a {
+  color: #2c2c2c;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.nav-center a:hover {
+  color: #ff1493;
+}
+
+.header-right {
+  display: flex;
+  gap: 15px;
+}
+
+.btn-signin,
+.btn-joinus {
+  border: none;
+  padding: 10px 20px;
+  font-size: 15px;
+  font-weight: 400;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.btn-signin {
+  background-color: #eee;
+}
+
+.btn-joinus {
+  background: linear-gradient(90deg, #ff2bb2, #1e90ff);
+  color: white;
+}

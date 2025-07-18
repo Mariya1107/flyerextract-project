@@ -1,0 +1,79 @@
+/* FlyerList.css */
+
+.flyer-list-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f9fafb;
+}
+
+.flyer-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 30px;
+  text-align: center;
+  color: #1f2937;
+}
+
+.no-flyers {
+  text-align: center;
+  color: #6b7280;
+  font-size: 1.1rem;
+}
+
+.flyer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 25px;
+}
+
+.flyer-card {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  text-decoration: none;
+  color: inherit;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.flyer-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.flyer-image-container {
+  width: 100%;
+  height: 260px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background-color: #f3f4f6;
+}
+
+.flyer-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.flyer-info {
+  padding: 16px;
+}
+
+.flyer-heading {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #111827;
+}
+
+.flyer-meta {
+  font-size: 0.95rem;
+  color: #4b5563;
+  margin-bottom: 4px;
+}

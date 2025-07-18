@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import Footer from "../components/Footer";
+
 import ProviderLogin from "../components/ProviderLogin";
 import AdminLogin from "../components/AdminLogin"; // 👈 Import
 import PhoneInput from "react-phone-number-input";
@@ -153,88 +153,6 @@ const Home = () => {
   return (
     <>
       {/* HEADER */}
-      <header className="main-header">
-        <div className="container">
-          <div className="header-left">
-            <Link to="/" aria-label="Home">
-              <img src="/assets/img/logo.svg" alt="Logo" className="logo" />
-            </Link>
-          </div>
-
-          <nav className="nav-center">
-            {["Home", "Customers"].map((txt) => (
-              <a href={`#${txt.toLowerCase()}`} key={txt}>
-                {txt} <FontAwesomeIcon icon={faChevronDown} />
-              </a>
-            ))}
-
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                setShowProviderModal(true); // ✅ For login
-              }}
-            >
-              Provider Login <FontAwesomeIcon icon={faChevronDown} />
-            </a>
-
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                setShowProviderModal1(true); // ✅ For registration
-              }}
-            >
-              Become a Provider
-            </a>
-
-
-            {/* ✅ No custom inline style — this now looks the same as "Become a Provider" */}
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                setShowAdminModal(true);
-              }}
-            >
-              Admin
-            </a>
-          </nav>
-          <ProviderModal1
-            showModal1={showProviderModal1}
-            setShowModal1={setShowProviderModal1}
-          />
-
-
-
-          <div className="header-right">
-            {/* Sign In Button */}
-            <button
-              className="btn-signin"
-              onClick={() => {
-                setAuthMode("signin");
-                setShowAuthModal(true);
-              }}
-            >
-
-              <FontAwesomeIcon icon={faLock} /> Sign In
-            </button>
-
-            {/* Join Us Button */}
-            <button
-              className="btn-joinus"
-              onClick={() => {
-                setAuthMode("signup");
-                setShowAuthModal(true);
-              }}
-            >
-              <FontAwesomeIcon icon={faUser} /> Join Us
-            </button>
-          </div>
-
-
-        </div>
-      </header>
 
 
       {/* HERO */}
@@ -410,7 +328,7 @@ const Home = () => {
       </section>
 
       {/* Footer */}
-      <Footer />
+     
 
       {/* Auth Modal */}
       <Authorisation
