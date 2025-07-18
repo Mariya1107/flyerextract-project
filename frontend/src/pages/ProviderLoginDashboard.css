@@ -1,9 +1,18 @@
-/* ProviderLoginDashboard.css */
-
 .dashboard-wrapper {
-  background-color: #f8fafc;
-  font-family: ...;
+  background-color: #f1f5f9;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   min-height: 100vh;
+}
+.dashboard-main-header {
+  position: sticky;
+  top: 0;
+  background: rgb(219, 233, 251);
+  z-index: 100;
+  padding: 16px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
 }
 
 .dashboard-container {
@@ -13,28 +22,30 @@
 
 .sidebar {
   width: 260px;
-  background-color: #1e293b;
-  color: #94a3b8;
+  background-color: #1f2937;
+  color: #f1f5f9;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
+  box-shadow: 2px 0 6px rgba(0, 0, 0, 0.1);
 }
 
 .sidebar-header {
   padding: 20px;
   text-align: center;
-  border-bottom: 1px solid #334155;
+  border-bottom: 1px solid #374151;
 }
 
 .logo {
   color: #ffffff;
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
+  font-weight: bold;
 }
 
 .sidebar-nav ul {
   list-style-type: none;
-  padding: 20px 0;
+  padding: 0;
   margin: 0;
 }
 
@@ -43,13 +54,13 @@
   align-items: center;
   padding: 15px 25px;
   text-decoration: none;
-  color: #cbd5e1;
+  color: #e5e7eb;
   font-weight: 500;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
 }
 
 .sidebar-nav li a:hover {
-  background-color: #334155;
+  background-color: #374151;
   color: #ffffff;
 }
 
@@ -74,7 +85,7 @@
 
 .nav-separator {
   height: 1px;
-  background-color: #334155;
+  background-color: #374151;
   margin: 15px 25px;
 }
 
@@ -82,6 +93,7 @@
   flex-grow: 1;
   padding: 30px;
   overflow-y: auto;
+  background: #f9fafb;
 }
 
 .dashboard-main-header {
@@ -91,11 +103,27 @@
   margin-bottom: 30px;
 }
 
-.dashboard-main-header h1 {
-  margin: 0;
-  color: #1e293b;
-  font-size: 1.75rem;
-  font-weight: 600;
+.search-bar {
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  width: 250px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background-color: #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.profile-icon {
+  width: 40px;
+  height: 40px;
+  background-color: #095ee6;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 1rem;
 }
 
 .stat-cards-grid {
@@ -178,7 +206,7 @@
   font-weight: 600;
 }
 
-.chart-header select {
+.dashboard-chart-header select {
   border: 1px solid #e2e8f0;
   border-radius: 6px;
   padding: 5px 10px;
