@@ -138,12 +138,15 @@ const DashboardLayout = () => {
 
               <li className="nav-separator"></li>
 
-              <li>
-                <button>
-                  <Icon name="E" />
-                  <span>Edit Profile</span>
-                </button>
-              </li>
+<li>
+  <button
+    onClick={() => navigate("/provider-dashboard/edit-profile")}
+    className={isActive("/provider-dashboard/edit-profile") ? "active" : ""}
+  >
+    <Icon name="E" />
+    <span>Edit Profile</span>
+  </button>
+</li>
 
               <li>
                 <button onClick={handleLogout} className="logout-btn">

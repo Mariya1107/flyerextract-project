@@ -22,6 +22,7 @@ class LoginSerializer(serializers.Serializer):
         raise serializers.ValidationError("Invalid credentials")
     
 class UserProfileSerializer(serializers.ModelSerializer):
+    profile_photo = serializers.ImageField(required=False)
     class Meta:
         model = CustomUser
-        fields = ['username', 'email', 'full_name', 'phone', 'gender',]
+        fields = ['username', 'email', 'full_name', 'phone', 'gender', 'profile_photo']

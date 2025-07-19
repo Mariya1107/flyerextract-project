@@ -14,7 +14,7 @@ import UploadBrochure from "./pages/UploadBrochure";
 import EditBrochure from "./pages/EditBrochure";
 import ExtractProducts from "./pages/ExtractProducts";
 import ProvidersPageDash from './pages/ProvidersPageDash';
-
+import EditProfile from "./pages/EditProfile";
 // Shared layout wrapper for dashboard
 import DashboardLayoutWrapper from "./components/DashboardLayoutWrapper";
 
@@ -41,6 +41,7 @@ function App() {
           <Route path="edit-brochure" element={<EditBrochure />} />
           <Route path="extract-products" element={<ExtractProducts />} />
           <Route path="providers" element={<ProvidersPageDash />} />
+          <Route path="/provider-dashboard/edit-profile" element={<EditProfile />} />
         </Route>
         
       </Routes>

@@ -37,6 +37,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     # ✅ New field for provider identification
     is_provider = models.BooleanField(default=False)
     stores = models.ManyToManyField(Store, blank=True, related_name="providers")  # ✅ New field here
+     # ✅ Add profile photo
+    profile_photo = models.ImageField(upload_to='profile_photos/', blank=True, null=True)
 
 
     # System fields

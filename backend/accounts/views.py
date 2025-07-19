@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from django.contrib.auth import get_user_model, authenticate
 from rest_framework.authtoken.models import Token
 from .serializers import UserProfileSerializer
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.decorators import parser_classes
 
 User = get_user_model()
 
@@ -62,6 +64,7 @@ def login_provider(request):
 
 @api_view(['GET', 'PUT'])
 @permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])  # ✅ Support for profile_photo file uploads
 def user_profile(request):
     if request.method == 'GET':
         serializer = UserProfileSerializer(request.user)
@@ -94,15 +97,27 @@ def login_admin(request):
 
     return Response({"error": "Invalid credentials"}, status=400)
 
-@api_view(['GET'])
+@api_view(['GET', 'PUT'])  # <-- Add PUT here
 @permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])  # <-- Support file uploads
 def get_logged_in_user_info(request):
     user = request.user
-    stores = user.stores.all()
 
-    return Response({
-        "username": user.username,
-        "email": user.email,
-        "is_provider": user.is_provider,
-        "stores": [{"id": store.id, "name": store.name} for store in stores] if stores.exists() else []
-    })
+    if request.method == 'GET':
+        stores = user.stores.all()
+        return Response({
+            "username": user.username,
+            "email": user.email,
+            "full_name": user.full_name,
+            "phone": user.phone,
+            "gender": user.gender,
+            "profile_photo": request.build_absolute_uri(user.profile_photo.url) if user.profile_photo else None,
+            "stores": [{"id": store.id, "name": store.name} for store in stores] if stores.exists() else []
+        })
+
+    if request.method == 'PUT':
+        serializer = UserProfileSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
