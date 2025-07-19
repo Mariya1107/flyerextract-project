@@ -1,4 +1,3 @@
-/* FlyerList.css */
 @keyframes aurora {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
@@ -12,11 +11,13 @@
   animation: aurora 8s ease infinite;
   min-height: 100vh;
 }
+
 .flyer-title {
   text-align: center;
-  font-size: 2.2rem;
+  font-size: 2.5rem;
   font-weight: bold;
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
+   margin-top: -2rem;
   color: #1f2937;
 }
 
@@ -25,6 +26,7 @@
   font-size: 1.2rem;
   color: #6b7280;
 }
+
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(40px) scale(0.95); }
   to { opacity: 1; transform: translateY(0) scale(1); }
@@ -39,57 +41,97 @@
 }
 
 .flyer-card {
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 16px;
+  background: white;
+  border-radius: 20px;
   overflow: hidden;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.08);
   text-decoration: none;
   color: inherit;
   display: flex;
   flex-direction: column;
-  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.4s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   opacity: 0;
-  animation: fadeInUp 0.6s ease-out forwards;
+  animation: fadeInOnly 0.6s ease-out forwards;
   position: relative;
+  height: 460px;
 }
-
-.flyer-card:before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  opacity: 0;
-  transition: opacity 0.4s ease;
-  z-index: -1;
+@keyframes fadeInOnly {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .flyer-card:hover {
-  transform: translateY(-12px);
+  transform: translateY(-40px); /* Lifts up the card */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.9); /* Enhanced shadow */
+  
 }
 
-.flyer-card:hover:before {
-  opacity: 1;
-}
 
 .flyer-img-wrapper {
-  position: relative;
   height: 200px;
-  background-color: #333;
+  background-color: #f3f4f6;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+   height: 530px; /* ⬆️ Slightly taller image block */
 }
 
 .flyer-img {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 130%;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.4s ease;
+  padding: 10px;
+  box-sizing: border-box;
+  transition: transform 0.3s ease;
 }
 
 .flyer-card:hover .flyer-img {
   transform: scale(1.05);
+}
+
+.flyer-overlay-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.flyer-hover-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 2;
+}
+
+.flyer-card:hover .flyer-hover-overlay {
+  opacity: 1;
+}
+
+.flyer-hover-btn {
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  background: #f97316; /* Tailwind orange-500 */
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  z-index: 3;
+}
+
+.flyer-hover-btn:hover {
+  background: #ea580c; /* Tailwind orange-600 */
 }
 
 .pdf-placeholder {
@@ -113,6 +155,16 @@
   font-size: 1.1rem;
 }
 
+.pdf-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
 .flyer-tag {
   position: absolute;
   top: 15px;
@@ -121,26 +173,27 @@
   color: white;
   font-weight: 700;
   font-size: 0.85rem;
-  background: linear-gradient(45deg, #ff4b2b, #ff416c);
+  background: linear-gradient(45deg, #f43f5e, #e11d48);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
   clip-path: polygon(0 0, 100% 0, 90% 100%, 0 100%);
 }
 
 .flyer-info {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   padding: 20px;
   flex-grow: 1;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .flyer-heading {
   font-size: 1.3rem;
-  font-weight: 800;
-  color: #1a223e;
+  font-weight: 700;
+  color: #111827;
   margin: 0 0 15px 0;
   line-height: 1.4;
 }
@@ -150,11 +203,16 @@
   justify-content: space-between;
   align-items: center;
   padding: 12px 18px;
-  border-radius: 10px;
+  border-radius: 12px;
   font-weight: 700;
   color: #fff;
-  background: linear-gradient(45deg, #3b82f6, #6366f1);
+  background: linear-gradient(45deg, #ff1493, #1e90ff);
   transition: all 0.3s ease;
+  font-size: 0.95rem;
+}
+
+.flyer-view-btn:hover {
+  filter: brightness(1.05);
 }
 
 .flyer-view-btn span:last-child {
@@ -162,5 +220,5 @@
 }
 
 .flyer-card:hover .flyer-view-btn span:last-child {
-  transform: translateX(5px);
+  transform: translateX(6px);
 }
