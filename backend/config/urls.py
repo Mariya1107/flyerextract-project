@@ -15,6 +15,7 @@ urlpatterns = [
     # Product-related API endpoints
     path('api/products/upload/', upload_cropped_product, name='upload_cropped_product'),
     path('api/products/search/', search_products, name='search_products'),
+    
 
     # Account-related endpoints
     path('api/accounts/', include('accounts.urls')),
