@@ -93,3 +93,16 @@ def login_admin(request):
             return Response({"error": "User does not have admin privileges"}, status=403)
 
     return Response({"error": "Invalid credentials"}, status=400)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_logged_in_user_info(request):
+    user = request.user
+    stores = user.stores.all()
+
+    return Response({
+        "username": user.username,
+        "email": user.email,
+        "is_provider": user.is_provider,
+        "stores": [{"id": store.id, "name": store.name} for store in stores] if stores.exists() else []
+    })

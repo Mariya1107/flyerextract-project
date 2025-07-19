@@ -12,6 +12,7 @@ import UploadBrochure from "./pages/UploadBrochure";
 import EditBrochure from "./pages/EditBrochure";
 import ExtractProducts from "./pages/ExtractProducts"; // create these late
 
+
 function App() {
   return (
     <Router>
@@ -28,6 +29,7 @@ function App() {
           <Route path="/dashboard/upload-brochure" element={<UploadBrochure />} />
           <Route path="/dashboard/edit-brochure" element={<EditBrochure />} />
           <Route path="/dashboard/extract-products" element={<ExtractProducts />} />
+          
         </Route>
       </Routes>
     </Router>

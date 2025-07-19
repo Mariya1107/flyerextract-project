@@ -5,7 +5,6 @@ import axios from "axios";
 import BASE_URL from "../config";
 import UploadBrochure from "./UploadBrochure";
 
-
 const Icon = ({ name }) => <div className="icon">{name.charAt(0)}</div>;
 
 const SparkLine = ({ data, color }) => (
@@ -75,8 +74,9 @@ const ProvidersBarChart = () => {
 
 const ProviderLoginDashboard = () => {
   const navigate = useNavigate();
-
+  const location = useLocation();
   const [stores, setStores] = useState([]);
+  const [storeName, setStoreName] = useState("");
   const [showProviders, setShowProviders] = useState(false);
 
   useEffect(() => {
@@ -84,7 +84,30 @@ const ProviderLoginDashboard = () => {
     if (!token) {
       alert("Access denied. Please login as a provider.");
       navigate("/");
+      return;
     }
+
+    axios.get(`${BASE_URL}/api/accounts/me/`, {
+      headers: {
+        Authorization: `Token ${token}`,
+      }
+    })
+      .then(res => {
+        const storeList = res.data.stores || [];
+        if (storeList.length > 0) {
+          const store = storeList[0];
+          localStorage.setItem("store_id", store.id);
+          setStoreName(store.name);
+        } else {
+          alert("No store assigned to this provider.");
+        }
+      })
+      .catch(err => {
+        console.error("Failed to fetch user info:", err);
+        alert("Session expired or invalid credentials. Please login again.");
+        localStorage.removeItem("providerToken");
+        navigate("/");
+      });
   }, [navigate]);
 
   useEffect(() => {
@@ -95,25 +118,26 @@ const ProviderLoginDashboard = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("providerToken");
+    localStorage.removeItem("store_id");
     navigate("/");
   };
+
   const handleBrochureClick = () => {
     const storeId = localStorage.getItem("store_id");
-    console.log("Retrieved store ID:", storeId);
     if (storeId) {
       navigate(`/store/${storeId}/flyers`);
     } else {
       alert("Store not found. Please log in again.");
     }
   };
+
   const statCards = [
     { title: 'Number of Brochures', value: '30', change: 15, trend: 'up', color: '#3b82f6', data: [5, 10, 8, 14, 12, 18] },
     { title: 'Number of Products', value: '25', change: 10, trend: 'up', color: '#ef4444', data: [18, 12, 16, 10, 14, 9] },
-    { title: 'Number of users clicked ', value: '18', change: 12, trend: 'up', color: '#22c55e', data: [8, 12, 9, 15, 11, 17] },
+    { title: 'Number of users clicked', value: '18', change: 12, trend: 'up', color: '#22c55e', data: [8, 12, 9, 15, 11, 17] },
     { title: 'Subscriptions', value: '$650', change: 20, trend: 'down', color: '#f97316', data: [17, 12, 19, 10, 15, 11] }
   ];
 
-  const location = useLocation();
   return (
     <div className="dashboard-wrapper">
       <div className="dashboard-container">
@@ -125,9 +149,7 @@ const ProviderLoginDashboard = () => {
             <ul>
               <li>
                 <button
-                  onClick={() => {
-                    window.location.href = "/provider-dashboard"; // forces full reload
-                  }}
+                  onClick={() => window.location.href = "/provider-dashboard"}
                   className="active"
                 >
                   <Icon name="D" />
@@ -164,6 +186,9 @@ const ProviderLoginDashboard = () => {
 
         <main className="main-content">
           <div className="dashboard-main-header">
+            <h2 className="store-name-title">
+              {storeName ? `Welcome to ${storeName}` : "Loading store..."}
+            </h2>
             <input type="text" className="search-bar" placeholder="Search in dashboard..." />
             <div className="profile-icon">P</div>
           </div>
@@ -178,17 +203,10 @@ const ProviderLoginDashboard = () => {
                 >
                   <div className="category-icon">
                     <img
-                      src={
-                        store.logo?.startsWith("http")
-                          ? store.logo
-                          : `${BASE_URL}${store.logo}`
-                      }
+                      src={store.logo?.startsWith("http") ? store.logo : `${BASE_URL}${store.logo}`}
                       alt={store.name}
                       className="img-fluid"
-                      onError={(e) =>
-                      (e.target.src =
-                        "https://via.placeholder.com/100x100?text=Logo")
-                      }
+                      onError={(e) => (e.target.src = "https://via.placeholder.com/100x100?text=Logo")}
                     />
                   </div>
                   <h6>{store.name}</h6>
