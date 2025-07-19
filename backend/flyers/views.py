@@ -88,6 +88,10 @@ class RegionListByCountry(generics.ListAPIView):
 
     def get_queryset(self):
         return Region.objects.filter(country_id=self.kwargs['country_id'])
+    
+class RegionList(generics.ListAPIView):
+    queryset = Region.objects.all()
+    serializer_class = RegionSerializer
 
 class FlyerListByRegion(generics.ListAPIView):
     serializer_class = FlyerSerializer

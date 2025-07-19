@@ -5,6 +5,8 @@ from .views import FlyerListAll
 from .views import submit_provider_application
 from .views import StoreListView, FlyersByStoreView
 from .views import flyers_by_store_id
+from .views import RegionList
+
 
 urlpatterns = [
     path('countries/', views.CountryList.as_view()),
@@ -13,7 +15,7 @@ urlpatterns = [
     path('products/<int:flyer_id>/', views.ProductListByFlyer.as_view()),
     path('flyers/all/', FlyerListAll.as_view()),
     path('api/provider-apply/', submit_provider_application, name='provider-apply'),
-    
+    path('regions/', RegionList.as_view(), name='region-list'),
     path('api/become-provider/', views.become_provider, name='become_provider'),
     path('stores/', StoreListView.as_view()),
     path('flyers/store/<str:store_name>/', FlyersByStoreView.as_view(), name='flyers-by-store'),

@@ -7,16 +7,23 @@ import CropUploader from "./components/CropUploader";
 import FlyerList from "./pages/FlyerList";
 import BrochureViewer from "./pages/BrochureViewer";
 import ProviderLogin from "./components/ProviderLogin";
+
+// Dashboard pages
 import ProviderLoginDashboard from './pages/ProviderLoginDashboard';
 import UploadBrochure from "./pages/UploadBrochure";
 import EditBrochure from "./pages/EditBrochure";
-import ExtractProducts from "./pages/ExtractProducts"; // create these late
+import ExtractProducts from "./pages/ExtractProducts";
+import ProvidersPageDash from './pages/ProvidersPageDash';
 
+// Shared layout wrapper for dashboard
+import DashboardLayoutWrapper from "./components/DashboardLayoutWrapper";
 
 function App() {
   return (
     <Router>
       <Routes>
+
+        {/* Public Routes */}
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="/flyers/:flyerId" element={<FlyerDetail />} />
@@ -25,12 +32,17 @@ function App() {
           <Route path="/flyers" element={<FlyerList />} />
           <Route path="/store/:id/flyers" element={<FlyerList />} />
           <Route path="/provider-login" element={<ProviderLogin />} />
-          <Route path="/provider-dashboard" element={<ProviderLoginDashboard />} />
-          <Route path="/dashboard/upload-brochure" element={<UploadBrochure />} />
-          <Route path="/dashboard/edit-brochure" element={<EditBrochure />} />
-          <Route path="/dashboard/extract-products" element={<ExtractProducts />} />
-          
         </Route>
+
+        {/* Provider Dashboard + Sub Pages - consistent layout */}
+        <Route path="/provider-dashboard" element={<DashboardLayoutWrapper />}>
+          <Route index element={<ProviderLoginDashboard />} />
+          <Route path="upload-brochure" element={<UploadBrochure />} />
+          <Route path="edit-brochure" element={<EditBrochure />} />
+          <Route path="extract-products" element={<ExtractProducts />} />
+          <Route path="providers" element={<ProvidersPageDash />} />
+        </Route>
+        
       </Routes>
     </Router>
   );

@@ -302,3 +302,51 @@
 .dropdown-content a:hover {
   background-color: #555;
 }
+
+.sidebar-item {
+  list-style: none;
+  width: 100%;
+}
+
+.sidebar-button {
+  background-color: transparent;
+  border: none;
+  color: #f1f5f9;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 16px;
+  padding: 12px 16px;
+  width: 100%;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.sidebar-button:hover {
+  background-color: #374151;
+  border-radius: 8px;
+}
+
+.sidebar-submenu {
+  list-style: none;
+  padding-left: 20px;
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-submenu li {
+  padding: 10px 16px;
+  font-size: 15px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #e5e7eb;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
+
+.sidebar-submenu li:hover {
+  background-color: #4b5563;
+}
