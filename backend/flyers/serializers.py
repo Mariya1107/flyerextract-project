@@ -32,6 +32,7 @@ class FlyerSerializer(serializers.ModelSerializer):
     store = StoreSerializer(read_only=True)
     region = RegionSerializer(read_only=True)
     image = serializers.ImageField(use_url=True)  
+    
 
     class Meta:
         model = Flyer
@@ -41,7 +42,9 @@ class FlyerSerializer(serializers.ModelSerializer):
             'pdf',
             'image',
             'store',
-            'region'
+            'region',
+            'expires_at'
+            
             # Removed: 'start_date', 'end_date', 'created_at'
         ]
 

@@ -20,6 +20,7 @@ urlpatterns = [
     path('stores/', StoreListView.as_view()),
     path('flyers/store/<str:store_name>/', FlyersByStoreView.as_view(), name='flyers-by-store'),
     path("flyers/<int:store_id>/", flyers_by_store_id),  # ✅ new route
+    path('flyers/upload/', views.upload_flyer, name='upload-flyer'),
     
     
 

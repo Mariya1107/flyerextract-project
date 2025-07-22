@@ -34,12 +34,12 @@ const UploadBrochure = () => {
     if (imageFile) formData.append("image", imageFile);
 
     try {
-      const res = await axios.post(`${BASE_URL}flyers/flyers/`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Token ${token}`,
-        },
-      });
+const res = await axios.post(`${BASE_URL}flyers/upload/`, formData, {
+  headers: {
+    "Content-Type": "multipart/form-data",
+    Authorization: `Token ${token}`,
+  },
+});
       alert("Brochure uploaded!");
       setTitle("");
       setPdfFile(null);

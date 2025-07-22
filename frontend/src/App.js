@@ -8,22 +8,28 @@ import FlyerList from "./pages/FlyerList";
 import BrochureViewer from "./pages/BrochureViewer";
 import ProviderLogin from "./components/ProviderLogin";
 
-// Dashboard pages
+// Provider Dashboard pages
 import ProviderLoginDashboard from './pages/ProviderLoginDashboard';
 import UploadBrochure from "./pages/UploadBrochure";
 import EditBrochure from "./pages/EditBrochure";
 import ExtractProducts from "./pages/ExtractProducts";
 import ProvidersPageDash from './pages/ProvidersPageDash';
 import EditProfile from "./pages/EditProfile";
-// Shared layout wrapper for dashboard
+
+// Admin Dashboard
+import AdminLoginDashboard from './pages/AdminLoginDashboard';
+import EditProfileAdmin from './pages/EditProfileAdmin';
+
+// Layout wrappers
 import DashboardLayoutWrapper from "./components/DashboardLayoutWrapper";
+import DashboardLayoutWrapper2 from "./components/DashboardLayoutWrapper2"; // ✅ NEW
 
 function App() {
   return (
     <Router>
       <Routes>
 
-        {/* Public Routes */}
+        {/* 🌐 Public Routes */}
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="/flyers/:flyerId" element={<FlyerDetail />} />
@@ -34,16 +40,22 @@ function App() {
           <Route path="/provider-login" element={<ProviderLogin />} />
         </Route>
 
-        {/* Provider Dashboard + Sub Pages - consistent layout */}
+        {/* 🧑‍💼 Provider Dashboard */}
         <Route path="/provider-dashboard" element={<DashboardLayoutWrapper />}>
           <Route index element={<ProviderLoginDashboard />} />
           <Route path="upload-brochure" element={<UploadBrochure />} />
           <Route path="edit-brochure" element={<EditBrochure />} />
           <Route path="extract-products" element={<ExtractProducts />} />
           <Route path="providers" element={<ProvidersPageDash />} />
-          <Route path="/provider-dashboard/edit-profile" element={<EditProfile />} />
+          <Route path="edit-profile" element={<EditProfile />} />
         </Route>
-        
+
+        {/* 👨‍💼 Admin Dashboard */}
+        <Route path="/admin-dashboard" element={<DashboardLayoutWrapper2 />}>
+          <Route index element={<AdminLoginDashboard />} />
+          <Route path="edit-profile" element={<EditProfileAdmin />} /> {/* ✅ */}
+        </Route>
+
       </Routes>
     </Router>
   );

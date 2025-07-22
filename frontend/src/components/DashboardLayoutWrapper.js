@@ -16,7 +16,7 @@ const DashboardLayoutWrapper = () => {
       alert("Access denied. Please login as a provider.");
       navigate("/");
       return;
-    }
+    } 
 
     axios.get(`${BASE_URL}/api/accounts/me/`, {
       headers: { Authorization: `Token ${token}` }
