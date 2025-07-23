@@ -3,9 +3,13 @@ import axios from "axios";
 import BASE_URL from "../config";
 import './UsersAdminDash.css';
 import { FaEdit, FaTrash } from "react-icons/fa";
+import EditIconUserAdmin from "./EditIconUserAdmin";
+import AddUserModal from "./AddUserModal"; // ✅ Import Add modal
 
 const UsersAdminDash = () => {
   const [users, setUsers] = useState([]);
+  const [editingUserId, setEditingUserId] = useState(null);
+  const [showAddModal, setShowAddModal] = useState(false); // ✅ State for add modal
 
   useEffect(() => {
     fetchUsers();
@@ -25,7 +29,7 @@ const UsersAdminDash = () => {
   const deleteUser = (userId) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
       const token = localStorage.getItem('adminToken');
-      axios.delete(`${BASE_URL}/api/accounts/admin/users/${userId}/`, {
+     axios.delete(`${BASE_URL}/api/accounts/admin/users/${userId}/delete/`, {
         headers: { Authorization: `Token ${token}` }
       })
       .then(() => {
@@ -41,7 +45,9 @@ const UsersAdminDash = () => {
     <div className="provider-table-wrapper">
       <div className="table-header">
         <h2>All Users</h2>
-        <button className="add-provider-btn">+ Add User</button>
+        <button className="add-provider-btn" onClick={() => setShowAddModal(true)}>
+          + Add User
+        </button>
       </div>
 
       <div className="table-container">
@@ -81,14 +87,41 @@ const UsersAdminDash = () => {
                 <td>{user.is_staff ? 'Yes' : 'No'}</td>
                 <td>{user.is_superuser ? 'Yes' : 'No'}</td>
                 <td className="action-icons">
-                  <button className="icon-btn edit-btn"><FaEdit /></button>
-                  <button className="icon-btn delete-btn" onClick={() => deleteUser(user.id)}><FaTrash /></button>
+                  <button
+                    className="icon-btn edit-btn"
+                    onClick={() => setEditingUserId(user.id)}
+                  >
+                    <FaEdit />
+                  </button>
+                  <button
+                    className="icon-btn delete-btn"
+                    onClick={() => deleteUser(user.id)}
+                  >
+                    <FaTrash />
+                  </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {/* 🔧 Edit modal */}
+      {editingUserId && (
+        <EditIconUserAdmin
+          userId={editingUserId}
+          onClose={() => setEditingUserId(null)}
+          onUpdated={fetchUsers}
+        />
+      )}
+
+      {/* ✅ Add modal */}
+      {showAddModal && (
+        <AddUserModal
+          onClose={() => setShowAddModal(false)}
+          onUserAdded={fetchUsers}
+        />
+      )}
     </div>
   );
 };

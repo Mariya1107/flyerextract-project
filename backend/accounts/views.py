@@ -6,7 +6,9 @@ from rest_framework.authtoken.models import Token
 from .serializers import UserProfileSerializer
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.decorators import parser_classes
-
+from flyers.models import Store
+from flyers.serializers import StoreSerializer
+from .serializers import RegisterSerializer
 
 from .models import CustomUser
 
@@ -156,3 +158,47 @@ def delete_user(request, user_id):
         return Response({"message": "User deleted successfully"}, status=200)
     except CustomUser.DoesNotExist:
         return Response({"error": "User not found"}, status=404)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])
+def update_user_by_admin(request, user_id):
+    try:
+        user = CustomUser.objects.get(id=user_id)
+    except CustomUser.DoesNotExist:
+        return Response({"error": "User not found"}, status=404)
+
+    serializer = UserProfileSerializer(user, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=400)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_by_id(request, user_id):
+    try:
+        user = CustomUser.objects.get(id=user_id)
+        serializer = UserProfileSerializer(user)
+        return Response(serializer.data)
+    except CustomUser.DoesNotExist:
+        return Response({"error": "User not found"}, status=404)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def list_stores(request):
+    stores = Store.objects.all()
+    serializer = StoreSerializer(stores, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_user_by_admin(request):
+    serializer = RegisterSerializer(data=request.data)
+    if serializer.is_valid():
+        user = serializer.save()
+        return Response({'success': True, 'user_id': user.id}, status=201)
+    return Response(serializer.errors, status=400)
