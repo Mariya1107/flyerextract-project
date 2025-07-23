@@ -203,3 +203,14 @@
   object-fit: cover;
   border-radius: 50%;
 }
+
+.sidebar {
+  width: 260px;
+  background-color: #1f2937;
+  color: #f1f5f9;
+  height: 100vh;
+  overflow-y: auto;        /* Enables vertical scroll inside sidebar */
+  overflow-x: hidden;      /* Prevents horizontal scroll */
+  position: sticky;
+  top: 0;
+}

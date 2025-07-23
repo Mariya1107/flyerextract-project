@@ -7,6 +7,9 @@ from .serializers import UserProfileSerializer
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.decorators import parser_classes
 
+
+from .models import CustomUser
+
 User = get_user_model()
 
 @api_view(['POST'])
@@ -121,3 +124,35 @@ def get_logged_in_user_info(request):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=400)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def list_all_users(request):
+    users = CustomUser.objects.all()
+    data = []
+    for user in users:
+        data.append({
+            "id": user.id,
+            "full_name": user.full_name,
+            "email": user.email,
+            "phone": user.phone,
+            "gender": user.gender,
+            "date_joined": user.date_joined.strftime("%d %b %Y"),
+            "is_active": user.is_active,
+            "profile_photo": request.build_absolute_uri(user.profile_photo.url) if user.profile_photo else None,
+            "username": user.username,
+            "is_provider": user.is_provider,
+        })
+    return Response(data)
+
+# views.py
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_user(request, user_id):
+    try:
+        user = CustomUser.objects.get(id=user_id)
+        user.delete()
+        return Response({"message": "User deleted successfully"}, status=200)
+    except CustomUser.DoesNotExist:
+        return Response({"error": "User not found"}, status=404)

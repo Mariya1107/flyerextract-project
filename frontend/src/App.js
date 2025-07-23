@@ -19,6 +19,7 @@ import EditProfile from "./pages/EditProfile";
 // Admin Dashboard
 import AdminLoginDashboard from './pages/AdminLoginDashboard';
 import EditProfileAdmin from './pages/EditProfileAdmin';
+import UsersAdminDash from './pages/UsersAdminDash';
 
 // Layout wrappers
 import DashboardLayoutWrapper from "./components/DashboardLayoutWrapper";
@@ -54,6 +55,7 @@ function App() {
         <Route path="/admin-dashboard" element={<DashboardLayoutWrapper2 />}>
           <Route index element={<AdminLoginDashboard />} />
           <Route path="edit-profile" element={<EditProfileAdmin />} /> {/* ✅ */}
+          <Route path="/admin-dashboard/users" element={<UsersAdminDash />} />
         </Route>
 
       </Routes>

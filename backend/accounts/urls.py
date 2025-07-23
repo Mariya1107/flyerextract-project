@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import register_user, login_user, login_provider, login_admin
-from .views import get_logged_in_user_info, user_profile
+from .views import get_logged_in_user_info, user_profile, list_all_users, delete_user
 urlpatterns = [
     path('register/', register_user, name='register'),
     path('login/', login_user, name='login'),
@@ -8,5 +8,7 @@ urlpatterns = [
     path('login/admin/', login_admin, name='admin-login'),
     path('me/', get_logged_in_user_info, name='get_logged_in_user_info'),
     path("profile/", user_profile, name="user-profile"),
+    path('admin/users/', list_all_users),
+    path('admin/users/<int:user_id>/', delete_user),
    
 ]

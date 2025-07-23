@@ -55,7 +55,7 @@ const DashboardLayout2 = () => {
   return (
     <div className="dashboard-wrapper">
       <div className="dashboard-container">
-        <aside className="sidebar">
+        <aside className="sidebar scrollable-sidebar">
           <div className="sidebar-header">
             <h2 className="logo">Gravity</h2>
           </div>
@@ -69,8 +69,21 @@ const DashboardLayout2 = () => {
                   <Icon name="D" /><span>Dashboard</span>
                 </Link>
               </li>
-              <li><a href="#"><Icon name="U" /><span>Users</span></a></li>
+              <li>
+  <Link
+    to="/admin-dashboard/users"
+    className={isActive("/admin-dashboard/users") ? "active" : ""}
+  >
+    <Icon name="U" /><span>Users</span>
+  </Link>
+</li>
+
               <li><a href="#"><Icon name="P" /><span>Providers</span></a></li>
+              <li><a href="#"><Icon name="C" /><span>Country</span></a></li>
+              <li><a href="#"><Icon name="R" /><span>Region</span></a></li>
+              <li><a href="#"><Icon name="PA" /><span>Provider Applications</span></a></li>
+              <li><a href="#"><Icon name="B" /><span>Brochures</span></a></li>
+              <li><a href="#"><Icon name="P" /><span>Products</span></a></li>
               <li><a href="#"><Icon name="R" /><span>Reports</span></a></li>
               <li><a href="#"><Icon name="A" /><span>Approvals</span></a></li>
               <li className="nav-separator"></li>
