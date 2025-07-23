@@ -202,3 +202,5 @@ def create_user_by_admin(request):
         user = serializer.save()
         return Response({'success': True, 'user_id': user.id}, status=201)
     return Response(serializer.errors, status=400)
+
+

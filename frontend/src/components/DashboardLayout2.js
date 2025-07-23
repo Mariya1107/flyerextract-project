@@ -78,7 +78,14 @@ const DashboardLayout2 = () => {
   </Link>
 </li>
 
-              <li><a href="#"><Icon name="P" /><span>Providers</span></a></li>
+              <li>
+  <Link
+    to="/admin-dashboard/providers"
+    className={isActive("/admin-dashboard/providers") ? "active" : ""}
+  >
+    <Icon name="P" /><span>Providers</span>
+  </Link>
+</li>
               <li><a href="#"><Icon name="C" /><span>Country</span></a></li>
               <li><a href="#"><Icon name="R" /><span>Region</span></a></li>
               <li><a href="#"><Icon name="PA" /><span>Provider Applications</span></a></li>

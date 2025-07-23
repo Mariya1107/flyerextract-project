@@ -20,4 +20,5 @@ urlpatterns = [
     path('stores/', list_stores, name='list_stores'), 
     path('admin/users/create/', create_user_by_admin, name='create_user'),
     
+    
 ]
