@@ -21,10 +21,12 @@ import AdminLoginDashboard from './pages/AdminLoginDashboard';
 import EditProfileAdmin from './pages/EditProfileAdmin';
 import UsersAdminDash from './pages/UsersAdminDash';
 import ProvidersAdminDash from './pages/ProvidersAdminDash';
+import RegionAdmin from './components/RegionAdmin';
 
 // Layout wrappers
 import DashboardLayoutWrapper from "./components/DashboardLayoutWrapper";
 import DashboardLayoutWrapper2 from "./components/DashboardLayoutWrapper2"; // ✅ NEW
+import CountryAdmin from "./components/CountryAdmin"; 
 
 function App() {
   return (
@@ -58,6 +60,8 @@ function App() {
           <Route path="edit-profile" element={<EditProfileAdmin />} /> {/* ✅ */}
           <Route path="/admin-dashboard/users" element={<UsersAdminDash />} />
           <Route path="providers" element={<ProvidersAdminDash />} />
+          <Route path="countries" element={<CountryAdmin />} />
+          <Route path="regions" element={<RegionAdmin />} />
 
         </Route>
 

@@ -9,8 +9,10 @@ from rest_framework.decorators import parser_classes
 from flyers.models import Store
 from flyers.serializers import StoreSerializer
 from .serializers import RegisterSerializer
-
 from .models import CustomUser
+from flyers.models import Country, Region
+from flyers.serializers import CountrySerializer
+from flyers.serializers import RegionSerializer
 
 User = get_user_model()
 
@@ -239,3 +241,56 @@ def delete_store(request, store_id):
 
     store.delete()
     return Response({'message': 'Store deleted successfully'}, status=200)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def list_countries(request):
+    countries = Country.objects.all()
+    serializer = CountrySerializer(countries, many=True)
+    return Response(serializer.data)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_country(request):
+    serializer = CountrySerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=201)
+    return Response(serializer.errors, status=400)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_country(request, country_id):
+    try:
+        country = Country.objects.get(id=country_id)
+    except Country.DoesNotExist:
+        return Response({'error': 'Country not found'}, status=404)
+
+    country.delete()
+    return Response({'message': 'Country deleted successfully'}, status=200)
+
+@api_view(['GET'])
+def list_regions(request):
+    regions = Region.objects.select_related('country').all()
+    serializer = RegionSerializer(regions, many=True)
+    return Response(serializer.data)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def add_region(request):
+    serializer = RegionSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_region(request, region_id):
+    try:
+        region = Region.objects.get(id=region_id)
+        region.delete()
+        return Response({'message': 'Region deleted'}, status=status.HTTP_204_NO_CONTENT)
+    except Region.DoesNotExist:
+        return Response({'error': 'Region not found'}, status=status.HTTP_404_NOT_FOUND)

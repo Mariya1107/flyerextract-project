@@ -18,10 +18,13 @@ class CountrySerializer(serializers.ModelSerializer):
 
 class RegionSerializer(serializers.ModelSerializer):
     country = CountrySerializer(read_only=True)
+    country_id = serializers.PrimaryKeyRelatedField(
+        queryset=Country.objects.all(), write_only=True, source='country'
+    )
 
     class Meta:
         model = Region
-        fields = ['id', 'name', 'country']
+        fields = ['id', 'name', 'country', 'country_id']
 
 
 

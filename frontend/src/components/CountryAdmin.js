@@ -1,44 +1,122 @@
-import React from "react";
+// src/pages/CountryAdmin.js
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import BASE_URL from '../config';
+import "../pages/UsersAdminDash.css";
+import { FaTrash } from "react-icons/fa";
 
-const countries = [
-  { name: "Bahrain", flag: "🇧🇭" },
-  { name: "Qatar", flag: "🇶🇦" },
-  { name: "Kuwait", flag: "🇰🇼" },
-  { name: "Oman", flag: "🇴🇲" },
-  { name: "Saudi Arabia", flag: "🇸🇦" },
-  { name: "United Arab Emirates", flag: "🇦🇪" },
-  { name: "Egypt", flag: "🇪🇬" },
-];
+const CountryAdmin = () => {
+  const [countries, setCountries] = useState([]);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newCountry, setNewCountry] = useState('');
 
-export default function CountrySelector() {
+  useEffect(() => {
+    fetchCountries();
+  }, []);
+
+  const fetchCountries = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/countries/`);
+      setCountries(res.data);
+    } catch (err) {
+      console.error('Failed to fetch countries:', err);
+    }
+  };
+
+  const handleAddCountry = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      await axios.post(
+        `${BASE_URL}/api/accounts/countries/add/`,
+        { name: newCountry },
+        {
+          headers: {
+            Authorization: `Token ${token}`,
+          },
+        }
+      );
+      setShowAddModal(false);
+      setNewCountry('');
+      fetchCountries();
+    } catch (err) {
+      console.error('Failed to add country:', err.response?.data || err);
+    }
+  };
+
+  const handleDeleteCountry = async (countryId) => {
+  const token = localStorage.getItem('token');
+  try {
+    await axios.delete(`${BASE_URL}/api/accounts/countries/${countryId}/`, {
+      headers: {
+        Authorization: `Token ${token}`,
+      },
+    });
+    fetchCountries(); // Refresh the country list
+  } catch (err) {
+    console.error('Failed to delete country:', err.response?.data || err);
+  }
+};
+
   return (
-    <div className="min-h-screen bg-gray-100 px-6 py-10">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-10">
-        <div className="text-2xl font-bold text-purple-700">
-          <span className="text-4xl">extract</span>pdf
-        </div>
-        <div className="text-sm text-gray-600"></div>
+    <div className="provider-table-wrapper">
+      <div className="table-header">
+        <h2>All Countries</h2> 
+        <button className="add-provider-btn" onClick={() => setShowAddModal(true)}>
+          + Add Country 
+        </button>
       </div>
 
-      {/* Title */}
-      <div className="text-center mb-10">
-        <h1 className="text-3xl font-bold text-gray-800">Select your country</h1>
-        <p className="text-gray-500 mt-2">Find all shopping flyers in one place</p>
+      <div className="table-container">
+        <table className="provider-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Countries</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+  {countries.map((country, index) => (
+    <tr key={country.id}>
+      <td>{index + 1}</td>
+      <td>{country.name}</td>
+      <td className="action-icons">
+        <button
+          className="icon-btn delete-btn"
+          onClick={() => handleDeleteCountry(country.id)}
+        >
+          <FaTrash />
+        </button>
+      </td>
+    </tr>
+  ))}
+</tbody>
+        </table>
       </div>
 
-      {/* Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
-        {countries.map((c, i) => (
-          <div
-            key={i}
-            className="bg-white shadow-md rounded-xl flex flex-col items-center justify-center py-6 hover:shadow-xl transition"
-          >
-            <div className="text-5xl">{c.flag}</div>
-            <div className="mt-4 text-lg font-medium">{c.name}</div>
+      {showAddModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>Add New Country</h3>
+            <input
+              type="text"
+              value={newCountry}
+              onChange={(e) => setNewCountry(e.target.value)}
+              placeholder="Enter country name"
+              className="modal-input"
+            />
+            <div className="modal-actions">
+              <button className="submit-btn" onClick={handleAddCountry}>Save</button>
+<span className="modal-close" onClick={() => setShowAddModal(false)}>
+  &times;
+</span>
+
+            </div>
           </div>
-        ))}
-      </div>
+        </div>
+      )}
     </div>
   );
-}
+};
+
+export default CountryAdmin;
