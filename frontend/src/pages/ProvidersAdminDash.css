@@ -52,7 +52,7 @@
   padding: 10px 16px;
   border-radius: 6px;
   cursor: pointer;
-  width: 100%;
+ 
 }
 
 .close-button {
@@ -63,4 +63,40 @@
   top: 10px;
   right: 15px;
   cursor: pointer;
+}
+
+.add-user-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -50px; 
+}
+
+
+
+.form-actions2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.deletebtn {
+  padding: 8px 16px;
+  color: white;
+  background: linear-gradient(to right, #ff1493, #1e90ff);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 25px; /* 👈 Add this line to push it slightly down */
+}
+
+.submit-btn {
+  padding: 8px 16px;
+  color: white;
+  background: linear-gradient(to right, #ff1493, #1e90ff);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 25px; /* 👈 Add this line to push it slightly down */
 }

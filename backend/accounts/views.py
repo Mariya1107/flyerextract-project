@@ -194,6 +194,32 @@ def list_stores(request):
     return Response(serializer.data)
 
 
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])
+def update_store(request, store_id):
+    try:
+        store = Store.objects.get(id=store_id)
+    except Store.DoesNotExist:
+        return Response({'error': 'Store not found'}, status=404)
+
+    serializer = StoreSerializer(store, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=400)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])
+def create_store(request):
+    serializer = StoreSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=201)
+    return Response(serializer.errors, status=400)
+
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_user_by_admin(request):
@@ -203,4 +229,13 @@ def create_user_by_admin(request):
         return Response({'success': True, 'user_id': user.id}, status=201)
     return Response(serializer.errors, status=400)
 
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_store(request, store_id):
+    try:
+        store = Store.objects.get(id=store_id)
+    except Store.DoesNotExist:
+        return Response({'error': 'Store not found'}, status=404)
 
+    store.delete()
+    return Response({'message': 'Store deleted successfully'}, status=200)

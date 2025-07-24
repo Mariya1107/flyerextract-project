@@ -3,6 +3,8 @@ from .models import Country, Region, Store, Flyer, Product
 from rest_framework import serializers
 from .models import ProviderApplication
 from rest_framework import generics
+from .models import ProviderApplication
+from .models import Store
 
 
 
@@ -22,10 +24,11 @@ class RegionSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'country']
 
 
+
 class StoreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Store
-        fields = ['id', 'name']
+        fields = ['id', 'name', 'logo']
 
 
 class FlyerSerializer(serializers.ModelSerializer):
@@ -75,11 +78,7 @@ class ProviderApplicationSerializer(serializers.ModelSerializer):
         model = ProviderApplication
         fields = '__all__'
 
-from rest_framework import serializers
-from .models import ProviderApplication
 
-
-from .models import Store
 class StoreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Store
