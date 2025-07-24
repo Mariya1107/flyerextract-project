@@ -5,7 +5,10 @@ from .views import (
     delete_user, update_user_by_admin, get_user_by_id, list_stores,
     create_user_by_admin, update_store, create_store, delete_store,
     list_countries, create_country, delete_country,
-    list_regions, add_region, delete_region   # ✅ Added region views
+    list_regions, add_region, delete_region,
+    create_provider_application, list_provider_applications,
+    get_provider_application, update_provider_application,
+    delete_provider_application,  # ✅ Added region views
 )
 
 urlpatterns = [
@@ -38,4 +41,12 @@ urlpatterns = [
     path('regions/', list_regions, name='list-regions'),                     # GET all regions
     path('regions/add/', add_region, name='add-region'),                     # POST add region
     path('regions/<int:region_id>/', delete_region, name='delete-region'),   # DELETE region
+
+
+    # ✅ ProviderApplication management
+    path('provider/applications/create/', create_provider_application),
+    path('provider/applications/', list_provider_applications),
+    path('provider/applications/<int:application_id>/', get_provider_application),
+    path('provider/applications/<int:application_id>/update/', update_provider_application),
+    path('provider/applications/<int:application_id>/delete/', delete_provider_application),
 ]

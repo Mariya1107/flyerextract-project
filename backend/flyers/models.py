@@ -51,14 +51,11 @@ class ProviderApplication(models.Model):
         ('female', 'Female'),
     ]
 
-  
 
-
-class ProviderApplication(models.Model):
     full_name = models.CharField(max_length=100)
     email = models.EmailField()
     phone = models.CharField(max_length=15)
-    gender = models.CharField(max_length=10, blank=True)
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True)
     company_name = models.CharField(max_length=100)
     address = models.TextField()
     gst_number = models.CharField(max_length=50, blank=True)

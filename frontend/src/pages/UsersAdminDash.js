@@ -5,6 +5,7 @@ import './UsersAdminDash.css';
 import { FaEdit, FaTrash } from "react-icons/fa";
 import EditIconUserAdmin from "./EditIconUserAdmin";
 import AddUserModal from "./AddUserModal"; // ✅ Import Add modal
+import './EditProfile.css';
 
 const UsersAdminDash = () => {
   const [users, setUsers] = useState([]);

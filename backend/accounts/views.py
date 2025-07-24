@@ -13,6 +13,8 @@ from .models import CustomUser
 from flyers.models import Country, Region
 from flyers.serializers import CountrySerializer
 from flyers.serializers import RegionSerializer
+from flyers.models import ProviderApplication
+from flyers.serializers import ProviderApplicationSerializer
 
 User = get_user_model()
 
@@ -294,3 +296,55 @@ def delete_region(request, region_id):
         return Response({'message': 'Region deleted'}, status=status.HTTP_204_NO_CONTENT)
     except Region.DoesNotExist:
         return Response({'error': 'Region not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+
+@api_view(['POST'])
+@parser_classes([MultiPartParser, FormParser])
+@permission_classes([IsAuthenticated])
+def create_provider_application(request):
+    serializer = ProviderApplicationSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=201)
+    return Response(serializer.errors, status=400)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def list_provider_applications(request):
+    applications = ProviderApplication.objects.all().order_by('-submitted_at')
+    serializer = ProviderApplicationSerializer(applications, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_provider_application(request, application_id):
+    try:
+        application = ProviderApplication.objects.get(id=application_id)
+        serializer = ProviderApplicationSerializer(application)
+        return Response(serializer.data)
+    except ProviderApplication.DoesNotExist:
+        return Response({"error": "Application not found"}, status=404)
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_provider_application(request, application_id):
+    try:
+        application = ProviderApplication.objects.get(id=application_id)
+    except ProviderApplication.DoesNotExist:
+        return Response({"error": "Application not found"}, status=404)
+
+    serializer = ProviderApplicationSerializer(application, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=400)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_provider_application(request, application_id):
+    try:
+        application = ProviderApplication.objects.get(id=application_id)
+        application.delete()
+        return Response({"message": "Application deleted"}, status=204)
+    except ProviderApplication.DoesNotExist:
+        return Response({"error": "Application not found"}, status=404)
