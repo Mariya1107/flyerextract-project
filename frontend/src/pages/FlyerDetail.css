@@ -97,7 +97,7 @@ body {
 
 .pdf-controls {
   position: absolute;
-  top: 50%;
+  top: 40%;
   left: -10%;
   right: -10%;
   display: flex;
@@ -129,11 +129,11 @@ body {
 }
 
 .pdf-controls button:first-child {
-  margin-left: -30px;
+  margin-left: -60px;
 }
 
 .pdf-controls button:last-child {
-  margin-right: -30px;
+  margin-right: -60px;
 }
 
 .page-number,
@@ -188,8 +188,9 @@ body {
   background: #dbf9ff;
   border-radius: 14px;
   padding: 1rem;
-  width: 240px;
-  box-shadow: 0 6px 14px rgba(13, 14, 14, 0.805);
+  width: 300px;
+  height: 290px;
+  box-shadow: 0 6px 14px rgba(152, 152, 152, 0.805);
   transition: transform 0.25s ease;
   display: flex;
   flex-direction: column;
@@ -287,8 +288,8 @@ body {
   border-radius: 20px;
   padding: 2rem;
   width: 90%;
-  max-width: 960px;
-  max-height: 90vh;
+  max-width: 550px;
+  max-height: 1000px;
   overflow-y: auto;
   box-shadow: 0 0 24px rgba(0, 0, 0, 0.25);
   font-family: 'Poppins', sans-serif;
@@ -325,6 +326,7 @@ body {
   flex-wrap: wrap;
   gap: 1.5rem;
   justify-content: center;
+  padding-bottom: 3rem;
 }
 
 /* Optional animations */
