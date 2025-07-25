@@ -157,7 +157,7 @@ const FlyerDetail = () => {
       {showSearchModal && (
         <div className="modal-overlay" onClick={() => setShowSearchModal(false)}>
           <div className="search-modal" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setShowSearchModal(false)}>✖</button>
+            <button className="modal-close1" onClick={() => setShowSearchModal(false)}>✖</button>
             <h2>Search Results</h2>
             {filteredProducts.length === 0 ? (
               <p className="no-results">No matching products found.</p>
