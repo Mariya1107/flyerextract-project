@@ -508,10 +508,10 @@ img {
 .search-modal {
   background: linear-gradient(135deg, #0f172a, #1e293b); /* deep blue gradient */
   border-radius: 20px;
-  padding: 2rem;
-  width: 90%;
-  max-width: 960px;
-  max-height: 90vh;
+  padding: 2rem ;
+  width: 50%;
+  max-width: 580px;
+  max-height: 1000px;
   overflow-y: auto;
   box-shadow: 0 0 24px rgba(0, 0, 0, 0.25);
   font-family: 'Poppins', sans-serif;
@@ -550,6 +550,7 @@ img {
   flex-wrap: wrap;
   gap: 1.5rem;
   justify-content: center;
+  padding-bottom: 2rem;
 }
 
 .product-card {
