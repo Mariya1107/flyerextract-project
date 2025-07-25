@@ -1,4 +1,6 @@
 from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import permission_classes
 
 
 from .models import Country, Region, Flyer, Product
@@ -269,10 +271,13 @@ def upload_flyer(request):
         return Response(serializer.data, status=201)
     return Response(serializer.errors,status=400)  
 
-
-
 @api_view(['GET'])
-def flyers_by_provider(request, provider_id):
-    flyers = Flyer.objects.filter(user_id=provider_id)  # adjust field if it's `provider_id` instead
-    serializer = FlyerSerializer(flyers, many=True)
-    return Response(serializer.data)
+@permission_classes([IsAuthenticated])
+def flyers_by_provider(request):
+    try:
+        store = Store.objects.get(user=request.user)
+        flyers = Flyer.objects.filter(store=store)
+        serializer = FlyerSerializer(flyers, many=True)
+        return Response(serializer.data)
+    except Store.DoesNotExist:
+        return Response({'error': 'No store associated with this provider'}, status=404)
