@@ -25,6 +25,8 @@ import ProvidersAdminDash from './pages/ProvidersAdminDash';
 import CountryAdmin from "./components/CountryAdmin"; 
 import RegionAdmin from './components/RegionAdmin';
 import ProviderApplicationDash from "./pages/ProviderApplicationDash";
+import AdminBrochure from "./pages/AdminBrochure";
+import AdminStoreBrochure from "./pages/AdminStoreBrochure";
 
 // Layout wrappers
 import DashboardLayoutWrapper from "./components/DashboardLayoutWrapper";
@@ -68,6 +70,8 @@ function App() {
           <Route path="countries" element={<CountryAdmin />} />
           <Route path="regions" element={<RegionAdmin />} />
           <Route path="provider-applications" element={<ProviderApplicationDash />} />
+          <Route path="/admin-dashboard/store/:storeId/brochures" element={<AdminStoreBrochure />} />
+          <Route path="store-brochures" element={<AdminBrochure />} /> {/* ✅ List view */}
           
 
         </Route>

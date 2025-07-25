@@ -1,10 +1,10 @@
 from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated,  IsAdminUser
 from rest_framework.decorators import permission_classes
 
 
 from .models import Country, Region, Flyer, Product
-from .serializers import CountrySerializer, RegionSerializer, FlyerSerializer, ProductSerializer
+from .serializers import CountrySerializer, RegionSerializer, FlyerSerializer, ProductSerializer, StoreWithFlyersSerializer
 import json
 import base64
 import openai
@@ -281,3 +281,21 @@ def flyers_by_provider(request):
         return Response(serializer.data)
     except Store.DoesNotExist:
         return Response({'error': 'No store associated with this provider'}, status=404)
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, IsAdminUser])
+def stores_with_flyers(request):
+    stores = Store.objects.all()
+    data = []
+
+    for store in stores:
+        flyers = Flyer.objects.filter(store=store)
+        flyer_serializer = FlyerSerializer(flyers, many=True, context={'request': request})
+        data.append({
+            'id': store.id,
+            'name': store.name,
+            'logo': request.build_absolute_uri(store.logo.url) if store.logo else None,
+            'flyers': flyer_serializer.data
+        })
+
+    return Response(data)

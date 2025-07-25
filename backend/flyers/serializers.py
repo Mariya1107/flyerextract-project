@@ -89,3 +89,9 @@ class StoreSerializer(serializers.ModelSerializer):
 
 
 
+class StoreWithFlyersSerializer(serializers.ModelSerializer):
+    flyers = FlyerSerializer(source='flyer_set', many=True, read_only=True)
+
+    class Meta:
+        model = Store
+        fields = ['id', 'name', 'logo', 'flyers']

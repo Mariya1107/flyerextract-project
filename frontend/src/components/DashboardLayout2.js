@@ -113,7 +113,12 @@ const DashboardLayout2 = () => {
     <span>Provider Applications</span>
   </Link>
 </li>
-              <li><a href="#"><Icon name="B" /><span>Brochures</span></a></li>
+              <li>
+  <Link to="/admin-dashboard/store-brochures">
+    <Icon name="B" />
+    <span>Brochures</span>
+  </Link>
+</li>
               <li><a href="#"><Icon name="P" /><span>Products</span></a></li>
               <li><a href="#"><Icon name="R" /><span>Reports</span></a></li>
               <li><a href="#"><Icon name="A" /><span>Approvals</span></a></li>
