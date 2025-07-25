@@ -67,14 +67,16 @@ body {
 .flyer-preview {
   background: #fefefe;
   border-radius: 16px;
-  padding: 20px;
+  padding: 10px;
   
   text-align: center;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
   width: 100%;
-  max-width: 800px;
+  max-width: 400px;
   position: relative;
 }
+
+
 
 .flyer-img {
   max-width: 100%;
@@ -88,17 +90,23 @@ body {
 .pdf-doc {
   display: flex;
   justify-content: center;
+  object-fit: contain;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 2px;
 }
-
-.pdf-pages {
+.pdf-controls {
   display: flex;
-  flex-wrap: wrap;
   justify-content: center;
-  gap: 1rem;
+  align-items: center;
+  gap: 1rem; /* spacing between button and number */
+  margin-top: 1rem;
 }
 
+.page-number {
+  font-weight: 500;
+  font-size: 1rem;
+  color: #333;
+}
 .react-pdf__Page {
   max-width: 380px !important;
   height: auto !important;
@@ -126,11 +134,11 @@ body {
 }
 
 .pdf-controls button:first-child {
-  left: -24px;
+  left: -240px;
 }
 
 .pdf-controls button:last-child {
-  right: -24px;
+  right: -240px;
 }
 .pdf-controls button svg {
   width: 20px;
@@ -268,13 +276,6 @@ body {
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-.pdf-pages {
-  display: flex;
-  justify-content: center;
-  flex-wrap: nowrap;
-  gap: 10px;
-}
-
 
 
 .flyer-viewer-container {
@@ -324,7 +325,7 @@ img {
 .pdf-controls {
   margin-top: 12px;
   
-  margin: 150px;
+  margin: 5px;
 
   display: flex;
   align-items: center;

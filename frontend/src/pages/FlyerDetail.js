@@ -100,6 +100,8 @@ const FlyerDetail = () => {
 
         <div className="pdf-controls">
           <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage <= 1}>‹</button>
+           
+  
           <span>Page {currentPage} / {numPages}</span>
           <button onClick={() => setCurrentPage(p => Math.min(numPages, p + 1))} disabled={currentPage >= numPages}>›</button>
         </div>

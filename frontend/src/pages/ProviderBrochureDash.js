@@ -17,8 +17,7 @@ const ProviderBrochureDash = () => {
     const providerId = localStorage.getItem('providerId');
     const token = localStorage.getItem('providerToken');
 
-    console.log('Fetched providerId:', providerId);
-    console.log('Fetched providerToken:', token);
+
 
     if (providerId && token) {
       axios

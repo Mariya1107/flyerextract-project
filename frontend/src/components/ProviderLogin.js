@@ -9,6 +9,7 @@ const ProviderLogin = ({ setShowProviderModal }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    
     setCredentials((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -27,7 +28,7 @@ const handleLogin = async (e) => {
     const token = res.data.token;
     const providerId = res.data.user?.id || res.data.id;
 
-    console.log("Extracted providerId:", providerId);
+
 
     localStorage.setItem("providerToken", token);
     localStorage.setItem("providerId", providerId);
