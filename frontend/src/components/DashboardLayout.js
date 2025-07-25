@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import { Outlet, useNavigate, Link, useLocation } from "react-router-dom";
 import { FaChevronDown } from "react-icons/fa";
 import axios from "axios";
 import BASE_URL from "../config";
@@ -73,7 +73,10 @@ const DashboardLayout = () => {
       <div className="dashboard-container">
         <aside className="sidebar">
           <div className="sidebar-header">
-            <h2 className="logo">Gravity</h2>
+            <Link to="/" aria-label="Home">
+             <h2 className="logo">Gravity</h2>
+                        
+                      </Link>
           </div>
 
           <nav className="sidebar-nav">
@@ -98,12 +101,13 @@ const DashboardLayout = () => {
                 </button>
               </li>
 
-              <li>
-                <button onClick={handleBrochureClick}>
-                  <Icon name="B" />
-                  <span>Brochures</span>
-                </button>
-              </li>
+            
+<li>
+  <Link to={`/provider-dashboard/brochures`}>
+    <Icon name="B" />
+    <span>Brochures</span>
+  </Link>
+</li>
 
               <li className="sidebar-item">
                 <button

@@ -57,7 +57,11 @@ const DashboardLayout2 = () => {
       <div className="dashboard-container">
         <aside className="sidebar scrollable-sidebar">
           <div className="sidebar-header">
-            <h2 className="logo">Gravity</h2>
+            
+             <Link to="/" aria-label="Home">
+             <h2 className="logo">Gravity</h2>
+                        
+                      </Link>
           </div>
           <nav className="sidebar-nav">
             <ul>

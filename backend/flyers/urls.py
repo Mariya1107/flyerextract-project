@@ -6,6 +6,7 @@ from .views import submit_provider_application
 from .views import StoreListView, FlyersByStoreView
 from .views import flyers_by_store_id
 from .views import RegionList
+from .views import flyers_by_provider 
 
 
 urlpatterns = [
@@ -21,7 +22,7 @@ urlpatterns = [
     path('flyers/store/<str:store_name>/', FlyersByStoreView.as_view(), name='flyers-by-store'),
     path("flyers/<int:store_id>/", flyers_by_store_id),  # ✅ new route
     path('flyers/upload/', views.upload_flyer, name='upload-flyer'),
-    
+    path('provider/<int:provider_id>/flyers/', flyers_by_provider, name='flyers-by-provider'),
     
 
    

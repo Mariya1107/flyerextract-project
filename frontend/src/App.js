@@ -5,7 +5,7 @@ import Layout from "./components/Layout";
 import FlyerDetail from "./pages/FlyerDetail";
 import CropUploader from "./components/CropUploader";
 import FlyerList from "./pages/FlyerList";
-import BrochureViewer from "./pages/BrochureViewer";
+import BrochureViewer from "./pages/ProviderBrochureDash.js";
 import ProviderLogin from "./components/ProviderLogin";
 
 // Provider Dashboard pages
@@ -15,6 +15,7 @@ import EditBrochure from "./pages/EditBrochure";
 import ExtractProducts from "./pages/ExtractProducts";
 import ProvidersPageDash from './pages/ProvidersPageDash';
 import EditProfile from "./pages/EditProfile";
+import ProviderBrochureDash from "./pages/ProviderBrochureDash";
 
 // Admin Dashboard
 import AdminLoginDashboard from './pages/AdminLoginDashboard';
@@ -54,6 +55,8 @@ function App() {
           <Route path="extract-products" element={<ExtractProducts />} />
           <Route path="providers" element={<ProvidersPageDash />} />
           <Route path="edit-profile" element={<EditProfile />} />
+          <Route path="/provider-dashboard/brochures" element={<ProviderBrochureDash />} />
+
         </Route>
 
         {/* 👨‍💼 Admin Dashboard */}

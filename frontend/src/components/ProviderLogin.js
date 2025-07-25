@@ -12,8 +12,8 @@ const ProviderLogin = ({ setShowProviderModal }) => {
     setCredentials((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleLogin = async (e) => {
-  e.preventDefault(); // ⛔ Prevent default GET request from form submission
+const handleLogin = async (e) => {
+  e.preventDefault();
 
   try {
     const res = await axios.post(
@@ -22,14 +22,24 @@ const ProviderLogin = ({ setShowProviderModal }) => {
       { headers: { "Content-Type": "application/json" } }
     );
 
-    localStorage.setItem("providerToken", res.data.token);
+    console.log("Login response:", res.data); // 🔍 Check this
+
+    const token = res.data.token;
+    const providerId = res.data.user?.id || res.data.id;
+
+    console.log("Extracted providerId:", providerId);
+
+    localStorage.setItem("providerToken", token);
+    localStorage.setItem("providerId", providerId);
+
     alert("Provider login successful");
     setShowProviderModal(false);
     window.location.href = "/provider-dashboard";
-  } catch (err) {
-    console.error("Login failed:", err.response?.data || err.message);
-    alert("Login failed. Invalid credentials.");
-  }
+  }catch (err) {
+  console.error("Login failed - full error object:", err);
+  console.error("Login failed - response data:", err.response?.data);
+  alert("Login failed. Invalid credentials.");
+}
 };
 
 

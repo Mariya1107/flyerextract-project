@@ -15,6 +15,8 @@ from flyers.serializers import CountrySerializer
 from flyers.serializers import RegionSerializer
 from flyers.models import ProviderApplication
 from flyers.serializers import ProviderApplicationSerializer
+from flyers.models import Flyer
+from flyers.serializers import FlyerSerializer
 
 User = get_user_model()
 
@@ -65,7 +67,8 @@ def login_provider(request):
             token, _ = Token.objects.get_or_create(user=user)
             return Response({
                 "token": token.key,
-                "message": "Provider login successful"
+                "message": "Provider login successful",
+                 "id": user.id
             })
         else:
             return Response({"error": "User is not a provider"}, status=403)
@@ -348,3 +351,13 @@ def delete_provider_application(request, application_id):
         return Response({"message": "Application deleted"}, status=204)
     except ProviderApplication.DoesNotExist:
         return Response({"error": "Application not found"}, status=404)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def provider_brochures_pages(request, provider_id):
+    if request.user.id != provider_id:
+        return Response({"error": "Unauthorized access"}, status=403)
+
+    flyers = Flyer.objects.filter(store__provider__id=provider_id)
+    serializer = FlyerSerializer(flyers, many=True, context={'request': request})
+    return Response(serializer.data)

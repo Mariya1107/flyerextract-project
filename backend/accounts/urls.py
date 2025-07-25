@@ -8,7 +8,7 @@ from .views import (
     list_regions, add_region, delete_region,
     create_provider_application, list_provider_applications,
     get_provider_application, update_provider_application,
-    delete_provider_application,  # ✅ Added region views
+    delete_provider_application, provider_brochures_pages # ✅ Added region views
 )
 
 urlpatterns = [
@@ -49,4 +49,7 @@ urlpatterns = [
     path('provider/applications/<int:application_id>/', get_provider_application),
     path('provider/applications/<int:application_id>/update/', update_provider_application),
     path('provider/applications/<int:application_id>/delete/', delete_provider_application),
+
+     # ✅ Flyers management
+    path('brochures/<int:provider_id>/pages/', provider_brochures_pages),
 ]

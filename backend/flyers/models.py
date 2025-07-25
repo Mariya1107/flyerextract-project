@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Country(models.Model):
     name = models.CharField(max_length=100)
 
@@ -12,10 +13,12 @@ class Region(models.Model):
 
     def __str__(self):
         return f"{self.name}, {self.country.name}"
-
+    
 class Store(models.Model):
     name = models.CharField(max_length=255)
     logo = models.ImageField(upload_to='store_logos/', blank=True, null=True)
+    provider = models.ForeignKey('accounts.CustomUser', on_delete=models.CASCADE, related_name='provider_stores', null=True, blank=True)
+
 
     def __str__(self):
         return self.name

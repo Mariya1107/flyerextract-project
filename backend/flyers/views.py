@@ -269,3 +269,10 @@ def upload_flyer(request):
         return Response(serializer.data, status=201)
     return Response(serializer.errors,status=400)  
 
+
+
+@api_view(['GET'])
+def flyers_by_provider(request, provider_id):
+    flyers = Flyer.objects.filter(user_id=provider_id)  # adjust field if it's `provider_id` instead
+    serializer = FlyerSerializer(flyers, many=True)
+    return Response(serializer.data)
