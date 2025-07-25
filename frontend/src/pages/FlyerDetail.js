@@ -77,35 +77,48 @@ const FlyerDetail = () => {
         />
       </div>
 
-      {/* Flyer Display */}
-      <div className="flyer-preview">
-        {flyer?.pdf?.endsWith('.pdf') ? (
-          <Document
-            file={{ url: flyer.pdf }}
-            onLoadSuccess={({ numPages }) => setNumPages(numPages)}
-            className="pdf-doc"
-          >
-            <Page
-              pageNumber={currentPage}
-              width={350}
-              renderAnnotationLayer={false}
-              renderTextLayer={false}
-            />
-          </Document>
-        ) : flyer.image ? (
-          <img src={flyer.image} alt="Flyer" className="flyer-img" />
-        ) : (
-          <p className="error">PDF or image not available.</p>
-        )}
+    {/* Flyer Display */}
+<div className="flyer-preview">
+  {flyer?.pdf?.endsWith('.pdf') ? (
+    <Document
+      file={{ url: flyer.pdf }}
+      onLoadSuccess={({ numPages }) => setNumPages(numPages)}
+      className="pdf-doc"
+    >
+      <Page
+        pageNumber={currentPage}
+        width={350}
+        renderAnnotationLayer={false}
+        renderTextLayer={false}
+      />
+    </Document>
+  ) : flyer.image ? (
+    <img src={flyer.image} alt="Flyer" className="flyer-img" />
+  ) : (
+    <p className="error">PDF or image not available.</p>
+  )}
 
-        <div className="pdf-controls">
-          <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage <= 1}>‹</button>
-           
-  
-          <span>Page {currentPage} / {numPages}</span>
-          <button onClick={() => setCurrentPage(p => Math.min(numPages, p + 1))} disabled={currentPage >= numPages}>›</button>
-        </div>
-      </div>
+  {/* Only arrow buttons here */}
+  <div className="pdf-controls">
+    <button
+      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+      disabled={currentPage <= 1}
+    >
+      ‹
+    </button>
+    <button
+      onClick={() => setCurrentPage((p) => Math.min(numPages, p + 1))}
+      disabled={currentPage >= numPages}
+    >
+      ›
+    </button>
+  </div>
+</div>
+
+{/* Page number below the flyer */}
+<p className="page-info">
+  Page {currentPage} / {numPages}
+</p>
 
       {/* Products Section */}
       <div className="product-section">

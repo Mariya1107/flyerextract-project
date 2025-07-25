@@ -323,40 +323,51 @@ img {
 
 
 .pdf-controls {
-  margin-top: 12px;
-  
-  margin: 5px;
-
+  position: relative;
+  width: 100%;
+  max-width: 740px;
+  margin: 20px auto 0;
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 56px;
+  height: 0;
 }
 
 .pdf-controls button {
-  padding: 28px 14px;
-  
-  background: #444;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #7f5af0; /* secondary color */
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  font-size: 22px;
+  font-weight: bold;
   cursor: pointer;
-  font-size: 14px;
-  transition: background 0.2s ease;
+  transition: background 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  z-index: 2;
 }
 
-.pdf-controls button:hover:enabled {
-  background: #222;
+.pdf-controls button:hover {
+  background-color: #654bdc;
 }
 
 .pdf-controls button:disabled {
-  opacity: 0.4;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
-.pdf-controls span {
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 14px;
-  color: #333;
+.pdf-controls button:first-child {
+  left: -60px; /* space to the left of flyer */
+ 
+}
+
+.pdf-controls button:last-child {
+  right: -60px; /* space to the right of flyer */
+
 }
 @keyframes slideUp {
   from {
@@ -516,13 +527,13 @@ img {
   font-size: 24px;
   background: transparent;
   border: none;
-  color: #f1f5f9;
+  color: white;
   cursor: pointer;
   transition: color 0.2s ease;
 }
 
 .modal-close:hover {
-  color: #38bdf8;
+  color: #edf1f4;
 }
 
 .search-modal h2 {
@@ -604,3 +615,47 @@ img {
   padding: 0;
   box-sizing: border-box;
 }
+
+
+/* Position arrows absolutely inside the flyer */
+.pdf-controls {
+  position: absolute;
+  top: 50%; /* move arrows higher (adjust as needed) */
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 10px;
+  pointer-events: none; /* allow clicks only on buttons */
+}
+
+.pdf-controls button {
+  pointer-events: all;
+  background-color: #7f5af0;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  font-size: 22px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  z-index: 2;
+}
+
+.pdf-controls button:hover {
+  background-color: #654bdc;
+}
+
+.pdf-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.page-info {
+  margin-top: 12px;
+  font-size: 16px;
+  color: #444;
+}
+.modal-close{ color: white;}
