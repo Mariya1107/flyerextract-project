@@ -27,11 +27,11 @@ import RegionAdmin from './components/RegionAdmin';
 import ProviderApplicationDash from "./pages/ProviderApplicationDash";
 import AdminBrochure from "./pages/AdminBrochure";
 import AdminStoreBrochure from "./pages/AdminStoreBrochure";
+import ApprovalAdmin from './pages/ApprovalAdmin'; 
 
 // Layout wrappers
 import DashboardLayoutWrapper from "./components/DashboardLayoutWrapper";
 import DashboardLayoutWrapper2 from "./components/DashboardLayoutWrapper2"; // ✅ NEW
-
 
 function App() {
   return (
@@ -41,12 +41,12 @@ function App() {
         {/* 🌐 Public Routes */}
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
-          <Route path="/flyers/:flyerId" element={<FlyerDetail />} />
-          <Route path="/manual-upload/:flyerId" element={<CropUploader />} />
-          <Route path="/brochure/:id" element={<BrochureViewer />} />
-          <Route path="/flyers" element={<FlyerList />} />
-          <Route path="/store/:id/flyers" element={<FlyerList />} />
-          <Route path="/provider-login" element={<ProviderLogin />} />
+          <Route path="flyers/:flyerId" element={<FlyerDetail />} />
+          <Route path="manual-upload/:flyerId" element={<CropUploader />} />
+          <Route path="brochure/:id" element={<BrochureViewer />} />
+          <Route path="flyers" element={<FlyerList />} />
+          <Route path="store/:id/flyers" element={<FlyerList />} />
+          <Route path="provider-login" element={<ProviderLogin />} />
         </Route>
 
         {/* 🧑‍💼 Provider Dashboard */}
@@ -57,23 +57,21 @@ function App() {
           <Route path="extract-products" element={<ExtractProducts />} />
           <Route path="providers" element={<ProvidersPageDash />} />
           <Route path="edit-profile" element={<EditProfile />} />
-          <Route path="/provider-dashboard/brochures" element={<ProviderBrochureDash />} />
-
+          <Route path="brochures" element={<ProviderBrochureDash />} /> {/* ✅ Fixed path */}
         </Route>
 
         {/* 👨‍💼 Admin Dashboard */}
         <Route path="/admin-dashboard" element={<DashboardLayoutWrapper2 />}>
           <Route index element={<AdminLoginDashboard />} />
-          <Route path="edit-profile" element={<EditProfileAdmin />} /> {/* ✅ */}
-          <Route path="/admin-dashboard/users" element={<UsersAdminDash />} />
+          <Route path="edit-profile" element={<EditProfileAdmin />} />
+          <Route path="users" element={<UsersAdminDash />} /> {/* ✅ Fixed path */}
           <Route path="providers" element={<ProvidersAdminDash />} />
           <Route path="countries" element={<CountryAdmin />} />
           <Route path="regions" element={<RegionAdmin />} />
           <Route path="provider-applications" element={<ProviderApplicationDash />} />
-          <Route path="/admin-dashboard/store/:storeId/brochures" element={<AdminStoreBrochure />} />
-          <Route path="store-brochures" element={<AdminBrochure />} /> {/* ✅ List view */}
-          
-
+          <Route path="store/:storeId/brochures" element={<AdminStoreBrochure />} /> {/* ✅ Fixed path */}
+          <Route path="store-brochures" element={<AdminBrochure />} />
+          <Route path="approvals" element={<ApprovalAdmin />} /> {/* ✅ Fixed path */}
         </Route>
 
       </Routes>

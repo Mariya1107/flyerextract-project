@@ -121,7 +121,13 @@ const DashboardLayout2 = () => {
 </li>
               <li><a href="#"><Icon name="P" /><span>Products</span></a></li>
               <li><a href="#"><Icon name="R" /><span>Reports</span></a></li>
-              <li><a href="#"><Icon name="A" /><span>Approvals</span></a></li>
+              
+<li>
+  <Link to="approvals">
+    <Icon name="A" />
+    <span>Approvals</span>
+  </Link>
+</li>
               <li className="nav-separator"></li>
               <li>
                 <button onClick={goToEditProfile}><Icon name="E" /><span>Edit Profile</span></button>

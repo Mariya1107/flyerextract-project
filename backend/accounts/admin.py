@@ -34,3 +34,4 @@ class CustomUserAdmin(UserAdmin):
     ordering = ("username",)
 
 admin.site.register(CustomUser, CustomUserAdmin)
+

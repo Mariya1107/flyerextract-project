@@ -70,3 +70,16 @@ class ProviderApplication(models.Model):
 
     def __str__(self):
         return f"{self.full_name} ({self.company_name})"
+    
+
+class PendingFlyer(models.Model):
+    store = models.ForeignKey(Store, on_delete=models.CASCADE)
+    region = models.ForeignKey(Region, on_delete=models.SET_NULL, null=True, blank=True)
+    title = models.CharField(max_length=255)
+    pdf = models.FileField(upload_to='pending_flyers/pdfs/', blank=True, null=True)
+    image = models.ImageField(upload_to='pending_flyers/images/', blank=True, null=True)
+    expires_at = models.DateField()
+    created_at = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.title} - Pending"

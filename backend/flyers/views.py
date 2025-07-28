@@ -4,7 +4,7 @@ from rest_framework.decorators import permission_classes
 
 
 from .models import Country, Region, Flyer, Product
-from .serializers import CountrySerializer, RegionSerializer, FlyerSerializer, ProductSerializer, StoreWithFlyersSerializer
+from .serializers import CountrySerializer, RegionSerializer, FlyerSerializer, ProductSerializer, StoreWithFlyersSerializer, PendingFlyerSerializer
 import json
 import base64
 import openai
@@ -19,6 +19,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from .models import ProviderApplication
 from rest_framework.views import APIView
+from .models import PendingFlyer
 
 
 from rest_framework import generics
@@ -299,3 +300,93 @@ def stores_with_flyers(request):
         })
 
     return Response(data)
+
+@api_view(['POST'])
+@parser_classes([MultiPartParser, FormParser])
+@permission_classes([IsAuthenticated, IsAdminUser])  # Optional: restrict to admin
+def create_flyer(request):
+    serializer = FlyerSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated, IsAdminUser])  # Only allow admin users
+def delete_flyer(request, flyer_id):
+    try:
+        flyer = Flyer.objects.get(pk=flyer_id)
+        flyer.delete()
+        return Response({'message': 'Flyer deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+    except Flyer.DoesNotExist:
+        return Response({'error': 'Flyer not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+@api_view(['POST'])
+@parser_classes([MultiPartParser, FormParser])
+@permission_classes([IsAuthenticated])  # Provider must be authenticated
+def upload_pending_flyer(request):
+    serializer = PendingFlyerSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({'message': 'Flyer submitted for approval'}, status=201)
+    return Response(serializer.errors, status=400)
+
+class PendingFlyerListView(generics.ListAPIView):
+    queryset = PendingFlyer.objects.all()
+    serializer_class = PendingFlyerSerializer
+    permission_classes = [IsAuthenticated, IsAdminUser]
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, IsAdminUser])
+def approve_pending_flyer(request, flyer_id):
+    try:
+        pending = PendingFlyer.objects.get(id=flyer_id)
+        # Move data to Flyer
+        flyer = Flyer.objects.create(
+            store=pending.store,
+            region=pending.region,
+            title=pending.title,
+            pdf=pending.pdf,
+            image=pending.image,
+            expires_at=pending.expires_at
+        )
+        pending.delete()  # remove from pending table
+        return Response({'message': 'Flyer approved and published'}, status=201)
+    except PendingFlyer.DoesNotExist:
+        return Response({'error': 'Pending flyer not found'}, status=404)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated, IsAdminUser])
+def reject_pending_flyer(request, flyer_id):
+    try:
+        flyer = PendingFlyer.objects.get(id=flyer_id)
+        flyer.delete()
+        return Response({'message': 'Flyer rejected and deleted'})
+    except PendingFlyer.DoesNotExist:
+        return Response({'error': 'Pending flyer not found'}, status=404)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def notify_admin_upload(request):
+    """
+    Optional: Create a message, flag, or log for admin. This is placeholder logic.
+    """
+    title = request.data.get("title")
+    store_id = request.data.get("store_id")
+
+    try:
+        store = Store.objects.get(id=store_id)
+    except Store.DoesNotExist:
+        return Response({"error": "Store not found"}, status=404)
+
+    # You can implement actual notification model/log here
+    print(f"[🔔 Notification] Brochure uploaded by {store.name}: {title}")
+
+    return Response({"message": "Admin notified"}, status=200)
+
+class PendingFlyerListView(generics.ListAPIView):
+    queryset = PendingFlyer.objects.all()
+    serializer_class = PendingFlyerSerializer

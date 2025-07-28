@@ -1,13 +1,5 @@
-
-from .models import Country, Region, Store, Flyer, Product
+from .models import Country, Region, Store, Flyer, Product, ProviderApplication, PendingFlyer
 from rest_framework import serializers
-from .models import ProviderApplication
-from rest_framework import generics
-from .models import ProviderApplication
-from .models import Store
-
-
-
 
 
 class CountrySerializer(serializers.ModelSerializer):
@@ -27,18 +19,26 @@ class RegionSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'country', 'country_id']
 
 
-
+# ✅ Updated StoreSerializer with region_id
 class StoreSerializer(serializers.ModelSerializer):
+    region = RegionSerializer(read_only=True)
+    region_id = serializers.PrimaryKeyRelatedField(
+        queryset=Region.objects.all(), write_only=True, source='region'
+    )
+    region_id_value = serializers.IntegerField(source='region.id', read_only=True)
+
     class Meta:
         model = Store
-        fields = ['id', 'name', 'logo']
+        fields = ['id', 'name', 'logo', 'region', 'region_id', 'region_id_value']
 
 
 class FlyerSerializer(serializers.ModelSerializer):
+    store_id = serializers.PrimaryKeyRelatedField(queryset=Store.objects.all(), write_only=True, source='store')
+    region_id = serializers.PrimaryKeyRelatedField(queryset=Region.objects.all(), write_only=True, source='region')
+
     store = StoreSerializer(read_only=True)
     region = RegionSerializer(read_only=True)
-    image = serializers.ImageField(use_url=True)  
-    
+    image = serializers.ImageField(use_url=True)
 
     class Meta:
         model = Flyer
@@ -49,9 +49,9 @@ class FlyerSerializer(serializers.ModelSerializer):
             'image',
             'store',
             'region',
+            'store_id',
+            'region_id',
             'expires_at'
-            
-            # Removed: 'start_date', 'end_date', 'created_at'
         ]
 
 
@@ -72,7 +72,6 @@ class ProductSerializer(serializers.ModelSerializer):
             'price',
             'image',
             'flyer'
-            # Removed: 'advantages', 'how_to_use', 'in_stock', 'created_at'
         ]
 
 
@@ -82,16 +81,36 @@ class ProviderApplicationSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class StoreSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Store
-        fields = ['id', 'name', 'logo']
-
-
-
 class StoreWithFlyersSerializer(serializers.ModelSerializer):
     flyers = FlyerSerializer(source='flyer_set', many=True, read_only=True)
 
     class Meta:
         model = Store
         fields = ['id', 'name', 'logo', 'flyers']
+
+class PendingFlyerSerializer(serializers.ModelSerializer):
+    store_id = serializers.PrimaryKeyRelatedField(queryset=Store.objects.all(), write_only=True, source='store')
+    store_id_value = serializers.IntegerField(source='store.id', read_only=True)
+
+    region_id = serializers.PrimaryKeyRelatedField(queryset=Region.objects.all(), write_only=True, source='region')
+    region_id_value = serializers.IntegerField(source='region.id', read_only=True)
+
+    store = StoreSerializer(read_only=True)
+    region = RegionSerializer(read_only=True)
+    image = serializers.ImageField(use_url=True)
+
+    class Meta:
+        model = PendingFlyer
+        fields = [
+            'id',
+            'title',
+            'pdf',
+            'image',
+            'store',
+            'region',
+            'store_id',
+            'store_id_value',  # ➕ This will give you store.id in the response
+            'region_id',
+            'region_id_value',  # ➕ This will give you region.id in the response
+            'expires_at'
+        ]

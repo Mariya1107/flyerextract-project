@@ -10,7 +10,7 @@ const UploadBrochure = () => {
   const [expiryDate, setExpiryDate] = useState("");
   const [regionList, setRegionList] = useState([]);
   const [regionId, setRegionId] = useState("");
-  const [showForm, setShowForm] = useState(true); // control form visibility
+  const [showForm, setShowForm] = useState(true);
 
   const token = localStorage.getItem("token");
   const storeId = localStorage.getItem("store_id");
@@ -19,27 +19,33 @@ const UploadBrochure = () => {
     axios
       .get(`${BASE_URL}regions/`)
       .then((res) => setRegionList(res.data))
-      .catch((err) => console.error(err));
+      .catch((err) => console.error("Region fetch error:", err));
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!storeId || !regionId) {
+      alert("Store and Region are required!");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("title", title);
-    formData.append("store", storeId);
-    formData.append("region", regionId);
+    formData.append("store_id", parseInt(storeId));    // 🛠️ Ensure it's an int
+    formData.append("region_id", parseInt(regionId));  // 🛠️ Ensure it's an int
     formData.append("expires_at", expiryDate);
 
     if (pdfFile) formData.append("pdf", pdfFile);
     if (imageFile) formData.append("image", imageFile);
 
     try {
-const res = await axios.post(`${BASE_URL}flyers/upload/`, formData, {
-  headers: {
-    "Content-Type": "multipart/form-data",
-    Authorization: `Token ${token}`,
-  },
-});
+      const res = await axios.post(`${BASE_URL}flyers/upload_pending/`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Token ${token}`,
+        },
+      });
       alert("Brochure uploaded!");
       setTitle("");
       setPdfFile(null);
@@ -47,12 +53,12 @@ const res = await axios.post(`${BASE_URL}flyers/upload/`, formData, {
       setExpiryDate("");
       setRegionId("");
     } catch (err) {
-      console.error(err);
+      console.error("Upload error: ", err.response?.data || err);
       alert("Upload failed");
     }
   };
 
-  if (!showForm) return null; // hide form if closed
+  if (!showForm) return null;
 
   return (
     <div className="upload-brochure-container">
@@ -62,7 +68,6 @@ const res = await axios.post(`${BASE_URL}flyers/upload/`, formData, {
           &times;
         </button>
       </div>
-
       <form onSubmit={handleSubmit} className="upload-form">
         <input
           type="text"
@@ -71,7 +76,6 @@ const res = await axios.post(`${BASE_URL}flyers/upload/`, formData, {
           onChange={(e) => setTitle(e.target.value)}
           required
         />
-
         <select
           value={regionId}
           onChange={(e) => setRegionId(e.target.value)}
@@ -80,32 +84,20 @@ const res = await axios.post(`${BASE_URL}flyers/upload/`, formData, {
           <option value="">Select Region</option>
           {regionList.map((region) => (
             <option key={region.id} value={region.id}>
-              {region.name}
+              {region.name}, {region.country.name}
             </option>
           ))}
         </select>
-
         <input
           type="date"
           value={expiryDate}
           onChange={(e) => setExpiryDate(e.target.value)}
           required
         />
-
         <label>PDF File (optional)</label>
-        <input
-          type="file"
-          accept=".pdf"
-          onChange={(e) => setPdfFile(e.target.files[0])}
-        />
-
+        <input type="file" accept=".pdf" onChange={(e) => setPdfFile(e.target.files[0])} />
         <label>Image File (optional)</label>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => setImageFile(e.target.files[0])}
-        />
-
+        <input type="file" accept="image/*" onChange={(e) => setImageFile(e.target.files[0])} />
         <button type="submit">Upload</button>
       </form>
     </div>

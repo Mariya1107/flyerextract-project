@@ -361,3 +361,5 @@ def provider_brochures_pages(request, provider_id):
     flyers = Flyer.objects.filter(store__provider__id=provider_id)
     serializer = FlyerSerializer(flyers, many=True, context={'request': request})
     return Response(serializer.data)
+
+
