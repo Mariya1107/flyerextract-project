@@ -285,7 +285,7 @@ body {
 }
 
 .search-modal {
-  background: linear-gradient(135deg, #dee7ff, #ffdffa);
+  background: linear-gradient(135deg, #262f47, #311b2e);
   border-radius: 20px;
   padding: 2rem;
   width: 90%;
@@ -306,7 +306,7 @@ body {
   font-size: 24px;
   background: transparent;
   border: none;
-  color: rgb(25, 26, 27);
+  color: rgb(183, 187, 191);
   cursor: pointer;
   transition: color 0.2s ease;
 }
@@ -316,7 +316,7 @@ body {
 .search-modal h2 {
   font-size: 1.8rem;
   margin-bottom: 1.5rem;
-  color: #121313;
+  color: #eff8f8;
   border-bottom: 1px solid #334155;
   padding-bottom: 0.5rem;
   text-align: center;
