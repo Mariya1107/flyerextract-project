@@ -1,7 +1,7 @@
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated,  IsAdminUser
 from rest_framework.decorators import permission_classes
-
+from django.db.models import Q
 from django.utils.decorators import method_decorator
 from rest_framework.authentication import TokenAuthentication
 from .models import Country, Region, Flyer, Product
@@ -399,15 +399,21 @@ class PendingFlyerListView(generics.ListAPIView):
     queryset = PendingFlyer.objects.all()
     serializer_class = PendingFlyerSerializer
 
-
 class StoreSearchAPIView(ListAPIView):
     serializer_class = StoreSerializer
 
     def get_queryset(self):
-        query = self.request.query_params.get('search', '')
-        return Store.objects.filter(Q(name__icontains=query))
+        query = self.request.query_params.get('search', '').strip()
 
+        if not query:
+            return Store.objects.none()
 
+        return Store.objects.filter(
+            Q(name__icontains=query) |
+            Q(flyer__region__name__icontains=query) |
+            Q(flyer__region__country__name__icontains=query)
+        ).distinct()
+    
 @api_view(['PUT'])
 @parser_classes([MultiPartParser, FormParser])
 @permission_classes([IsAuthenticated])

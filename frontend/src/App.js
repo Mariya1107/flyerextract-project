@@ -12,7 +12,7 @@ import ProviderLogin from "./components/ProviderLogin";
 import ProviderLoginDashboard from './pages/ProviderLoginDashboard';
 import UploadBrochure from "./pages/UploadBrochure";
 import EditBrochure from "./pages/EditBrochure";
-import ExtractProducts from "./pages/ExtractProducts";
+
 import ProvidersPageDash from './pages/ProvidersPageDash';
 import EditProfile from "./pages/EditProfile";
 import ProviderBrochureDash from "./pages/ProviderBrochureDash";
@@ -58,10 +58,12 @@ function App() {
           <Route index element={<ProviderLoginDashboard />} />
           <Route path="upload-brochure" element={<UploadBrochure />} />
           <Route path="edit-brochure" element={<EditBrochure />} />
-          <Route path="extract-products" element={<ExtractProducts />} />
           <Route path="providers" element={<ProvidersPageDash />} />
           <Route path="edit-profile" element={<EditProfile />} />
           <Route path="brochures" element={<ProviderBrochureDash />} /> {/* ✅ Fixed path */}
+          
+          
+          
         </Route>
 
         {/* 👨‍💼 Admin Dashboard */}
@@ -77,7 +79,7 @@ function App() {
   <Route path="store/:storeId/brochures" element={<AdminStoreBrochure />} />
   <Route path="store-brochures" element={<AdminBrochure />} />
   <Route path="approvals" element={<ApprovalAdmin />} />
-  <Route path="crop-products/:flyerId" element={<CropUploader />} />
+  <Route path="crop-products/:flyerId" element={<CropProducts />} />
   <Route path="storebrochure-extracts"element={<AdminBrochureExtract />}/>
   <Route path="store/:storeId/brochure-extract" element={<AdminStoreBrochureExtract />} /> {/* ✅ Fixed path */}
 </Route>

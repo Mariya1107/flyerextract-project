@@ -1,3 +1,5 @@
+// src/pages/Home.js
+
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
@@ -45,16 +47,14 @@ const Home = () => {
 
   const [stores, setStores] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [locationTerm, setLocationTerm] = useState(""); // 👈 Added
   const [isCitiesOpen, setIsCitiesOpen] = useState(true);
-  const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get("http://127.0.0.1:8000/stores/")
-      .then((res) => {
-        setStores(res.data);
-      })
+    axios.get(`${BASE_URL}stores/`)
+      .then((res) => setStores(res.data))
       .catch((err) => console.error("Error fetching stores", err));
   }, []);
 
@@ -126,9 +126,20 @@ const Home = () => {
     setShowAuthModal(false);
   };
 
-  const filteredStores = stores.filter((store) =>
-    store.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // 🔍 Updated filter logic
+  const filteredStores = stores.filter((store) => {
+    const name = store.name?.toLowerCase() || "";
+    const region = store.region?.name?.toLowerCase() || "";
+    const country = store.region?.country?.name?.toLowerCase() || "";
+
+    const term = searchTerm.toLowerCase();
+    const loc = locationTerm.toLowerCase();
+
+    return (
+      name.includes(term) &&
+      (region.includes(loc) || country.includes(loc) || loc === "")
+    );
+  });
 
   return (
     <>
@@ -165,6 +176,8 @@ const Home = () => {
                       type="text"
                       placeholder="Enter Location"
                       className="search-input"
+                      value={locationTerm}
+                      onChange={(e) => setLocationTerm(e.target.value)}
                     />
                   </div>
 

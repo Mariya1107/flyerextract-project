@@ -7,7 +7,7 @@ import "pdfjs-dist/web/pdf_viewer.css";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
-const CropUploader = () => {
+const CropProducts = () => {
   const { flyerId: paramFlyerId } = useParams();
   const location = useLocation();
   const stateFlyerId = location.state?.flyerId;
@@ -273,4 +273,4 @@ const CropUploader = () => {
   );
 };
 
-export default CropUploader;
+export default CropProducts;

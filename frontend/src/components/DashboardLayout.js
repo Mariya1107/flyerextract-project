@@ -133,12 +133,7 @@ const DashboardLayout = () => {
                     >
                       Edit Brochure
                     </li>
-                    <li
-                      className={isActive("/provider-dashboard/extract-products") ? "active" : ""}
-                      onClick={() => navigate("/provider-dashboard/extract-products")}
-                    >
-                      Extract Products
-                    </li>
+                    
                   </ul>
                 )}
               </li>
