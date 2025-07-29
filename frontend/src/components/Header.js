@@ -25,7 +25,7 @@ const Header = ({
         </div>
 
         <nav className="nav-center">
-          {["Home", "Customers"].map((txt) => (
+          {["Home"].map((txt) => (
             <a href={`#${txt.toLowerCase()}`} key={txt}>
               {txt} <FontAwesomeIcon icon={faChevronDown} />
             </a>

@@ -1,14 +1,56 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import BASE_URL from "../config";
 import * as pdfjsLib from "pdfjs-dist";
 import "pdfjs-dist/web/pdf_viewer.css";
+import "./CropProducts.css";
+import "./ProductGrid.css";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
-const CropUploader = () => {
+const ProductGrid = ({ products }) => {
+  const [visibleCount, setVisibleCount] = useState(6);
+  const [showAll, setShowAll] = useState(false);
+
+  const handleToggle = () => {
+    if (showAll) {
+      setVisibleCount(6);
+    } else {
+      setVisibleCount(products.length);
+    }
+    setShowAll(!showAll);
+  };
+
+  return (
+    <div className="product-section">
+      <h2 className="section-title">🛍️ Featured Products</h2>
+      <div className="product-grid">
+        {products.slice(0, visibleCount).map((product, index) => (
+          <div key={index} className="product-card">
+            <img src={product.image} alt={product.name} className="product-img" />
+            <div className="product-details">
+              <strong>{product.name}</strong>
+              <div className="price-tag">₹ {product.price}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      {products.length > 6 && (
+        <div className="toggle-button-wrapper">
+          <button className="toggle-btn" onClick={handleToggle}>
+            {showAll ? "View Less ▲" : "View More ▼"}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const CropUploaderPage = () => {
   const { flyerId } = useParams();
+  const navigate = useNavigate();
+
   const [flyer, setFlyer] = useState(null);
   const [canvasEl, setCanvasEl] = useState(null);
   const [selection, setSelection] = useState(null);
@@ -16,10 +58,15 @@ const CropUploader = () => {
   const [pdfDoc, setPdfDoc] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [products, setProducts] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showSearchModal, setShowSearchModal] = useState(false);
+  const [showAllProducts, setShowAllProducts] = useState(false);
+
+  const displayedProducts = showAllProducts ? products : products.slice(0, 6);
 
   const startRef = useRef(null);
   const overlayRef = useRef();
-  const containerRef = useRef();
 
   useEffect(() => {
     axios.get(`${BASE_URL}flyers/all/`).then((res) => {
@@ -31,45 +78,37 @@ const CropUploader = () => {
         loadPdfDocument(url);
       }
     });
+
+    axios.get(`${BASE_URL}products/${flyerId}/`).then((res) => setProducts(res.data));
   }, [flyerId]);
 
   const loadPdfDocument = async (url) => {
-    try {
-      const loadingTask = pdfjsLib.getDocument(url);
-      const pdf = await loadingTask.promise;
-      setPdfDoc(pdf);
-      setTotalPages(pdf.numPages);
-      renderPdfPage(pdf, 1);
-    } catch (err) {
-      console.error("❌ PDF Load Error:", err);
-      alert("Failed to load PDF.");
-    }
+    const loadingTask = pdfjsLib.getDocument(url);
+    const pdf = await loadingTask.promise;
+    setPdfDoc(pdf);
+    setTotalPages(pdf.numPages);
+    renderPdfPage(pdf, 1);
   };
 
   const renderPdfPage = async (pdf, pageNumber) => {
-    try {
-      const page = await pdf.getPage(pageNumber);
-      const scale = 1.5;
-      const viewport = page.getViewport({ scale });
+    const page = await pdf.getPage(pageNumber);
+    const scale = 1.5;
+    const viewport = page.getViewport({ scale });
 
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
 
-      await page.render({ canvasContext: ctx, viewport }).promise;
+    await page.render({ canvasContext: ctx, viewport }).promise;
 
-      setCanvasEl(canvas);
-      const container = document.getElementById("pdf-canvas-container");
-      if (container) {
-        container.innerHTML = "";
-        container.appendChild(canvas);
-        canvas.style.width = "100%";
-        canvas.style.height = "auto";
-        canvas.style.display = "block";
-      }
-    } catch (err) {
-      console.error("❌ Page Render Error:", err);
+    setCanvasEl(canvas);
+    const container = document.getElementById("pdf-canvas-container");
+    if (container) {
+      container.innerHTML = "";
+      container.appendChild(canvas);
+      canvas.style.width = "100%";
+      canvas.style.display = "block";
     }
   };
 
@@ -118,16 +157,6 @@ const CropUploader = () => {
     cropSelection();
   };
 
-  const handleImageLoad = (e) => {
-    const img = e.target;
-    const canvas = document.createElement("canvas");
-    canvas.width = img.naturalWidth;
-    canvas.height = img.naturalHeight;
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(img, 0, 0);
-    setCanvasEl(canvas);
-  };
-
   const cropSelection = async () => {
     if (!canvasEl || !selection || selection.width < 10 || selection.height < 10) {
       alert("❌ Invalid crop area.");
@@ -160,99 +189,106 @@ const CropUploader = () => {
       const res = await axios.post(`${BASE_URL}api/products/upload/`, formData);
       alert(`✅ Uploaded: ${res.data.name} (₹${res.data.price})`);
       setSelection(null);
+      setProducts((prev) => [...prev, res.data]);
     } catch (err) {
-      console.error("Crop/upload error:", err);
-      alert("❌ Crop failed.");
+      alert("❌ Upload failed.");
     }
   };
 
-  const renderOverlay = () => (
-    <div
-      ref={overlayRef}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      style={{
-        position: "absolute",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        cursor: "crosshair",
-        zIndex: 10,
-      }}
-    >
-      {selection && (
-        <div
-          style={{
-            position: "absolute",
-            left: selection.x,
-            top: selection.y,
-            width: selection.width,
-            height: selection.height,
-            border: "2px dashed red",
-            backgroundColor: "rgba(255,0,0,0.2)",
-            pointerEvents: "none",
-          }}
-        />
-      )}
-    </div>
+  const handleSearchChange = (e) => {
+    const term = e.target.value;
+    setSearchTerm(term);
+    setShowSearchModal(term.trim().length > 0);
+  };
+
+  const filteredProducts = products.filter((p) =>
+    p.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
-    <div style={{ padding: "40px 20px", fontFamily: "Segoe UI, sans-serif" }}>
-      <h2 style={{ textAlign: "center", marginBottom: "30px" }}>
-        🖼️ Crop Product from Flyer
-      </h2>
+    <div className="flyer-detail-container">
+      {/* Header */}
+      <div className="flyer-header-card">
+        <button className="back-button" onClick={() => navigate("/")}>← Back</button>
+        <input
+          className="search-bar"
+          placeholder="🔍 Search products..."
+          value={searchTerm}
+          onChange={handleSearchChange}
+        />
+      </div>
 
-      {(flyer?.image || flyer?.pdf) ? (
-        <>
-          <div
-            ref={containerRef}
-            style={{
-              position: "relative",
-              width: "100%",
-              maxWidth: "600px",
-              margin: "0 auto",
-              border: "1px solid #ccc",
-              borderRadius: "10px",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-              overflow: "hidden",
-            }}
-          >
-            {flyer?.image && (
-              <img
-                src={flyer.image.startsWith("http") ? flyer.image : `${BASE_URL}${flyer.image}`}
-                alt="Flyer"
-                crossOrigin="anonymous"
-                style={{ width: "100%", display: "block", objectFit: "contain" }}
-                onLoad={handleImageLoad}
-                onError={() => alert("❌ Failed to load flyer image.")}
-              />
-            )}
-
-            {!flyer?.image && flyer?.pdf && (
-              <div id="pdf-canvas-container" style={{ width: "100%", height: "auto" }} />
-            )}
-
-            {renderOverlay()}
-          </div>
-
-          {!flyer?.image && flyer?.pdf && (
-            <div style={{ textAlign: "center", marginTop: 16 }}>
-              <button onClick={goToPrev} disabled={currentPage <= 1}>⬅️ Previous</button>
-              <span style={{ margin: "0 12px" }}>Page {currentPage} of {totalPages}</span>
-              <button onClick={goToNext} disabled={currentPage >= totalPages}>Next ➡️</button>
-            </div>
+      {/* PDF Viewer and Overlay */}
+      <div className="flyer-preview">
+        <div id="pdf-canvas-container" style={{ width: "100%", position: "relative" }} />
+        <div
+          ref={overlayRef}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            cursor: "crosshair",
+            zIndex: 10,
+          }}
+        >
+          {selection && (
+            <div
+              style={{
+                position: "absolute",
+                left: selection.x,
+                top: selection.y,
+                width: selection.width,
+                height: selection.height,
+                border: "2px dashed red",
+                backgroundColor: "rgba(255,0,0,0.2)",
+                pointerEvents: "none",
+              }}
+            />
           )}
-        </>
-      ) : (
-        <p style={{ color: "crimson", textAlign: "center", fontSize: 16 }}>
-          ❌ Flyer not available.
-        </p>
+        </div>
+
+        <div className="pdf-controls">
+          <button onClick={goToPrev} disabled={currentPage <= 1}>‹</button>
+          <button onClick={goToNext} disabled={currentPage >= totalPages}>›</button>
+        </div>
+      </div>
+
+      <p className="page-info">Page {currentPage} / {totalPages}</p>
+
+      {/* Product Grid */}
+      <ProductGrid products={products} />
+
+      {/* Search Modal */}
+      {showSearchModal && (
+        <div className="modal-overlay" onClick={() => setShowSearchModal(false)}>
+          <div className="search-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close1" onClick={() => setShowSearchModal(false)}>✖</button>
+            <h2>Search Results</h2>
+            {filteredProducts.length === 0 ? (
+              <p className="no-results">No matching products found.</p>
+            ) : (
+              <div className="product-grid-modal">
+                {filteredProducts.map((p) => (
+                  <div key={p.id} className="product-card">
+                    <img src={p.image || "https://via.placeholder.com/150"} alt={p.name} />
+                    <div className="product-details">
+                      <strong>{p.name}</strong>
+                      <span className="price-tag">₹ {p.price}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );
 };
 
-export default CropUploader;
+export default CropUploaderPage;

@@ -148,10 +148,7 @@ const FlyerDetail = () => {
         )}
       </div>
 
-      {/* Floating Add Button */}
-      <div className="floating-action">
-        <button onClick={() => navigate(`/manual-upload/${flyerId}`)}>➕ Add Product</button>
-      </div>
+    
 
       {/* Search Results Modal */}
       {showSearchModal && (
