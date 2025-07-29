@@ -96,9 +96,7 @@ const handleReject = async (flyerId) => {
   const confirmed = window.confirm('Are you sure you want to reject this flyer?');
   if (!confirmed) return;
 
-  console.log("🗑️ Rejecting flyer with ID:", flyerId);
-  console.log("Token sent in delete request:", token);
-
+  
   try {
     await axios.delete(`${BASE_URL}/api/reject-flyer/${flyerId}/`, {
       headers: { Authorization: `Token ${token}` },

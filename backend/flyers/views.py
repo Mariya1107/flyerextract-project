@@ -136,7 +136,11 @@ def extract_with_gpt(image_file):
                     "content": [
                         {
                             "type": "text",
-                            "text": "Extract the product name and price from this image. Respond with only JSON like: {\"name\": \"Product Name\", \"price\": 99.99}"
+                           "text": (
+    "Extract the product name and price from this image. "
+    "Always respond in JSON format like: {\"name\": \"Product Name\", \"price\": 99.99}. "
+    "Translate the product name to English if it's in another language."
+)
                         },
                         {
                             "type": "image_url",
