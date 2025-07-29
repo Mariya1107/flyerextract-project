@@ -97,7 +97,8 @@ class PendingFlyerSerializer(serializers.ModelSerializer):
 
     store = StoreSerializer(read_only=True)
     region = RegionSerializer(read_only=True)
-    image = serializers.ImageField(use_url=True)
+    image = serializers.ImageField(use_url=True, required=False, allow_null=True)
+    pdf = serializers.FileField(required=False, allow_null=True)
 
     class Meta:
         model = PendingFlyer
@@ -109,9 +110,18 @@ class PendingFlyerSerializer(serializers.ModelSerializer):
             'store',
             'region',
             'store_id',
-            'store_id_value',  # ➕ This will give you store.id in the response
+            'store_id_value',
             'region_id',
-            'region_id_value',  # ➕ This will give you region.id in the response
+            'region_id_value',
             'expires_at'
         ]
+        extra_kwargs = {
+            'pdf': {'required': False, 'allow_null': True},
+            'image': {'required': False, 'allow_null': True},
+        }
+
+    def validate(self, data):
+        if not data.get('pdf') and not data.get('image'):
+            raise serializers.ValidationError("You must provide at least a PDF or an image.")
+        return data
 

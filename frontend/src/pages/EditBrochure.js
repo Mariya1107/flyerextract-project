@@ -52,32 +52,42 @@ const EditBrochure = () => {
     });
   };
 
-  const handleSave = async (e) => {
-    e.preventDefault();
-    if (!editingId) return;
+const handleSave = async (e) => {
+  e.preventDefault();
+  if (!editingId) return;
 
-    const updateData = new FormData();
-    updateData.append('title', formData.title);
-    updateData.append('expires_at', formData.expires_at);
-    updateData.append('region_id', parseInt(formData.region_id));
-    if (formData.pdf) updateData.append('pdf', formData.pdf);
-    if (formData.image) updateData.append('image', formData.image);
+  const updateData = new FormData();
+  updateData.append('title', formData.title);
+  updateData.append('expires_at', formData.expires_at);
+  updateData.append('region_id', parseInt(formData.region_id));
 
-    try {
-      await axios.put(`${BASE_URL}flyers/${editingId}/edit/`, updateData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Token ${token}`
-        }
-      });
-      alert('Brochure updated!');
-      setEditingId(null);
-      window.location.reload();
-    } catch (err) {
-      console.error('Update error:', err);
-      alert('Failed to update brochure');
-    }
-  };
+  // If a new PDF is uploaded, include it and tell backend to delete image
+  if (formData.pdf) {
+    updateData.append('pdf', formData.pdf);
+    updateData.append('clear_image', 'true');
+  }
+
+  // If a new image is uploaded, include it and tell backend to delete pdf
+  if (formData.image) {
+    updateData.append('image', formData.image);
+    updateData.append('clear_pdf', 'true');
+  }
+
+  try {
+    await axios.put(`${BASE_URL}flyers/${editingId}/edit/`, updateData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Token ${token}`,
+      },
+    });
+    alert('Brochure updated!');
+    setEditingId(null);
+    window.location.reload();
+  } catch (err) {
+    console.error('Update error:', err);
+    alert('Failed to update brochure');
+  }
+};
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;

@@ -408,7 +408,6 @@ class StoreSearchAPIView(ListAPIView):
         return Store.objects.filter(Q(name__icontains=query))
 
 
-
 @api_view(['PUT'])
 @parser_classes([MultiPartParser, FormParser])
 @permission_classes([IsAuthenticated])
@@ -419,8 +418,21 @@ def update_flyer(request, flyer_id):
     except Flyer.DoesNotExist:
         return Response({'error': 'Flyer not found'}, status=status.HTTP_404_NOT_FOUND)
 
+    # Handle clearing the image if new PDF is uploaded or clear_image flag is set
+    if 'pdf' in request.FILES or request.data.get("clear_image") == "true":
+        if flyer.image:
+            flyer.image.delete(save=False)
+        flyer.image = None
+
+    # Handle clearing the PDF if new image is uploaded or clear_pdf flag is set
+    if 'image' in request.FILES or request.data.get("clear_pdf") == "true":
+        if flyer.pdf:
+            flyer.pdf.delete(save=False)
+        flyer.pdf = None
+
     serializer = FlyerSerializer(flyer, data=request.data, partial=True)
     if serializer.is_valid():
         serializer.save()
         return Response({'message': 'Flyer updated successfully'}, status=status.HTTP_200_OK)
+
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
