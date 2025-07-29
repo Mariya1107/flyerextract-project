@@ -16,7 +16,8 @@ from .views import (
     delete_flyer,
     upload_pending_flyer,
     approve_pending_flyer,
-    reject_pending_flyer
+    reject_pending_flyer,
+    StoreSearchAPIView
 )
 
 urlpatterns = [
@@ -31,6 +32,7 @@ urlpatterns = [
     path('flyers/store/<str:store_name>/', FlyersByStoreView.as_view(), name='flyers-by-store'),
     path('flyers/<int:store_id>/', flyers_by_store_id, name='flyers-by-store-id'),
     path('flyers/all/', FlyerListAll.as_view(), name='flyers-all'),
+    path('stores/search/', StoreSearchAPIView.as_view(), name='store-search'),
 
     # Flyer Upload and Admin Approval Flow
     path('flyers/upload/', views.upload_flyer, name='upload-flyer'),

@@ -114,3 +114,4 @@ class PendingFlyerSerializer(serializers.ModelSerializer):
             'region_id_value',  # ➕ This will give you region.id in the response
             'expires_at'
         ]
+

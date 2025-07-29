@@ -2,12 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
 import ProviderLogin from "../components/ProviderLogin";
-import AdminLogin from "../components/AdminLogin"; // 👈 Import
+import AdminLogin from "../components/AdminLogin";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import axios from "axios";
 import BASE_URL from "../config";
-
 
 import ProviderModal1 from "../components/ProviderModal1";
 
@@ -31,11 +30,8 @@ const Home = () => {
   const [authMode, setAuthMode] = useState("signup");
   const [userData, setUserData] = useState(null);
   const [showProviderModal, setShowProviderModal] = useState(false);
-  const [showAdminModal, setShowAdminModal] = useState(false); // 👈 Add this
+  const [showAdminModal, setShowAdminModal] = useState(false);
   const [showProviderModal1, setShowProviderModal1] = useState(false);
-
-  console.log("userData at render:", userData); // ✅ Move it here safely
-
   const [formData, setFormData] = useState({
     firstname: "",
     email: "",
@@ -46,6 +42,21 @@ const Home = () => {
     signinUser: "",
     signinPass: "",
   });
+
+  const [stores, setStores] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isCitiesOpen, setIsCitiesOpen] = useState(true);
+  const [loading, setLoading] = useState(true);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    axios.get("http://127.0.0.1:8000/stores/")
+      .then((res) => {
+        setStores(res.data);
+      })
+      .catch((err) => console.error("Error fetching stores", err));
+  }, []);
 
   useEffect(() => {
     const jquery = document.createElement("script");
@@ -66,12 +77,6 @@ const Home = () => {
     };
   }, []);
 
-
-
-  useEffect(() => {
-    console.log("userData changed:", userData);
-  }, [userData]);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -82,7 +87,6 @@ const Home = () => {
   };
 
   const handleSignup = () => {
-    console.log("🔐 Signup handler called");
     const { firstname, email, phone, username, password, gender } = formData;
     if (!firstname || !email || !phone || !username || password.length < 8) {
       alert("Please fill all fields correctly.");
@@ -98,12 +102,10 @@ const Home = () => {
       profileImage: null,
     });
 
-    console.log("Signup Data:", formData);
     setShowAuthModal(false);
   };
 
   const handleSignin = () => {
-    console.log("🔑 Signin handler called");
     const { signinUser, signinPass } = formData;
 
     if (!signinUser || signinPass.length < 8) {
@@ -121,40 +123,15 @@ const Home = () => {
     });
 
     alert(`Logged in as ${signinUser}`);
-    console.log("Signin Data:", { signinUser, signinPass });
-
     setShowAuthModal(false);
   };
 
-  const navigate = useNavigate();
-  const [isCitiesOpen, setIsCitiesOpen] = useState(true);
-  const [stores, setStores] = useState([]);
-
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    axios.get("http://127.0.0.1:8000/stores/")
-      .then((res) => {
-        console.log("Fetched stores:", res.data);  // ✅ Check this shows the data
-        setStores(res.data);
-      })
-      .catch((err) => console.error("Error fetching stores", err));
-  }, []);
-
-  const allCategories = stores.map((store) => ({
-    id: store.id,
-    title: store.name.toUpperCase(),
-    icon: store.logo?.startsWith("http") ? store.logo : `${BASE_URL}${store.logo ?? ''}`,
-
-    products: "View Flyers",
-    isStore: true,
-  }));
+  const filteredStores = stores.filter((store) =>
+    store.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <>
-      {/* HEADER */}
-
-
       {/* HERO */}
       <section className="hero-section" id="home">
         <div className="container hero-flex">
@@ -175,6 +152,8 @@ const Home = () => {
                       type="text"
                       placeholder="Search for Supermarket"
                       className="search-input"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
                     />
                   </div>
 
@@ -203,7 +182,6 @@ const Home = () => {
       </section>
 
       {/* CATEGORY SECTION */}
-      {/* CATEGORY SECTION */}
       <section className="section category-section">
         <div className="container">
           <div className="text-center mb-4">
@@ -216,7 +194,7 @@ const Home = () => {
           </div>
 
           <div className="category-grid">
-            {stores.map((store) => (
+            {filteredStores.map((store) => (
               <div
                 className="category-card"
                 key={store.id}
@@ -232,8 +210,7 @@ const Home = () => {
                     alt={store.name}
                     className="img-fluid"
                     onError={(e) =>
-                    (e.target.src =
-                      "https://via.placeholder.com/100x100?text=Logo")
+                      (e.target.src = "https://via.placeholder.com/100x100?text=Logo")
                     }
                   />
                 </div>
@@ -241,6 +218,9 @@ const Home = () => {
                 <p>View Flyers</p>
               </div>
             ))}
+            {filteredStores.length === 0 && (
+              <p className="text-center mt-4">No supermarkets matched your search.</p>
+            )}
           </div>
 
           <div className="category-footer mt-4">
@@ -250,9 +230,6 @@ const Home = () => {
           </div>
         </div>
       </section>
-
-
-
 
       {/* Business Section */}
       <section className="section business-section bg-black">
@@ -327,10 +304,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Footer */}
-     
-
-      {/* Auth Modal */}
+      {/* Modals */}
       <Authorisation
         showAuthModal={showAuthModal}
         setShowAuthModal={setShowAuthModal}
@@ -338,13 +312,11 @@ const Home = () => {
         setAuthMode={setAuthMode}
         setUserData={setUserData}
       />
-      {/* Provider Login Modal */}
       {showProviderModal && (
         <div className="modal-overlay">
           <ProviderLogin setShowProviderModal={setShowProviderModal} />
         </div>
       )}
-
       {showProviderModal1 && (
         <ProviderModal1
           showModal={showProviderModal1}
@@ -354,7 +326,8 @@ const Home = () => {
       {showAdminModal && (
         <AdminLogin setShowAdminModal={setShowAdminModal} />
       )}
-      {/* Custom Cursor Element */}
+
+      {/* Custom Cursor */}
       <div className="tx-js-cursor xb-cursor">
         <div className="xb-cursor-wrapper">
           <div className="tx-js-follower xb-cursor--follower"></div>
@@ -362,7 +335,6 @@ const Home = () => {
           <div className="tx-js-icon"></div>
         </div>
       </div>
-
     </>
   );
 };

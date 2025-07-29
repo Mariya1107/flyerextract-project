@@ -143,12 +143,7 @@ const DashboardLayout = () => {
                 )}
               </li>
 
-              <li>
-                <button>
-                  <Icon name="R" />
-                  <span>Reports</span>
-                </button>
-              </li>
+
 
               <li className="nav-separator"></li>
 

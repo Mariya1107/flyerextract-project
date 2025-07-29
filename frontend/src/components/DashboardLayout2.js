@@ -120,7 +120,7 @@ const DashboardLayout2 = () => {
   </Link>
 </li>
               <li><a href="#"><Icon name="P" /><span>Products</span></a></li>
-              <li><a href="#"><Icon name="R" /><span>Reports</span></a></li>
+              
               
 <li>
   <Link to="approvals">

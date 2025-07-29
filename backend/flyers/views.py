@@ -398,3 +398,11 @@ def notify_admin_upload(request):
 class PendingFlyerListView(generics.ListAPIView):
     queryset = PendingFlyer.objects.all()
     serializer_class = PendingFlyerSerializer
+
+
+class StoreSearchAPIView(ListAPIView):
+    serializer_class = StoreSerializer
+
+    def get_queryset(self):
+        query = self.request.query_params.get('search', '')
+        return Store.objects.filter(Q(name__icontains=query))
