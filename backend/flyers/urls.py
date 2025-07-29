@@ -37,7 +37,7 @@ urlpatterns = [
     path('flyers/upload_pending/', upload_pending_flyer, name='upload-pending-flyer'),
     path('admin/pending-flyers/', PendingFlyerListView.as_view(), name='pending-flyers'),
     path('admin/approve-flyer/<int:flyer_id>/', approve_pending_flyer, name='approve-flyer'),
-    path('admin/reject-flyer/<int:flyer_id>/', reject_pending_flyer, name='reject-flyer'),
+    path('api/reject-flyer/<int:flyer_id>/', reject_pending_flyer, name='reject-flyer'),
     path('flyers/pending/', PendingFlyerListView.as_view(), name='pending-flyers-list'),
 
     # Provider Related

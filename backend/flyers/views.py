@@ -2,15 +2,16 @@ from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated,  IsAdminUser
 from rest_framework.decorators import permission_classes
 
-
+from django.utils.decorators import method_decorator
+from rest_framework.authentication import TokenAuthentication
 from .models import Country, Region, Flyer, Product
-from .serializers import CountrySerializer, RegionSerializer, FlyerSerializer, ProductSerializer, StoreWithFlyersSerializer, PendingFlyerSerializer
+from .serializers import CountrySerializer, RegionSerializer, FlyerSerializer, ProductSerializer,  StoreWithFlyersSerializer, PendingFlyerSerializer
 import json
 import base64
 import openai
 from openai import OpenAI
 from django.conf import settings
-from rest_framework.decorators import api_view, parser_classes
+from rest_framework.decorators import api_view, parser_classes, authentication_classes
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework import status
@@ -358,8 +359,10 @@ def approve_pending_flyer(request, flyer_id):
         return Response({'error': 'Pending flyer not found'}, status=404)
 
 
+@csrf_exempt
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated, IsAdminUser])
+@authentication_classes([TokenAuthentication])
 def reject_pending_flyer(request, flyer_id):
     try:
         flyer = PendingFlyer.objects.get(id=flyer_id)
@@ -367,6 +370,7 @@ def reject_pending_flyer(request, flyer_id):
         return Response({'message': 'Flyer rejected and deleted'})
     except PendingFlyer.DoesNotExist:
         return Response({'error': 'Pending flyer not found'}, status=404)
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])

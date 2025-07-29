@@ -32,53 +32,84 @@ const ApprovalAdmin = () => {
     setNumPages((prev) => ({ ...prev, [flyerId]: numPages }));
   };
 
-const handleApprove = async (flyer) => {
-  console.log("📤 Approving flyer:", flyer);
-
-  const store = flyer.store;
-  const storeId = store?.id;
-  const regionId = store?.region?.id;
-
-  console.log("📦 Store object:", store);
-  console.log("✅ Extracted storeId:", storeId, "regionId:", regionId);
-
-  if (!storeId || !regionId) {
-    console.error("❌ Missing store_id or region_id:", { storeId, regionId });
-    return;
-  }
-
-  const payload = {
-    title: flyer.title,
-    image: flyer.image, // Make sure this is either a valid URL or a File object
-    pdf: flyer.pdf || null,
-    store: storeId,
-    region: regionId,
-    expires_at: flyer.expires_at || "2025-08-31" // hardcoded or let admin select
+  const urlToFile = async (url, filename) => {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    return new File([blob], filename, { type: blob.type });
   };
 
-  try {
-    const response = await axios.post(`${BASE_URL}/api/flyers/create/`, payload);
-    console.log("✅ Flyer approved:", response.data);
-  } catch (error) {
-    console.error("❌ Error approving flyer:", error.response?.data || error.message);
-  }
-};
+  const handleApprove = async (flyer) => {
+    console.log("📤 Approving flyer:", flyer);
 
+    const storeId = flyer?.store?.id;
+    const regionId = flyer?.region?.id;
 
-  const handleReject = async (id) => {
-    const confirmed = window.confirm('Reject this flyer?');
-    if (!confirmed) return;
+    if (!storeId || !regionId) {
+      console.error("❌ Missing store_id or region_id:", { storeId, regionId });
+      alert("Missing store or region info. Cannot approve flyer.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("title", flyer.title);
+    formData.append("store_id", storeId);
+    formData.append("region_id", regionId);
+    formData.append("expires_at", flyer.expires_at || "2025-08-31");
+
+    if (flyer.image && typeof flyer.image === "string") {
+      const imageFile = await urlToFile(flyer.image, "flyer_image.jpg");
+      formData.append("image", imageFile);
+    }
+
+    if (flyer.pdf && typeof flyer.pdf === "string") {
+      const pdfFile = await urlToFile(flyer.pdf, "flyer.pdf");
+      formData.append("pdf", pdfFile);
+    }
 
     try {
-      await axios.post(`${BASE_URL}/admin/reject-flyer/${id}/`, null, {
-        headers: { Authorization: `Token ${token}` },
+      await axios.post(`${BASE_URL}/api/flyers/create/`, formData, {
+        headers: {
+          Authorization: `Token ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
       });
+
+      // ✅ Cleanup from pending list
+      try {
+        await axios.delete(`${BASE_URL}/api/reject-flyer/${flyer.id}/`, {
+          headers: { Authorization: `Token ${token}` },
+        });
+
+        alert("✅ Brochure approved and removed from pending list!");
+      } catch (cleanupErr) {
+        console.warn("⚠️ Flyer created but failed to remove from pending list:", cleanupErr);
+        alert("⚠️ Brochure approved, but failed to remove from pending list.");
+      }
+
       fetchPendingFlyers();
-    } catch (err) {
-      console.error('❌ Error rejecting flyer:', err.response?.data || err.message);
-      alert('Failed to reject flyer.');
+    } catch (error) {
+      console.error("❌ Error approving flyer:", error.response?.data || error.message);
+      alert("❌ Approval failed: " + (error.response?.data?.detail || error.message));
     }
   };
+const handleReject = async (flyerId) => {
+  const confirmed = window.confirm('Are you sure you want to reject this flyer?');
+  if (!confirmed) return;
+
+  console.log("🗑️ Rejecting flyer with ID:", flyerId);
+  console.log("Token sent in delete request:", token);
+
+  try {
+    await axios.delete(`${BASE_URL}/api/reject-flyer/${flyerId}/`, {
+      headers: { Authorization: `Token ${token}` },
+    });
+    alert("❌ Flyer rejected and removed.");
+    fetchPendingFlyers(); // Refresh the list
+  } catch (error) {
+    console.error("❌ Error rejecting flyer:", error.response?.data || error.message);
+    alert("❌ Failed to reject flyer: " + (error.response?.data?.detail || error.message));
+  }
+};
 
   return (
     <div className="flyer-list-wrapper">
