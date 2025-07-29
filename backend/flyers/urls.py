@@ -17,7 +17,8 @@ from .views import (
     upload_pending_flyer,
     approve_pending_flyer,
     reject_pending_flyer,
-    StoreSearchAPIView
+    StoreSearchAPIView,
+    update_flyer
 )
 
 urlpatterns = [
@@ -57,7 +58,8 @@ urlpatterns = [
     # Store with Flyers
     path('api/stores-with-flyers/', stores_with_flyers, name='stores-with-flyers'),
 
-    # Create/Delete Flyer
+    # Create/Delete/Edit Flyer
     path('api/flyers/create/', create_flyer, name='flyer-create'),
     path('api/flyers/<int:flyer_id>/delete/', delete_flyer, name='flyer-delete'),
+    path('flyers/<int:flyer_id>/edit/', update_flyer, name='update-flyer'),
 ]

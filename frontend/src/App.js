@@ -26,8 +26,12 @@ import CountryAdmin from "./components/CountryAdmin";
 import RegionAdmin from './components/RegionAdmin';
 import ProviderApplicationDash from "./pages/ProviderApplicationDash";
 import AdminBrochure from "./pages/AdminBrochure";
+import AdminBrochureExtract from "./pages/AdminBrochureExtract";
 import AdminStoreBrochure from "./pages/AdminStoreBrochure";
-import ApprovalAdmin from './pages/ApprovalAdmin'; 
+import AdminStoreBrochureExtract from "./pages/AdminStoreBrochureExtract";
+import ApprovalAdmin from './pages/ApprovalAdmin';
+import CropProducts from './pages/CropProducts'; 
+
 
 // Layout wrappers
 import DashboardLayoutWrapper from "./components/DashboardLayoutWrapper";
@@ -61,18 +65,23 @@ function App() {
         </Route>
 
         {/* 👨‍💼 Admin Dashboard */}
-        <Route path="/admin-dashboard" element={<DashboardLayoutWrapper2 />}>
-          <Route index element={<AdminLoginDashboard />} />
-          <Route path="edit-profile" element={<EditProfileAdmin />} />
-          <Route path="users" element={<UsersAdminDash />} /> {/* ✅ Fixed path */}
-          <Route path="providers" element={<ProvidersAdminDash />} />
-          <Route path="countries" element={<CountryAdmin />} />
-          <Route path="regions" element={<RegionAdmin />} />
-          <Route path="provider-applications" element={<ProviderApplicationDash />} />
-          <Route path="store/:storeId/brochures" element={<AdminStoreBrochure />} /> {/* ✅ Fixed path */}
-          <Route path="store-brochures" element={<AdminBrochure />} />
-          <Route path="approvals" element={<ApprovalAdmin />} /> {/* ✅ Fixed path */}
-        </Route>
+
+<Route path="/admin-dashboard" element={<DashboardLayoutWrapper2 />}>
+  <Route index element={<AdminLoginDashboard />} />
+  <Route path="edit-profile" element={<EditProfileAdmin />} />
+  <Route path="users" element={<UsersAdminDash />} />
+  <Route path="providers" element={<ProvidersAdminDash />} />
+  <Route path="countries" element={<CountryAdmin />} />
+  <Route path="regions" element={<RegionAdmin />} />
+  <Route path="provider-applications" element={<ProviderApplicationDash />} />
+  <Route path="store/:storeId/brochures" element={<AdminStoreBrochure />} />
+  <Route path="store-brochures" element={<AdminBrochure />} />
+  <Route path="approvals" element={<ApprovalAdmin />} />
+  <Route path="crop-products/:flyerId" element={<CropUploader />} />
+  <Route path="storebrochure-extracts"element={<AdminBrochureExtract />}/>
+  <Route path="store/:storeId/brochure-extract" element={<AdminStoreBrochureExtract />} /> {/* ✅ Fixed path */}
+</Route>
+
 
       </Routes>
     </Router>

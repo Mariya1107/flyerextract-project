@@ -406,3 +406,21 @@ class StoreSearchAPIView(ListAPIView):
     def get_queryset(self):
         query = self.request.query_params.get('search', '')
         return Store.objects.filter(Q(name__icontains=query))
+
+
+
+@api_view(['PUT'])
+@parser_classes([MultiPartParser, FormParser])
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
+def update_flyer(request, flyer_id):
+    try:
+        flyer = Flyer.objects.get(id=flyer_id)
+    except Flyer.DoesNotExist:
+        return Response({'error': 'Flyer not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = FlyerSerializer(flyer, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({'message': 'Flyer updated successfully'}, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
