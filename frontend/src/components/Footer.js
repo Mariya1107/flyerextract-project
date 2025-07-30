@@ -31,9 +31,9 @@ const Footer = () => {
   const currencies = ["USD", "EURO", "YEN"];
 
 const socialPlatforms = [
-  { name: "Facebook", icon: "/assets/facebook.jpg" },
-  { name: "Instagram", icon: "/assets/insta.jpg" },
-  { name: "LinkedIn", icon: "/assets/linkedln.jpg" },
+  { name: "Facebook", icon: "/assets/facebook.png" },
+  { name: "Instagram", icon: "/assets/insta.png" },
+  { name: "LinkedIn", icon: "/assets/linkedln.png" },
   { name: "WhatsApp", icon: "/assets/whatsapp.jpg" },
   { name: "YouTube", icon: "/assets/yotube.jpg" },
   { name: "Twitter", icon: "/assets/x.jpg" },
