@@ -19,7 +19,8 @@ from .views import (
     reject_pending_flyer,
     StoreSearchAPIView,
     update_flyer,
-    dashboard_counts
+    dashboard_counts,
+    provider_dashboard_counts
 )
 
 urlpatterns = [
@@ -53,6 +54,7 @@ urlpatterns = [
     # Admin Notifications
     path('api/admin/notify-upload/', notify_admin_upload, name='notify-admin-upload'),
     path('api/dashboard-counts/', dashboard_counts, name='dashboard_counts'),
+     path('api/provider-dashboard-counts/', provider_dashboard_counts, name='provider_dashboard_counts'),
     
 
     # Products

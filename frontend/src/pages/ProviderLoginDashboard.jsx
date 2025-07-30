@@ -1,5 +1,6 @@
-// src/pages/ProviderLoginDashboard.js
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import BASE_URL from "../config";
 import "./ProviderLoginDashboard.css";
 
 const SparkLine = ({ data, color }) => (
@@ -68,38 +69,52 @@ const ProvidersBarChart = () => {
 };
 
 const ProviderLoginDashboard = () => {
+  const [counts, setCounts] = useState({
+    brochures: 0,
+    products: 0,
+    providers: 0,
+  });
+
+  useEffect(() => {
+    const token = localStorage.getItem("providerToken");
+    if (!token) return;
+
+    axios
+      .get(`${BASE_URL}api/provider-dashboard-counts/`, {
+        headers: { Authorization: `Token ${token}` },
+      })
+      .then((res) => {
+        setCounts(res.data);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch provider dashboard stats", err);
+      });
+  }, []);
+
   const statCards = [
     {
-      title: 'Number of Brochures',
-      value: '30',
+      title: "Number of Brochures",
+      value: counts.brochures,
       change: 15,
-      trend: 'up',
-      color: '#3b82f6',
+      trend: "up",
+      color: "#3b82f6",
       data: [5, 10, 8, 14, 12, 18],
     },
     {
-      title: 'Number of Products',
-      value: '25',
+      title: "Number of Products",
+      value: counts.products,
       change: 10,
-      trend: 'up',
-      color: '#ef4444',
+      trend: "up",
+      color: "#ef4444",
       data: [18, 12, 16, 10, 14, 9],
     },
     {
-      title: 'Number of users clicked',
-      value: '18',
+      title: "Number of Providers",
+      value: counts.providers,
       change: 12,
-      trend: 'up',
-      color: '#22c55e',
+      trend: "up",
+      color: "#22c55e",
       data: [8, 12, 9, 15, 11, 17],
-    },
-    {
-      title: 'Subscriptions',
-      value: '$650',
-      change: 20,
-      trend: 'down',
-      color: '#f97316',
-      data: [17, 12, 19, 10, 15, 11],
     },
   ];
 
@@ -111,10 +126,7 @@ const ProviderLoginDashboard = () => {
             <div className="stat-card-info">
               <span className="stat-card-title">{card.title}</span>
               <span className="stat-card-value">{card.value}</span>
-              <span className={`stat-card-change ${card.trend}`}>
-                <span className="arrow">{card.trend === 'up' ? '↑' : '↓'}</span>
-                {card.change}% Current Month
-              </span>
+
             </div>
             <div className="sparkline-chart">
               <SparkLine data={card.data} color={card.color} />

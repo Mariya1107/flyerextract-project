@@ -461,3 +461,21 @@ def dashboard_counts(request):
         "flyers": flyers_count,
         "pending_flyers": pending_flyers_count
     })
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def provider_dashboard_counts(request):
+    user = request.user
+
+    store = user.stores.first()
+    if not store:
+        return Response({"detail": "Store not found for this provider."}, status=404)
+
+    brochures_count = Flyer.objects.filter(store=store).count()
+    products_count = Product.objects.filter(flyer__store=store).count()
+    providers_count = Store.objects.count()
+
+    return Response({
+        "brochures": brochures_count,
+        "products": products_count,
+        "providers": providers_count
+    })
