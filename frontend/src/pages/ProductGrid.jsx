@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import ProductCard from './ProductCard';
+import ProductCard from '../components/ProductCard';
 import './ProductGrid.css';
 import backendBaseURL from '../config'; // ✅ Import global backend URL
 

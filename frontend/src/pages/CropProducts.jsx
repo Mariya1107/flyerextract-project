@@ -24,7 +24,7 @@ const ProductGrid = ({ products, onProductClick }) => {
 
   return (
     <div className="product-section">
-      <h2 className="section-title">🛍️ Featured Products</h2>
+      <h2 className="section-title">Products</h2>
       <div className="product-grid">
         {products.slice(0, visibleCount).map((product, index) => (
           <div
