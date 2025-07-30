@@ -1,78 +1,18 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import BASE_URL from "../config";
+import {
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  LineChart, Line, CartesianGrid, Legend
+} from "recharts";
 import "./ProviderLoginDashboard.css";
-
-const SparkLine = ({ data, color }) => (
-  <svg width="100" height="30" viewBox="0 0 100 30">
-    <path
-      d={`M 0 ${30 - data[0]} C 10 ${30 - data[0]}, 10 ${30 - data[1]}, 20 ${30 - data[1]} S 30 ${30 - data[2]}, 40 ${30 - data[2]} S 50 ${30 - data[3]}, 60 ${30 - data[3]} S 70 ${30 - data[4]}, 80 ${30 - data[4]} S 90 ${30 - data[5]}, 100 ${30 - data[5]}`}
-      fill="none"
-      stroke={color}
-      strokeWidth="2"
-    />
-  </svg>
-);
-
-const RevenueChart = () => (
-  <svg width="100%" height="250" viewBox="0 0 500 250">
-    <defs>
-      <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" style={{ stopColor: 'rgba(135, 163, 232, 0.5)' }} />
-        <stop offset="100%" style={{ stopColor: 'rgba(135, 163, 232, 0)' }} />
-      </linearGradient>
-    </defs>
-    {[0, 60, 120, 180, 240].map(y => (
-      <line key={y} x1="30" y1={y} x2="490" y2={y} stroke="#eef2f7" strokeWidth="1" />
-    ))}
-    <path
-      d="M 30 180 C 80 160, 130 190, 180 170 S 280 120, 330 100 S 430 50, 480 80"
-      stroke="#87a3e8"
-      strokeWidth="2"
-      fill="url(#areaGradient)"
-    />
-    {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'].map((label, i) => (
-      <text key={label} x={30 + i * 75} y="250" fontSize="12" fill="#6c757d">
-        {label}
-      </text>
-    ))}
-  </svg>
-);
-
-const ProvidersBarChart = () => {
-  const data = [150, 80, 175, 145, 170, 60, 195, 115, 185];
-  const barWidth = 30;
-  const gap = 20;
-  return (
-    <svg width="100%" height="250" viewBox="0 0 500 250">
-      {[0, 50, 100, 150, 200, 250].map(y => (
-        <line key={y} x1="30" y1={235 - y} x2="490" y2={235 - y} stroke="#eef2f7" strokeWidth="1" />
-      ))}
-      {data.map((d, i) => (
-        <rect
-          key={i}
-          x={30 + i * (barWidth + gap)}
-          y={235 - d}
-          width={barWidth}
-          height={d}
-          fill="#87a3e8"
-          rx="4"
-        />
-      ))}
-      {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'].map((label, i) => (
-        <text key={label} x={38 + i * (barWidth + gap)} y="250" fontSize="12" fill="#6c757d">
-          {label}
-        </text>
-      ))}
-    </svg>
-  );
-};
 
 const ProviderLoginDashboard = () => {
   const [counts, setCounts] = useState({
     brochures: 0,
     products: 0,
     providers: 0,
+    totalRevenue: 0,
   });
 
   useEffect(() => {
@@ -91,66 +31,63 @@ const ProviderLoginDashboard = () => {
       });
   }, []);
 
-  const statCards = [
-    {
-      title: "Number of Brochures",
-      value: counts.brochures,
-      change: 15,
-      trend: "up",
-      color: "#3b82f6",
-      data: [5, 10, 8, 14, 12, 18],
-    },
-    {
-      title: "Number of Products",
-      value: counts.products,
-      change: 10,
-      trend: "up",
-      color: "#ef4444",
-      data: [18, 12, 16, 10, 14, 9],
-    },
-    {
-      title: "Number of Providers",
-      value: counts.providers,
-      change: 12,
-      trend: "up",
-      color: "#22c55e",
-      data: [8, 12, 9, 15, 11, 17],
-    },
+  const chartData = [
+    { name: "Brochures", count: counts.brochures },
+    { name: "Products", count: counts.products },
+    { name: "Providers", count: counts.providers },
   ];
 
   return (
     <div className="dashboard-content">
       <div className="stat-cards-grid">
-        {statCards.map((card) => (
-          <div key={card.title} className="stat-card">
-            <div className="stat-card-info">
-              <span className="stat-card-title">{card.title}</span>
-              <span className="stat-card-value">{card.value}</span>
-
-            </div>
-            <div className="sparkline-chart">
-              <SparkLine data={card.data} color={card.color} />
-            </div>
-          </div>
-        ))}
+        <div className="stat-card">
+          <h4>Brochures</h4>
+          <p>{counts.brochures}</p>
+        </div>
+        <div className="stat-card">
+          <h4>Products</h4>
+          <p>{counts.products}</p>
+        </div>
+        <div className="stat-card">
+          <h4>Providers</h4>
+          <p>{counts.providers}</p>
+        </div>
       </div>
 
       <div className="chart-grid">
         <div className="chart-container">
-          <div className="dashboard-chart-header">
-            <h3>Traffic to Page</h3>
-            <select><option>Monthly</option><option>Yearly</option></select>
-          </div>
-          <RevenueChart />
+          <h3>📊 Overview</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={chartData}>
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="count" fill="#3b82f6" />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
 
         <div className="chart-container">
-          <div className="dashboard-chart-header">
-            <h3>Most searched product</h3>
-            <select><option>Monthly</option><option>Yearly</option></select>
-          </div>
-          <ProvidersBarChart />
+          <h3>📈 Growth Trend</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Line type="monotone" dataKey="count" stroke="#22c55e" />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
+      </div>
+
+      <div className="summary-card">
+        <h3>System Summary</h3>
+        <p><strong>Brochures:</strong> {counts.brochures}</p>
+        <p><strong>Products:</strong> {counts.products}</p>
+        <p><strong>Providers:</strong> {counts.providers}</p>
+        <p><strong>Total Revenue:</strong> ${counts.totalRevenue}</p>
       </div>
     </div>
   );

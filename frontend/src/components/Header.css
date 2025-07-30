@@ -20,7 +20,7 @@
 
 .header-left .logo {
   width: 230px;        /* Increased logo size */
-  margin-left: -140px;  /* Moves it further left */
+  padding-left:-20px; /* Moves it further left */
 }
 .nav-center {
   display: flex;
