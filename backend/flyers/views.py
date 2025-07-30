@@ -21,6 +21,8 @@ from django.http import JsonResponse
 from .models import ProviderApplication
 from rest_framework.views import APIView
 from .models import PendingFlyer
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 
 from rest_framework import generics
@@ -442,3 +444,20 @@ def update_flyer(request, flyer_id):
         return Response({'message': 'Flyer updated successfully'}, status=status.HTTP_200_OK)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def dashboard_counts(request):
+    users_count = User.objects.count()
+    stores_count = Store.objects.count()
+    flyers_count = Flyer.objects.count()
+    pending_flyers_count = PendingFlyer.objects.count()
+
+    return Response({
+        "users": users_count,
+        "providers": stores_count,
+        "flyers": flyers_count,
+        "pending_flyers": pending_flyers_count
+    })
