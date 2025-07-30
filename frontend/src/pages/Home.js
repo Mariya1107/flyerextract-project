@@ -268,7 +268,7 @@ const Home = () => {
             <div className="col-md-6 text-md-end">
               <div className="business-img">
                 <img
-                  src="/assets/img/business.jpg"
+                  src="/assets/Business2.jpg"
                   className="img-fluid"
                   alt="Business"
                   style={{ maxWidth: "90%", borderRadius: "12px" }}

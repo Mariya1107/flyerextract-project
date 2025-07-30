@@ -30,7 +30,14 @@ const Footer = () => {
 
   const currencies = ["USD", "EURO", "YEN"];
 
-  const socialPlatforms = ["fb", "instagram", "twitter", "whatsapp", "youtube", "linkedin"];
+const socialPlatforms = [
+  { name: "Facebook", icon: "/assets/facebook.jpg" },
+  { name: "Instagram", icon: "/assets/insta.jpg" },
+  { name: "LinkedIn", icon: "/assets/linkedln.jpg" },
+  { name: "WhatsApp", icon: "/assets/whatsapp.jpg" },
+  { name: "YouTube", icon: "/assets/yotube.jpg" },
+  { name: "Twitter", icon: "/assets/x.jpg" },
+];
 
   return (
     <footer className="footer">
@@ -61,24 +68,28 @@ const Footer = () => {
             </div>
 
             <h6 className="download-title">Download Our App</h6>
-            <div className="app-icons">
-              {/* Note: The image shows specific branded badges. You'll need to source these image assets. */}
-              <a href="#appstore"><img src="/assets/img/icons/app-store.svg" alt="App Store" /></a>
-              <a href="#playstore"><img src="/assets/img/icons/goolge-play.svg" alt="Google Play" /></a>
-            </div>
+<div className="app-icons">
+  <a href="#appstore" className="appstore-icon">
+    <img src="/assets/App store.jpg" alt="App Store" />
+  </a>
+  <a href="#playstore" className="playstore-icon">
+    <img src="/assets/PlayStore.jpg" alt="Play Store" />
+  </a>
+</div>
           </div>
         </div>
 
 <div className="footer-meta">
-  <ul className="social-icons">
-    {socialPlatforms.map((platform) => (
-      <li key={platform}>
-        <a href="#home">
-          <img src={`/assets/img/icons/${platform}.svg`} alt={platform} />
-        </a>
-      </li>
-    ))}
-  </ul>
+<ul className="social-icons">
+  {socialPlatforms.map((platform) => (
+    <li key={platform.name}>
+      <a href="#home">
+        <img src={platform.icon} alt={platform.name} />
+      </a>
+    </li>
+  ))}
+</ul>
+
 </div>
 
 

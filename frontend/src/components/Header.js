@@ -20,7 +20,7 @@ const Header = ({
       <div className="container">
         <div className="header-left">
           <Link to="/" aria-label="Home">
-            <img src="/assets/img/logo.svg" alt="Logo" className="logo" />
+            <img src="/assets/Logo.png" alt="Logo" className="logo" />
           </Link>
         </div>
 

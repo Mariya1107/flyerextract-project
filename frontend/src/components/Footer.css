@@ -124,6 +124,11 @@
   height: 40px;
 }
 
+.playstore-icon img {
+  height: 43px; /* You can adjust this value as needed */
+  width: auto;
+}
+
 /* Middle Section: Social and Dropdowns */
 .footer-meta {
   display: flex;

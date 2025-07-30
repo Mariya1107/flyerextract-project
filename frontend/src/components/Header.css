@@ -18,9 +18,9 @@
 }
 
 .header-left .logo {
-  width: 120px;
+  width: 230px;        /* Increased logo size */
+  margin-left: -140px;  /* Moves it further left */
 }
-
 .nav-center {
   display: flex;
   align-items: center;
