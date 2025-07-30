@@ -38,7 +38,7 @@ const ProductGrid = ({ products }) => {
           </div>
         ))}
       </div>
-      {products.length > 6 && (
+      {products.length > 3 && (
         <div className="toggle-button-wrapper">
           <button className="toggle-btn" onClick={handleToggle}>
             {showAll ? "View Less ▲" : "View More ▼"}

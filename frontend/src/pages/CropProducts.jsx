@@ -15,7 +15,7 @@ const ProductGrid = ({ products, onProductClick }) => {
 
   const handleToggle = () => {
     if (showAll) {
-      setVisibleCount(6);
+      setVisibleCount(3);
     } else {
       setVisibleCount(products.length);
     }
@@ -24,31 +24,35 @@ const ProductGrid = ({ products, onProductClick }) => {
 
   return (
     <div className="product-section">
-      <h2 className="section-title">Products</h2>
-      <div className="product-grid">
-        {products.slice(0, visibleCount).map((product, index) => (
-          <div
-            key={index}
-            className="product-card"
-            onClick={() => onProductClick(product)}
-            style={{ cursor: "pointer" }}
-          >
-            <img src={product.image} alt={product.name} className="product-img" />
-            <div className="product-details">
-              <strong>{product.name}</strong>
-              <div className="price-tag">₹ {product.price}</div>
-            </div>
+      <div className="product-header">
+  <h2 className="section-title">Products</h2>
+
+  {products.length > 3 && (
+    <button className="toggle-view-btn" onClick={() => setShowAll((prev) => !prev)}>
+      {showAll ? 'Show Less ▲' : 'View All ▼'}
+    </button>
+  )}</div>
+
+  <div className="product-grid">
+    {products
+      .slice(0, showAll ? products.length : visibleCount)
+      .map((product, index) => (
+        <div
+          key={index}
+          className="product-card"
+          onClick={() => onProductClick(product)}
+          style={{ cursor: 'pointer' }}
+        >
+          <img src={product.image} alt={product.name} className="product-img" />
+          <div className="product-details">
+            <strong>{product.name}</strong>
+            <div className="price-tag">₹ {product.price}</div>
           </div>
-        ))}
-      </div>
-      {products.length > 6 && (
-        <div className="toggle-button-wrapper">
-          <button className="toggle-btn" onClick={handleToggle}>
-            {showAll ? "View Less ▲" : "View More ▼"}
-          </button>
         </div>
-      )}
-    </div>
+      ))}
+  </div>
+</div>
+
   );
 };
 

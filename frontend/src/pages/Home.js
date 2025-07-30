@@ -286,7 +286,7 @@ const Home = () => {
             <div className="popular-cities-header d-flex align-items-center justify-content-between w-100">
               <h2 className="fw-bold m-0 mb-0">Popular Cities</h2>
               <button
-                className="toggle-button"
+                className="toggle-button1"
                 onClick={() => setIsCitiesOpen(prev => !prev)}
                 aria-label="Toggle Cities"
               >
