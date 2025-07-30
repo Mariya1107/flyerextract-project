@@ -82,13 +82,7 @@ const ProviderLoginDashboard = () => {
         </div>
       </div>
 
-      <div className="summary-card">
-        <h3>System Summary</h3>
-        <p><strong>Brochures:</strong> {counts.brochures}</p>
-        <p><strong>Products:</strong> {counts.products}</p>
-        <p><strong>Providers:</strong> {counts.providers}</p>
-        <p><strong>Total Revenue:</strong> ${counts.totalRevenue}</p>
-      </div>
+      
     </div>
   );
 };
