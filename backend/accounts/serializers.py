@@ -25,6 +25,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
     profile_photo = serializers.ImageField(required=False)
     class Meta:
         model = CustomUser
-        fields = ['username', 'email', 'full_name', 'phone', 'gender', 'profile_photo', 'stores']
+        fields = ['username', 'email', 'full_name', 'phone', 'gender', 'profile_photo', 'stores' ,'last_login']
 
 

@@ -8,7 +8,7 @@ from .views import (
     list_regions, add_region, delete_region,
     create_provider_application, list_provider_applications,
     get_provider_application, update_provider_application,
-    delete_provider_application, provider_brochures_pages # ✅ Added region views
+    delete_provider_application, provider_brochures_pages, server_status # ✅ Added region views
 )
 
 urlpatterns = [
@@ -18,6 +18,7 @@ urlpatterns = [
     path('login/admin/', login_admin, name='admin-login'),
     path('me/', get_logged_in_user_info, name='get_logged_in_user_info'),
     path('profile/', user_profile, name='user-profile'),
+    path('server-status/', server_status),
 
     # Admin user management
     path('admin/users/', list_all_users),

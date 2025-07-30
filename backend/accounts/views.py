@@ -124,6 +124,7 @@ def get_logged_in_user_info(request):
             "phone": user.phone,
             "gender": user.gender,
             "profile_photo": request.build_absolute_uri(user.profile_photo.url) if user.profile_photo else None,
+            "last_login": user.last_login,
             "stores": [{"id": store.id, "name": store.name} for store in stores] if stores.exists() else []
         })
 
@@ -363,3 +364,6 @@ def provider_brochures_pages(request, provider_id):
     return Response(serializer.data)
 
 
+@api_view(['GET'])
+def server_status(request):
+    return Response({"status": "online"})

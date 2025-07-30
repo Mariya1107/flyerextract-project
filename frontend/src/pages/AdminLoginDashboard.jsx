@@ -6,12 +6,13 @@ import './AdminLoginDashboard.css';
 
 const AdminLoginDashboard = () => {
   const navigate = useNavigate();
-  const [adminData, setAdminData] = useState(null);
 
+  const [adminData, setAdminData] = useState(null);
   const [usersCount, setUsersCount] = useState(0);
   const [providersCount, setProvidersCount] = useState(0);
   const [flyersCount, setFlyersCount] = useState(0);
   const [pendingFlyersCount, setPendingFlyersCount] = useState(0);
+  const [serverStatus, setServerStatus] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem('adminToken');
@@ -47,7 +48,32 @@ const AdminLoginDashboard = () => {
       .catch((err) => {
         console.error('Failed to fetch dashboard counts:', err);
       });
+
+    // Fetch server status
+    axios
+      .get(`${BASE_URL}api/accounts/server-status/`, { headers })
+      .then((res) => {
+        setServerStatus(res.data.status === 'online' ? 'Online' : 'Offline');
+      })
+      .catch((err) => {
+        console.error('Failed to fetch server status:', err);
+        setServerStatus('Offline');
+      });
   }, [navigate]);
+
+  // Convert to 12-hour format with AM/PM
+  const formatDateTime = (datetimeStr) => {
+    const date = new Date(datetimeStr);
+    const options = {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    };
+    return date.toLocaleString('en-US', options);
+  };
 
   const adminCards = [
     { title: 'Total Users', value: usersCount, color: '#3b82f6' },
@@ -70,8 +96,16 @@ const AdminLoginDashboard = () => {
       <div className="admin-notes">
         <h3>System Summary</h3>
         <p>Admin: {adminData?.full_name || 'Loading...'}</p>
-        <p>Last login: 10 mins ago</p>
-        <p>Server status: ✅ Online</p>
+        <p>
+          Last login:{' '}
+          {adminData?.last_login
+            ? formatDateTime(adminData.last_login)
+            : 'Fetching...'}
+        </p>
+        <p>
+          Server status:{' '}
+          {serverStatus === 'Online' ? '✅ Online' : serverStatus === 'Offline' ? '❌ Offline' : '...'}
+        </p>
       </div>
     </div>
   );
