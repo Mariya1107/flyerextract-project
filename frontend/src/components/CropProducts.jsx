@@ -4,12 +4,14 @@ import axios from "axios";
 import BASE_URL from "../config";
 import * as pdfjsLib from "pdfjs-dist";
 import "pdfjs-dist/web/pdf_viewer.css";
-import "./CropProducts.css";
-import "./ProductGrid.css";
+
+
+import "./pages/CropProducts.css";
+import "./pages/ProductGrid.css";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
-const ProductGrid = ({ products, onProductClick }) => {
+const ProductGrid = ({ products }) => {
   const [visibleCount, setVisibleCount] = useState(6);
   const [showAll, setShowAll] = useState(false);
 
@@ -27,12 +29,7 @@ const ProductGrid = ({ products, onProductClick }) => {
       <h2 className="section-title">🛍️ Featured Products</h2>
       <div className="product-grid">
         {products.slice(0, visibleCount).map((product, index) => (
-          <div
-            key={index}
-            className="product-card"
-            onClick={() => onProductClick(product)}
-            style={{ cursor: "pointer" }}
-          >
+          <div key={index} className="product-card">
             <img src={product.image} alt={product.name} className="product-img" />
             <div className="product-details">
               <strong>{product.name}</strong>
@@ -52,7 +49,7 @@ const ProductGrid = ({ products, onProductClick }) => {
   );
 };
 
-const CropProducts = () => {
+const CropUploaderPage = () => {
   const { flyerId } = useParams();
   const navigate = useNavigate();
 
@@ -66,7 +63,9 @@ const CropProducts = () => {
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [showSearchModal, setShowSearchModal] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null); // NEW
+  const [showAllProducts, setShowAllProducts] = useState(false);
+
+  const displayedProducts = showAllProducts ? products : products.slice(0, 6);
 
   const startRef = useRef(null);
   const overlayRef = useRef();
@@ -210,6 +209,7 @@ const CropProducts = () => {
 
   return (
     <div className="flyer-detail-container">
+      {/* Header */}
       <div className="flyer-header-card">
         <button className="back-button" onClick={() => navigate("/")}>← Back</button>
         <input
@@ -220,6 +220,7 @@ const CropProducts = () => {
         />
       </div>
 
+      {/* PDF Viewer and Overlay */}
       <div className="flyer-preview">
         <div id="pdf-canvas-container" style={{ width: "100%", position: "relative" }} />
         <div
@@ -262,33 +263,15 @@ const CropProducts = () => {
       <p className="page-info">Page {currentPage} / {totalPages}</p>
 
       {/* Product Grid */}
-      <ProductGrid products={products} onProductClick={(product) => setSelectedProduct(product)} />
+      <ProductGrid products={products} />
 
-      {/* Modal (for search OR click) */}
-      {(showSearchModal || selectedProduct) && (
-        <div className="modal-overlay" onClick={() => {
-          setShowSearchModal(false);
-          setSelectedProduct(null);
-        }}>
+      {/* Search Modal */}
+      {showSearchModal && (
+        <div className="modal-overlay" onClick={() => setShowSearchModal(false)}>
           <div className="search-modal" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close1" onClick={() => {
-              setShowSearchModal(false);
-              setSelectedProduct(null);
-            }}>✖</button>
-
-            <h2>{selectedProduct ? "Product Details" : "Search Results"}</h2>
-
-            {selectedProduct ? (
-              <div className="product-grid-modal">
-                <div className="product-card">
-                  <img src={selectedProduct.image || "https://via.placeholder.com/150"} alt={selectedProduct.name} />
-                  <div className="product-details">
-                    <strong>{selectedProduct.name}</strong>
-                    <span className="price-tag">₹ {selectedProduct.price}</span>
-                  </div>
-                </div>
-              </div>
-            ) : filteredProducts.length === 0 ? (
+            <button className="modal-close1" onClick={() => setShowSearchModal(false)}>✖</button>
+            <h2>Search Results</h2>
+            {filteredProducts.length === 0 ? (
               <p className="no-results">No matching products found.</p>
             ) : (
               <div className="product-grid-modal">
@@ -310,4 +293,3 @@ const CropProducts = () => {
   );
 };
 
-export default CropProducts;

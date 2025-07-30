@@ -1,0 +1,123 @@
+:root {
+  --accent: #6069b3;
+  --bg-gradient: linear-gradient(135deg, #ffe4f0, #d4eafc, #dafce4);
+  --text: #ebe2e2;
+  --card-radius: 18px;
+  --card-bg: rgba(255, 255, 255, 0.45);
+}
+
+/* Main section */
+.product-section {
+  background: var(--bg-gradient);
+  padding: 3rem 1.5rem;
+  border-radius: 28px;
+  margin: 2rem auto;
+  max-width: 1200px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+}
+
+.section-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #3e2b63;
+  text-align: center;
+  margin-bottom: 2rem;
+  font-family: "Poppins", sans-serif;
+}
+
+/* Product grid */
+.product-grid {
+  display: grid;
+  flex-wrap: wrap;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.2rem;
+  justify-items: center;
+  
+}
+
+/* Individual card */
+.product-card {
+  background: var(--card-bg);
+  border: 1px solid rgba(221, 212, 212, 0.5);
+  backdrop-filter: blur(12px);
+  padding: 0.5rem;
+  border-radius: var(--card-radius);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  width: 500px;
+  height: 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.12);
+}
+
+.product-img {
+  width: 100%;
+  height: 90px;
+  min-height:90px;
+  object-fit: contain;
+  border-radius: 14px;
+  background: rgba(10, 10, 10, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  margin-bottom: 1rem;
+  border-color: #2e2e2e;
+}
+
+.product-details strong {
+  font-size: 1.1rem;
+  color: #3a2a53;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-family:Georgia, 'Times New Roman', Times, serif;
+  padding-top: 3px;
+}
+
+.price-tag {
+  background: var(--accent);
+  color: #ffffff;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-weight: 400;
+  font-size: 1.2rem;
+  font-family:fantasy ;
+  
+}
+
+/* View More button */
+.toggle-button-wrapper {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.toggle-btn {
+  background: #ffffffcc;
+  border: 1px solid #ddd;
+  padding: 10px 24px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #444;
+  transition: background 0.2s ease;
+}
+
+.toggle-btn:hover {
+  background: #ffffffee;
+}
+.product-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+
+}
+.product-card {
+  width: 320px;
+  min-width: 250px;
+  flex: 0 0 auto;
+  height:250px
+}
