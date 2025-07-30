@@ -80,10 +80,24 @@ const CropProducts = () => {
       const selected = res.data.find((f) => f.id === parseInt(flyerId));
       setFlyer(selected);
 
-      if (!selected?.image && selected?.pdf) {
-        const url = selected.pdf.startsWith("http") ? selected.pdf : `${BASE_URL}${selected.pdf}`;
-        loadPdfDocument(url);
-      }
+      if (selected?.pdf) {
+  const url = selected.pdf.startsWith("http") ? selected.pdf : `${BASE_URL}${selected.pdf}`;
+  loadPdfDocument(url);
+} else if (selected?.image) {
+  const img = document.createElement("img");
+  img.src = selected.image.startsWith("http") ? selected.image : `${BASE_URL}${selected.image}`;
+  img.onload = () => {
+    setCanvasEl(img); // Track image as 'canvasEl' to allow cropping
+    const container = document.getElementById("pdf-canvas-container");
+    if (container) {
+      container.innerHTML = "";
+      container.appendChild(img);
+      img.style.maxWidth = "100%";
+      img.style.display = "block";
+    }
+  };
+}
+
     });
 
     axios.get(`${BASE_URL}products/${flyerId}/`).then((res) => setProducts(res.data));

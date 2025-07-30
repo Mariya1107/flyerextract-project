@@ -100,14 +100,14 @@
   font-weight: 800;
   margin-bottom: 20px;
  
-  padding-left: 400px;
+text-align: center;
 }
 .category-section .sub-title {
   font-size: 15px;
   color: #666;
   margin: 0 auto 50px;
   max-width: 700px;
-  padding-left: 400px;
+  text-align: center;
 }
 
 .text-linear-primary {
@@ -262,6 +262,7 @@
   max-width: 100%;
   border-radius: 10px;
   padding: 12px 28px;
+  height:400px;
 }
 /* === Animation === */
 @keyframes fadeInUp {
@@ -287,13 +288,15 @@
 
 .business-section .container {
   max-width: 1200px;
+  max-height: 400px;
   margin: 0 auto;
   padding: 0 20px;
   transform: translateY(-20px) translateX(-50px); 
 }
 
 .business-section .text-column {
-  padding-left: 50px;
+  padding-left: 40px;
+  padding-right: 20px;
 }
 
 .business-section h2 {
@@ -314,6 +317,7 @@
   margin-bottom: 24px;
   font-size: 17px;
   line-height: 1.6;
+  
 }
 
 .business-section .btn-linear-primary {
@@ -333,17 +337,15 @@
 .business-section .business-img {
   display: flex;
   justify-content: flex-end;
-  align-items: center;
-  margin-left: 900px; 
+  padding-top: 90px;
+  margin-left: 1000px;
+   position: relative;
+   top: -450px;
+   
+   
+
 }
 
-.business-section .business-img img {
-  max-width: 90%;
-  height: auto;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(255, 255, 255, 0.05);
-  transform: translateX(40px);
-}
 
 /* Section styling */
 /* Section styling */
@@ -351,7 +353,7 @@
   padding: 60px 0;
   background-color: #fff;
   border-top: 1px solid #eee;
-  margin-left: -100px; 
+  margin-left: -180px; 
 }
 
 /* Accordion header and button */

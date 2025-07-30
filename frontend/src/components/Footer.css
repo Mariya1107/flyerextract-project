@@ -8,6 +8,7 @@
   font-size: 15px; /* Slightly larger */
   font-weight: 400;
   line-height: 1.6;
+  margin-left: -100px;
 }
 
 .container {
@@ -177,7 +178,7 @@
 
 .bottom-links {
   display: flex;
-  gap: 25px;
+  gap: 5px;
   list-style: none;
   padding: 0;
   margin: 0;
@@ -190,6 +191,7 @@
   text-decoration: none;
   color: #282222;
   font-size: 15px;
+  margin-right: 5px;
 }
 
 .bottom-links a:hover {

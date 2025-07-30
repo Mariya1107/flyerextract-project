@@ -150,16 +150,28 @@ const FlyerDetail = () => {
       </div>
 
       <div className="flyer-preview">
-        <div id="pdf-canvas-container" style={{ width: "100%", position: "relative" }} />
-        <div className="pdf-controls">
-          <button onClick={goToPrev} disabled={currentPage <= 1}>
-            ‹
-          </button>
-          <button onClick={goToNext} disabled={currentPage >= totalPages}>
-            ›
-          </button>
-        </div>
+  {flyer?.image ? (
+    <img
+      src={flyer.image.startsWith("http") ? flyer.image : `${BASE_URL}${flyer.image}`}
+      alt={flyer.title}
+      style={{
+        width: "100%",
+        maxHeight: "600px",
+        objectFit: "contain",
+        borderRadius: "12px"
+      }}
+    />
+  ) : (
+    <>
+      <div id="pdf-canvas-container" style={{ width: "100%", position: "relative" }} />
+      <div className="pdf-controls">
+        <button onClick={goToPrev} disabled={currentPage <= 1}>‹</button>
+        <button onClick={goToNext} disabled={currentPage >= totalPages}>›</button>
       </div>
+    </>
+  )}
+</div>
+
 
       <p className="page-info">
         Page {currentPage} / {totalPages}

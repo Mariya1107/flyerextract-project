@@ -17,7 +17,7 @@ const Header = ({
 }) => {
   return (
     <header className="main-header">
-      <div className="container">
+      <div className="container1">
         <div className="header-left">
           <Link to="/" aria-label="Home">
             <img src="/assets/Logo.png" alt="Logo" className="logo" />
@@ -48,7 +48,7 @@ const Header = ({
               setShowProviderModal1(true);
             }}
           >
-            Become a Provider
+            Become a Provider  <FontAwesomeIcon icon={faChevronDown} />
           </a>
 
           <a
@@ -58,7 +58,7 @@ const Header = ({
               setShowAdminModal(true);
             }}
           >
-            Admin
+            Admin <FontAwesomeIcon icon={faChevronDown} />
           </a>
         </nav>
 

@@ -244,7 +244,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Business Section */}
+ {/* Business Section */}
       <section className="section business-section bg-black">
         <div className="container">
           <div className="row align-items-center">
@@ -271,13 +271,15 @@ const Home = () => {
                   src="/assets/Business2.jpg"
                   className="img-fluid"
                   alt="Business"
-                  style={{ maxWidth: "90%", borderRadius: "12px" }}
+                  style={{ maxWidth: "500px" , borderRadius: "40px" , }}
                 />
               </div>
             </div>
           </div>
         </div>
       </section>
+
+      
 
       {/* Cities Section */}
       <section className="section info-section">
