@@ -27,19 +27,11 @@ const Header = ({
         <nav className="nav-center">
           {["Home"].map((txt) => (
             <a href={`#${txt.toLowerCase()}`} key={txt}>
-              {txt} <FontAwesomeIcon icon={faChevronDown} />
+              {txt}
             </a>
           ))}
 
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              setShowProviderModal(true);
-            }}
-          >
-            Provider Login <FontAwesomeIcon icon={faChevronDown} />
-          </a>
+
 
           <a
             href="#"
@@ -48,8 +40,14 @@ const Header = ({
               setShowProviderModal1(true);
             }}
           >
-            Become a Provider  <FontAwesomeIcon icon={faChevronDown} />
+            Become a Shop With Us
           </a>
+          {["About Us"].map((txt) => (
+            <a href={`#${txt.toLowerCase()}`} key={txt}>
+              {txt}
+            </a>
+          ))}
+
 
           <a
             href="#"
@@ -58,7 +56,7 @@ const Header = ({
               setShowAdminModal(true);
             }}
           >
-            Admin <FontAwesomeIcon icon={faChevronDown} />
+            Admin
           </a>
         </nav>
 
@@ -75,12 +73,12 @@ const Header = ({
 
           <button
             className="btn-joinus"
-            onClick={() => {
-              setAuthMode("signup");
-              setShowAuthModal(true);
+            onClick={(e) => {
+              e.preventDefault();
+              setShowProviderModal(true);
             }}
           >
-            <FontAwesomeIcon icon={faUser} /> Join Us
+            <FontAwesomeIcon icon={faUser} /> Provider Sign In
           </button>
         </div>
       </div>
@@ -89,3 +87,4 @@ const Header = ({
 };
 
 export default Header;
+
