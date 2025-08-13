@@ -244,7 +244,8 @@ const Home = () => {
         </div>
       </section>
        {/* About Section */}
-      <section className="section about-section bg-creme">
+      <section id="about-us" className="section about-section bg-creme">
+
         <div className="container">
           <div className="row align-items-center">
             <div className="col-md-6">
@@ -273,7 +274,7 @@ const Home = () => {
                   src="/assets/Business1.jpg"
                   className="img-fluid"
                   alt="Business"
-                  style={{ minWidth: "780px",minHeight: "580px", borderRadius: "40px", }}
+                  style={{ minWidth: "880px",minHeight: "680px", borderRadius: "40px", }}
                 />
               </div>
             </div>

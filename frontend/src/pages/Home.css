@@ -466,7 +466,7 @@ text-align: center;
 /* Section background & padding */
 .about-section .container {
   max-width: 1200px;
-  max-height: 300px;
+  max-height: 400px;
   margin: 0 auto;
   padding: 0 20px;
   transform: translateY(-20px) translateX(-50px); 
@@ -491,9 +491,11 @@ text-align: center;
 
 /* Paragraph styles */
 .about-section .section-header p {
-  font-size: 1.1rem;
+  font-size: 1.3rem;
   margin-top: 15px;
+  font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
   line-height: 1.6;
+  font-style: oblique;
   color: #131111; /* light for dark backgrounds */
 }
 
@@ -502,6 +504,7 @@ text-align: center;
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  
   padding: 12px 24px;
   font-weight: 600;
   border-radius: 30px;
@@ -524,9 +527,9 @@ text-align: center;
   justify-content: flex-end;
   justify-content: left;
   padding-top: 100px;
- margin-left: 700px;
+ margin-left: 650px;
    position: relative;
-   top: -505px;
+   top: -547px;
    
   
   
