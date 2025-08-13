@@ -463,3 +463,82 @@ text-align: center;
 .popular-cities-header h2 {
   padding-left: 65px; /* Adjust this value as needed */
 }
+/* Section background & padding */
+.about-section .container {
+  max-width: 1200px;
+  max-height: 300px;
+  margin: 0 auto;
+  padding: 0 20px;
+  transform: translateY(-20px) translateX(-50px); 
+}
+.about-section {
+  padding: 80px 0;
+  padding-right: 55px;
+  background-color: #f8f5f0; /* light creme */
+}
+
+/* Heading styles */
+.about-section .section-header h2 {
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.about-section .section-header .text-linear-primary {
+  background: linear-gradient(90deg, #ff7b54, #ffb347);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Paragraph styles */
+.about-section .section-header p {
+  font-size: 1.1rem;
+  margin-top: 15px;
+  line-height: 1.6;
+  color: #131111; /* light for dark backgrounds */
+}
+
+/* Button styles */
+.about-section .btn-linear-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  font-weight: 600;
+  border-radius: 30px;
+  background: linear-gradient(90deg, #ff7b54, #ffb347);
+  border: none;
+  color: white;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  margin-left: 30px;
+}
+
+.about-section .btn-linear-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0px 4px 12px rgba(255, 123, 84, 0.4);
+}
+
+/* Image styles */
+.about-section .business-img img {
+   display: flex;
+  justify-content: flex-end;
+  justify-content: left;
+  padding-top: 100px;
+ margin-left: 700px;
+   position: relative;
+   top: -505px;
+   
+  
+  
+}
+
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .about-section {
+    text-align: center;
+  }
+  .about-section .business-img {
+    margin-top: 50px;
+  }
+}

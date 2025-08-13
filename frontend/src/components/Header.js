@@ -25,23 +25,18 @@ const Header = ({
         </div>
 
         <nav className="nav-center">
-          {["Home"].map((txt) => (
-            <a href={`#${txt.toLowerCase()}`} key={txt}>
-              {txt}
-            </a>
-          ))}
+  {["Home"].map((txt) => (
+    <Link to="/" key={txt}>
+      {txt}
+    </Link>
+  ))}
 
 
 
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              setShowProviderModal1(true);
-            }}
-          >
-            Become a Shop With Us
-          </a>
+
+          <Link to="/becomeshop">
+  Become a Shop With Us
+</Link>
           {["About Us"].map((txt) => (
             <a href={`#${txt.toLowerCase()}`} key={txt}>
               {txt}

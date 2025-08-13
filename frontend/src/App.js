@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Layout from "./components/Layout";
 import FlyerDetail from "./pages/FlyerDetail";
-
+import BecomeShop from "./pages/BecomeShop";
 import FlyerList from "./pages/FlyerList";
 import BrochureViewer from "./pages/ProviderBrochureDash.js";
 import ProviderLogin from "./components/ProviderLogin";
@@ -51,6 +51,7 @@ function App() {
           <Route path="flyers" element={<FlyerList />} />
           <Route path="store/:id/flyers" element={<FlyerList />} />
           <Route path="provider-login" element={<ProviderLogin />} />
+          <Route path="/becomeshop" element={<BecomeShop />} />
         </Route>
 
         {/* 🧑‍💼 Provider Dashboard */}

@@ -10,7 +10,7 @@ const ProviderModal1 = ({ showModal, setShowModal }) => {
     full_name: "",
     email: "",
     phone: "",
-    gender: "",
+    
     company_name: "",
     address: "",
     gst_number: "",
@@ -31,7 +31,7 @@ const ProviderModal1 = ({ showModal, setShowModal }) => {
       full_name,
       email,
       phone,
-      gender,
+      
       company_name,
       address,
       gst_number,
@@ -42,7 +42,7 @@ const ProviderModal1 = ({ showModal, setShowModal }) => {
       full_name.trim() &&
       email.trim() &&
       phone.trim() &&
-      gender &&
+      
       company_name.trim() &&
       address.trim() &&
       gst_number.trim() &&
@@ -78,7 +78,7 @@ const ProviderModal1 = ({ showModal, setShowModal }) => {
         full_name: "",
         email: "",
         phone: "",
-        gender: "",
+        
         company_name: "",
         address: "",
         gst_number: "",
@@ -120,19 +120,7 @@ const ProviderModal1 = ({ showModal, setShowModal }) => {
                 onChange={handleChange}
               />
             </div>
-            <div className="provider-field">
-              <label>Gender</label>
-              <select
-                name="gender"
-                value={formData.gender}
-                onChange={handleChange}
-              >
-                <option value="">Select</option>
-                <option value="female">Female</option>
-                <option value="male">Male</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
+            
           </>
         );
       case 2:

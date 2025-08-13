@@ -243,8 +243,44 @@ const Home = () => {
           </div>
         </div>
       </section>
+       {/* About Section */}
+      <section className="section about-section bg-creme">
+        <div className="container">
+          <div className="row align-items-center">
+            <div className="col-md-6">
+              <div className="section-header mb-md-0 mb-4">
+                <h2 className="text-white display-4">
+                  ABOUT US <br />
+                   <span className="text-linear-primary"> ONE PLACE FOR ALL OFFERS</span>
+                </h2>
+                <p className="text-light">
+                  A versatile platform that lets customers get to know all offers and shops at their figer tips . Be able to browse,  select and shop right here . 
+                </p>
+                <a
+                  href="#" className="btn btn-linear-primary"
 
- {/* Business Section */}
+                >  <Link to="/becomeshop">
+                    <FontAwesomeIcon icon={faUser} className="me-2" />
+                    Register NOW
+
+                  </Link></a>
+
+              </div>
+            </div>
+            <div className="col-md-6 text-md-end">
+              <div className="business-img">
+                <img
+                  src="/assets/Business1.jpg"
+                  className="img-fluid"
+                  alt="Business"
+                  style={{ minWidth: "780px",minHeight: "580px", borderRadius: "40px", }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+{/* Business Section */}
       <section className="section business-section bg-black">
         <div className="container">
           <div className="row align-items-center">
@@ -259,10 +295,15 @@ const Home = () => {
                   from home services like plumbing and electrical work to personal services like<br />
                   photography and tutoring.
                 </p>
-                <a href="#" className="btn btn-linear-primary">
-                  <FontAwesomeIcon icon={faUser} className="me-2" />
-                  Join Us
-                </a>
+                <a
+                  href="#" className="btn btn-linear-primary"
+
+                >  <Link to="/becomeshop">
+                    <FontAwesomeIcon icon={faUser} className="me-2" />
+                    Become a Shop With Us
+
+                  </Link></a>
+
               </div>
             </div>
             <div className="col-md-6 text-md-end">
@@ -271,7 +312,7 @@ const Home = () => {
                   src="/assets/Business2.jpg"
                   className="img-fluid"
                   alt="Business"
-                  style={{ maxWidth: "500px" , borderRadius: "40px" , }}
+                  style={{ maxWidth: "500px", borderRadius: "40px", }}
                 />
               </div>
             </div>
@@ -279,7 +320,9 @@ const Home = () => {
         </div>
       </section>
 
-      
+     
+
+
 
       {/* Cities Section */}
       <section className="section info-section">
