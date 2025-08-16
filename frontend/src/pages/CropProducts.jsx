@@ -6,53 +6,60 @@ import * as pdfjsLib from "pdfjs-dist";
 import "pdfjs-dist/web/pdf_viewer.css";
 import "./CropProducts.css";
 import "./ProductGrid.css";
+import { FaShoppingCart } from "react-icons/fa";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
-const ProductGrid = ({ products, onProductClick }) => {
+const ProductGrid = ({ products, onProductClick, handleAddToCart }) => {
   const [visibleCount, setVisibleCount] = useState(6);
   const [showAll, setShowAll] = useState(false);
-
-  const handleToggle = () => {
-    if (showAll) {
-      setVisibleCount(3);
-    } else {
-      setVisibleCount(products.length);
-    }
-    setShowAll(!showAll);
-  };
 
   return (
     <div className="product-section">
       <div className="product-header">
-  <h2 className="section-title">Products</h2>
+        <h2 className="section-title">Products</h2>
+        {products.length > 3 && (
+          <button
+            className="toggle-view-btn"
+            onClick={() => setShowAll((prev) => !prev)}
+          >
+            {showAll ? "Show Less ▲" : "View All ▼"}
+          </button>
+        )}
+      </div>
 
-  {products.length > 3 && (
-    <button className="toggle-view-btn" onClick={() => setShowAll((prev) => !prev)}>
-      {showAll ? 'Show Less ▲' : 'View All ▼'}
-    </button>
-  )}</div>
-
-  <div className="product-grid">
-    {products
-      .slice(0, showAll ? products.length : visibleCount)
-      .map((product, index) => (
-        <div
-          key={index}
-          className="product-card"
-          onClick={() => onProductClick(product)}
-          style={{ cursor: 'pointer' }}
-        >
-          <img src={product.image} alt={product.name} className="product-img" />
-          <div className="product-details">
-            <strong>{product.name}</strong>
-            <div className="price-tag">₹ {product.price}</div>
-          </div>
-        </div>
-      ))}
-  </div>
-</div>
-
+      <div className="product-grid">
+        {products
+          .slice(0, showAll ? products.length : visibleCount)
+          .map((product, index) => (
+            <div
+              key={index}
+              className="product-card"
+              onClick={() => onProductClick(product)}
+              style={{ cursor: "pointer" }}
+            >
+              <img
+                src={product.image}
+                alt={product.name}
+                className="product-img"
+              />
+              <div className="product-details">
+                <strong>{product.name}</strong>
+                <div className="product-footer">
+                  <span className="price-tag">₹ {product.price}</span>
+                  <FaShoppingCart
+                    className="cart-icon"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAddToCart(product);
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
+      </div>
+    </div>
   );
 };
 
@@ -61,7 +68,7 @@ const CropProducts = () => {
   const navigate = useNavigate();
 
   const [flyer, setFlyer] = useState(null);
-  const [canvasEl, setCanvasEl] = useState(null);
+  const [canvasEl, setCanvasEl] = useState(null); // always store a canvas
   const [selection, setSelection] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [pdfDoc, setPdfDoc] = useState(null);
@@ -70,7 +77,7 @@ const CropProducts = () => {
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [showSearchModal, setShowSearchModal] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null); // NEW
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   const startRef = useRef(null);
   const overlayRef = useRef();
@@ -81,26 +88,41 @@ const CropProducts = () => {
       setFlyer(selected);
 
       if (selected?.pdf) {
-  const url = selected.pdf.startsWith("http") ? selected.pdf : `${BASE_URL}${selected.pdf}`;
-  loadPdfDocument(url);
-} else if (selected?.image) {
-  const img = document.createElement("img");
-  img.src = selected.image.startsWith("http") ? selected.image : `${BASE_URL}${selected.image}`;
-  img.onload = () => {
-    setCanvasEl(img); // Track image as 'canvasEl' to allow cropping
-    const container = document.getElementById("pdf-canvas-container");
-    if (container) {
-      container.innerHTML = "";
-      container.appendChild(img);
-      img.style.maxWidth = "100%";
-      img.style.display = "block";
-    }
-  };
-}
+        const url = selected.pdf.startsWith("http")
+          ? selected.pdf
+          : `${BASE_URL}${selected.pdf}`;
+        loadPdfDocument(url);
+      } else if (selected?.image) {
+        const imgUrl = selected.image.startsWith("http")
+          ? selected.image
+          : `${BASE_URL}${selected.image}`;
 
+        const img = new Image();
+        img.crossOrigin = "anonymous"; // avoid CORS issues
+        img.src = imgUrl;
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+          canvas.width = img.width;
+          canvas.height = img.height;
+          ctx.drawImage(img, 0, 0);
+
+          setCanvasEl(canvas);
+
+          const container = document.getElementById("pdf-canvas-container");
+          if (container) {
+            container.innerHTML = "";
+            container.appendChild(canvas);
+            canvas.style.maxWidth = "100%";
+            canvas.style.display = "block";
+          }
+        };
+      }
     });
 
-    axios.get(`${BASE_URL}products/${flyerId}/`).then((res) => setProducts(res.data));
+    axios
+      .get(`${BASE_URL}products/${flyerId}/`)
+      .then((res) => setProducts(res.data));
   }, [flyerId]);
 
   const loadPdfDocument = async (url) => {
@@ -200,7 +222,10 @@ const CropProducts = () => {
 
     try {
       const blob = await new Promise((resolve, reject) => {
-        cropped.toBlob((b) => (b ? resolve(b) : reject(new Error("Empty blob"))), "image/jpeg");
+        cropped.toBlob(
+          (b) => (b ? resolve(b) : reject(new Error("Empty blob"))),
+          "image/jpeg"
+        );
       });
 
       const formData = new FormData();
@@ -222,6 +247,10 @@ const CropProducts = () => {
     setShowSearchModal(term.trim().length > 0);
   };
 
+  const handleAddToCart = (product) => {
+    navigate("/cart", { state: { product } });
+  };
+
   const filteredProducts = products.filter((p) =>
     p.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -229,7 +258,9 @@ const CropProducts = () => {
   return (
     <div className="flyer-detail-container">
       <div className="flyer-header-card">
-        <button className="back-button" onClick={() => navigate("/")}>← Back</button>
+        <button className="back-button" onClick={() => navigate("/")}>
+          ← Back
+        </button>
         <input
           className="search-bar"
           placeholder="🔍 Search products..."
@@ -239,7 +270,10 @@ const CropProducts = () => {
       </div>
 
       <div className="flyer-preview">
-        <div id="pdf-canvas-container" style={{ width: "100%", position: "relative" }} />
+        <div
+          id="pdf-canvas-container"
+          style={{ width: "100%", position: "relative" }}
+        />
         <div
           ref={overlayRef}
           onMouseDown={handleMouseDown}
@@ -272,37 +306,65 @@ const CropProducts = () => {
         </div>
 
         <div className="pdf-controls">
-          <button onClick={goToPrev} disabled={currentPage <= 1}>‹</button>
-          <button onClick={goToNext} disabled={currentPage >= totalPages}>›</button>
+          <button onClick={goToPrev} disabled={currentPage <= 1}>
+            ‹
+          </button>
+          <button onClick={goToNext} disabled={currentPage >= totalPages}>
+            ›
+          </button>
         </div>
       </div>
 
-      <p className="page-info">Page {currentPage} / {totalPages}</p>
+      <p className="page-info">
+        Page {currentPage} / {totalPages}
+      </p>
 
-      {/* Product Grid */}
-      <ProductGrid products={products} onProductClick={(product) => setSelectedProduct(product)} />
+      <ProductGrid
+        products={products}
+        onProductClick={(product) => setSelectedProduct(product)}
+        handleAddToCart={handleAddToCart}
+      />
 
-      {/* Modal (for search OR click) */}
       {(showSearchModal || selectedProduct) && (
-        <div className="modal-overlay" onClick={() => {
-          setShowSearchModal(false);
-          setSelectedProduct(null);
-        }}>
+        <div
+          className="modal-overlay"
+          onClick={() => {
+            setShowSearchModal(false);
+            setSelectedProduct(null);
+          }}
+        >
           <div className="search-modal" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close1" onClick={() => {
-              setShowSearchModal(false);
-              setSelectedProduct(null);
-            }}>✖</button>
+            <button
+              className="modal-close1"
+              onClick={() => {
+                setShowSearchModal(false);
+                setSelectedProduct(null);
+              }}
+            >
+              ✖
+            </button>
 
             <h2>{selectedProduct ? "Product Details" : "Search Results"}</h2>
 
             {selectedProduct ? (
               <div className="product-grid-modal">
                 <div className="product-card">
-                  <img src={selectedProduct.image || "https://via.placeholder.com/150"} alt={selectedProduct.name} />
+                  <img
+                    src={selectedProduct.image || "https://via.placeholder.com/150"}
+                    alt={selectedProduct.name}
+                  />
                   <div className="product-details">
                     <strong>{selectedProduct.name}</strong>
-                    <span className="price-tag">₹ {selectedProduct.price}</span>
+                    <div className="product-footer">
+                      <span className="price-tag">₹ {selectedProduct.price}</span>
+                      <FaShoppingCart
+                        className="cart-icon"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAddToCart(selectedProduct);
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -312,10 +374,22 @@ const CropProducts = () => {
               <div className="product-grid-modal">
                 {filteredProducts.map((p) => (
                   <div key={p.id} className="product-card">
-                    <img src={p.image || "https://via.placeholder.com/150"} alt={p.name} />
+                    <img
+                      src={p.image || "https://via.placeholder.com/150"}
+                      alt={p.name}
+                    />
                     <div className="product-details">
                       <strong>{p.name}</strong>
-                      <span className="price-tag">₹ {p.price}</span>
+                      <div className="product-footer">
+                        <span className="price-tag">₹ {p.price}</span>
+                        <FaShoppingCart
+                          className="cart-icon"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleAddToCart(p);
+                          }}
+                        />
+                      </div>
                     </div>
                   </div>
                 ))}

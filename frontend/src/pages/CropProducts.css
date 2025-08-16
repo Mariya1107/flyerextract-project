@@ -862,3 +862,28 @@ body {
   color: #bfb9b9;
   cursor: pointer;
 }
+
+.card-footer {
+  display: flex;
+  justify-content: space-between; /* price left, cart right */
+  align-items: center;
+  margin-top: 10px;
+}
+
+.card-price {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #333; /* adjust to match your theme */
+}
+
+.cart-icon {
+  font-size: 1.4rem;  /* size of the cart */
+  color: #333;        /* make sure it’s visible */
+  cursor: pointer;    /* shows hand cursor */
+  transition: color 0.2s ease;
+  margin-left: 140px;
+}
+
+.cart-icon:hover {
+  color: #adb7c2; /* change color on hover */
+}
