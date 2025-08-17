@@ -4,23 +4,30 @@ import { useNavigate } from "react-router-dom";
 import BASE_URL from "../config";
 import "../pages/ProviderLoginDashboard.css";
 import "./ProvidersAdminDash.css"; // Reuse styles
-
+const token = localStorage.getItem("token");
 const AdminBrochureExtract = () => {
   const [stores, setStores] = useState([]);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchStores = async () => {
-      try {
-        const res = await axios.get(`${BASE_URL}/stores/`);
-        setStores(res.data);
-      } catch (err) {
-        console.error("Failed to fetch stores", err);
-      }
-    };
+useEffect(() => {
+  const fetchStores = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/api/accounts/stores/`, {
+        headers: {
+          Authorization: `Token ${token}`, // include if required
+        },
+      });
 
-    fetchStores();
-  }, []);
+      // handle paginated response from DRF
+      setStores(res.data.results || res.data);
+    } catch (err) {
+      console.error("Failed to fetch stores", err);
+    }
+  };
+
+  fetchStores();
+}, []);
+
 
   const handleStoreClick = (storeId) => {
     navigate(`/admin-dashboard/store/${storeId}/brochure-extract`);

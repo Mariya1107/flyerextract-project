@@ -21,7 +21,7 @@ const DashboardLayout2 = () => {
     }
 
     axios
-      .get(`${BASE_URL}api/accounts/me/`, {
+      .get(`${BASE_URL}/api/accounts/me/`, {
         headers: { Authorization: `Token ${token}` },
       })
       .then((res) => {

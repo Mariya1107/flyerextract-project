@@ -25,7 +25,7 @@ const AdminLoginDashboard = () => {
 
     // Fetch admin info
     axios
-      .get(`${BASE_URL}api/accounts/me/`, { headers })
+      .get(`${BASE_URL}/api/accounts/me/`, { headers })
       .then((res) => {
         setAdminData(res.data);
       })

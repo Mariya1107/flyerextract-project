@@ -58,7 +58,7 @@ const AddUserModal = ({ onClose, onUserAdded }) => {
       }
     });
 
-   axios.post(`${BASE_URL}api/accounts/admin/users/create/`, data, {
+   axios.post(`${BASE_URL}/api/accounts/admin/users/create/`, data, {
       headers: {
         Authorization: `Token ${token}`,
         "Content-Type": "multipart/form-data"

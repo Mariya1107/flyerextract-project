@@ -1,0 +1,90 @@
+[33me11e77c[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{0}: pull: Fast-forward
+[33m4c278b9[m HEAD@{1}: reset: moving to HEAD
+[33m4c278b9[m HEAD@{2}: commit: UI2
+[33m1cdac4b[m HEAD@{3}: commit: UI
+[33m281fa3d[m HEAD@{4}: commit: fixed
+[33m2fca9ad[m HEAD@{5}: commit: home.js
+[33m950bd82[m HEAD@{6}: reset: moving to origin/main
+[33mcc63511[m HEAD@{7}: pull: Merge made by the 'ort' strategy.
+[33m5a42ece[m HEAD@{8}: reset: moving to HEAD
+[33m5a42ece[m HEAD@{9}: reset: moving to HEAD
+[33m5a42ece[m HEAD@{10}: reset: moving to HEAD
+[33m5a42ece[m HEAD@{11}: pull: Merge made by the 'ort' strategy.
+[33m7bc4ba6[m HEAD@{12}: reset: moving to HEAD
+[33m7bc4ba6[m HEAD@{13}: reset: moving to HEAD
+[33m7bc4ba6[m HEAD@{14}: reset: moving to HEAD
+[33m7bc4ba6[m HEAD@{15}: reset: moving to HEAD
+[33m7bc4ba6[m HEAD@{16}: commit: doc
+[33mce69ecf[m HEAD@{17}: pull: Fast-forward
+[33mf83c26f[m HEAD@{18}: pull: Fast-forward
+[33me86376e[m HEAD@{19}: reset: moving to HEAD
+[33me86376e[m HEAD@{20}: pull: Fast-forward
+[33mfce46c8[m HEAD@{21}: commit: latestdashbaords
+[33mf30e872[m HEAD@{22}: commit: latestup
+[33m867b597[m HEAD@{23}: pull: Fast-forward
+[33m52eb58d[m HEAD@{24}: commit: updatedcss
+[33md74064b[m HEAD@{25}: pull: Fast-forward
+[33md8677ea[m HEAD@{26}: reset: moving to HEAD
+[33md8677ea[m HEAD@{27}: reset: moving to HEAD
+[33md8677ea[m HEAD@{28}: commit: updatedgrid
+[33m88c7460[m HEAD@{29}: commit: updatedui
+[33ma2d2e9e[m HEAD@{30}: reset: moving to HEAD
+[33ma2d2e9e[m HEAD@{31}: pull origin main: Fast-forward
+[33md5c91af[m HEAD@{32}: commit: updatedcropper
+[33me91a7aa[m HEAD@{33}: commit: updatedcropperui
+[33mc35651f[m HEAD@{34}: reset: moving to HEAD
+[33mc35651f[m HEAD@{35}: reset: moving to HEAD
+[33mc35651f[m HEAD@{36}: pull: Fast-forward
+[33mff3021d[m HEAD@{37}: reset: moving to HEAD
+[33mff3021d[m HEAD@{38}: reset: moving to HEAD
+[33mff3021d[m HEAD@{39}: pull origin main: Fast-forward
+[33m901f3c4[m HEAD@{40}: commit: updatedfly
+[33m9e1aa6d[m HEAD@{41}: pull origin main: Fast-forward
+[33mb28c264[m HEAD@{42}: commit: updatedhome2
+[33m2d00c94[m HEAD@{43}: commit: updateflyer
+[33me30ad7c[m HEAD@{44}: commit: flyerdetails3
+[33mc6dc7d6[m HEAD@{45}: pull origin main: Fast-forward
+[33m6578522[m HEAD@{46}: reset: moving to HEAD
+[33m6578522[m HEAD@{47}: commit: flyerdetails2
+[33m801fe8c[m HEAD@{48}: pull: Fast-forward
+[33mdff9424[m HEAD@{49}: reset: moving to HEAD
+[33mdff9424[m HEAD@{50}: commit: flyerdetails
+[33m7ca8aa8[m HEAD@{51}: pull: Fast-forward
+[33m5e4df2d[m HEAD@{52}: reset: moving to HEAD
+[33m5e4df2d[m HEAD@{53}: pull: Fast-forward
+[33mca3763f[m HEAD@{54}: reset: moving to HEAD
+[33mca3763f[m HEAD@{55}: pull: Fast-forward
+[33m3997001[m HEAD@{56}: reset: moving to HEAD
+[33m3997001[m HEAD@{57}: reset: moving to origin/main
+[33mf3ba075[m HEAD@{58}: reset: moving to origin/main
+[33mf3ba075[m HEAD@{59}: pull origin main: Fast-forward
+[33me2e8318[m HEAD@{60}: commit: updated dash
+[33mc136fa1[m HEAD@{61}: pull: Fast-forward
+[33m47b2777[m HEAD@{62}: pull origin main: Fast-forward
+[33mcaab4f1[m HEAD@{63}: commit: updated
+[33m3826a35[m HEAD@{64}: pull origin main: Merge made by the 'ort' strategy.
+[33mf8464c7[m HEAD@{65}: commit (merge): Resolved merge conflicts by keeping all local changes
+[33m2dca56b[m HEAD@{66}: reset: moving to HEAD
+[33m2dca56b[m HEAD@{67}: reset: moving to HEAD
+[33m2dca56b[m HEAD@{68}: commit: Resolved merge conflicts
+[33m8bdb551[m HEAD@{69}: reset: moving to origin/main
+[33m8bdb551[m HEAD@{70}: reset: moving to origin/main
+[33m8bdb551[m HEAD@{71}: reset: moving to origin/main
+[33m8bdb551[m HEAD@{72}: pull: Fast-forward
+[33m2a8f112[m HEAD@{73}: commit: Updated design
+[33m008b987[m HEAD@{74}: pull: Fast-forward
+[33ma669728[m HEAD@{75}: commit: updated
+[33m81fe811[m HEAD@{76}: pull origin main: Fast-forward
+[33mcc2910d[m HEAD@{77}: commit: updated become a provider frontend and backend
+[33m37ca4ea[m HEAD@{78}: pull origin main: Merge made by the 'ort' strategy.
+[33m44e45dd[m HEAD@{79}: commit (merge): merged
+[33m011c143[m HEAD@{80}: commit: My changes before pulling latest
+[33m410e855[m HEAD@{81}: pull origin main: Fast-forward
+[33m3c1205e[m HEAD@{82}: pull origin main: Fast-forward
+[33mda2d56f[m HEAD@{83}: pull origin main: Fast-forward
+[33mb7a8179[m HEAD@{84}: commit: updated frontend and backend
+[33m9379738[m HEAD@{85}: Branch: renamed refs/heads/main to refs/heads/main
+[33m9379738[m HEAD@{87}: commit: Initial project upload
+[33m1e0cc45[m HEAD@{88}: Branch: renamed refs/heads/main to refs/heads/main
+[33m1e0cc45[m HEAD@{90}: commit: Initial project upload
+[33m11e34bd[m HEAD@{91}: clone: from https://github.com/Mariya1107/flyerextract-project.git

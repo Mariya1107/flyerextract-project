@@ -16,13 +16,18 @@ const ProvidersAdminDash = () => {
   const token = localStorage.getItem("token");
 
   const fetchStores = async () => {
-    try {
-      const res = await axios.get(`${BASE_URL}/stores/`);
-      setStores(res.data);
-    } catch (err) {
-      console.error("Error fetching stores", err);
-    }
-  };
+  try {
+    const res = await axios.get(`${BASE_URL}/api/accounts/stores/`, {
+      headers: {
+        Authorization: `Token ${token}`, // if your API requires auth
+      },
+    });
+    console.log("Stores API response:", res.data);
+    setStores(res.data);
+  } catch (err) {
+    console.error("Error fetching stores", err);
+  }
+};
 
   useEffect(() => {
     fetchStores();
@@ -288,5 +293,6 @@ const ProvidersAdminDash = () => {
     </div>
   );
 };
+
 
 export default ProvidersAdminDash;
