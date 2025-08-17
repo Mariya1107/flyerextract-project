@@ -88,3 +88,63 @@
   top: 15px;
   cursor: pointer;
 }
+
+/* ✅ Responsive styles */
+@media (max-width: 768px) {
+  .upload-brochure-container {
+    max-width: 90%;
+    padding: 30px 20px;
+  }
+
+  .upload-brochure-container h2 {
+    font-size: 20px;
+  }
+
+  .upload-form input,
+  .upload-form select {
+    font-size: 13px;
+    padding: 10px;
+  }
+
+  .upload-form button {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .close-btn {
+    font-size: 20px;
+    right: 15px;
+    top: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .upload-brochure-container {
+    margin: 20px auto;
+    padding: 20px 15px;
+    border-radius: 8px;
+  }
+
+  .upload-brochure-container h2 {
+    font-size: 18px;
+  }
+
+  .upload-form {
+    gap: 15px;
+  }
+
+  .upload-form input,
+  .upload-form select {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  .upload-form button {
+    font-size: 13px;
+    padding: 8px;
+  }
+
+  .close-btn {
+    font-size: 18px;
+  }
+}
