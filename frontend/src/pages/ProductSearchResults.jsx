@@ -10,7 +10,7 @@ const ProductSearchResults = () => {
   useEffect(() => {
     if (query) {
       axios
-        .get(`${BASE_URL}products/search/?q=${encodeURIComponent(query)}`)
+        .get(`${BASE_URL}/products/search/?q=${encodeURIComponent(query)}`)
         .then(res => setResults(res.data))
         .catch(err => console.error('Search error:', err));
     }

@@ -64,19 +64,19 @@ const FlyerDetail = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   useEffect(() => {
-    axios.get(`${BASE_URL}flyers/all/`).then((res) => {
+    axios.get(`${BASE_URL}/flyers/all/`).then((res) => {
       const selected = res.data.find((f) => f.id === parseInt(flyerId));
       setFlyer(selected);
 
       if (!selected?.image && selected?.pdf) {
         const url = selected.pdf.startsWith("http")
           ? selected.pdf
-          : `${BASE_URL}${selected.pdf}`;
+          : `${BASE_URL}/${selected.pdf}`;
         loadPdfDocument(url);
       }
     });
 
-    axios.get(`${BASE_URL}products/${flyerId}/`).then((res) => setProducts(res.data));
+    axios.get(`${BASE_URL}/products/${flyerId}/`).then((res) => setProducts(res.data));
   }, [flyerId]);
 
   const loadPdfDocument = async (url) => {
@@ -152,7 +152,7 @@ const FlyerDetail = () => {
       <div className="flyer-preview">
   {flyer?.image ? (
     <img
-      src={flyer.image.startsWith("http") ? flyer.image : `${BASE_URL}${flyer.image}`}
+      src={flyer.image.startsWith("http") ? flyer.image : `${BASE_URL}/${flyer.image}`}
       alt={flyer.title}
       style={{
         width: "100%",

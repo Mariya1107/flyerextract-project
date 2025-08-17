@@ -18,7 +18,7 @@ const handleLogin = async (e) => {
 
   try {
     const res = await axios.post(
-      `${BASE_URL}api/accounts/login/provider/`,
+      `${BASE_URL}/api/accounts/login/provider/`,
       credentials,
       { headers: { "Content-Type": "application/json" } }
     );

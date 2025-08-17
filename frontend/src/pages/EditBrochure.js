@@ -26,13 +26,13 @@ const EditBrochure = () => {
 
   useEffect(() => {
     if (providerId && token) {
-      axios.get(`${BASE_URL}api/accounts/brochures/${providerId}/pages/`, {
+      axios.get(`${BASE_URL}/api/accounts/brochures/${providerId}/pages/`, {
         headers: { Authorization: `Token ${token}` }
       }).then(res => setBrochures(res.data))
         .catch(err => console.error('Fetch error:', err));
     }
 
-    axios.get(`${BASE_URL}regions/`)
+    axios.get(`${BASE_URL}/regions/`)
       .then(res => setRegionList(res.data))
       .catch(err => console.error('Region fetch error:', err));
   }, []);
@@ -74,7 +74,7 @@ const handleSave = async (e) => {
   }
 
   try {
-    await axios.put(`${BASE_URL}flyers/${editingId}/edit/`, updateData, {
+    await axios.put(`${BASE_URL}/flyers/${editingId}/edit/`, updateData, {
       headers: {
         'Content-Type': 'multipart/form-data',
         Authorization: `Token ${token}`,

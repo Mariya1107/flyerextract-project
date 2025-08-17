@@ -20,7 +20,7 @@ const ProviderLoginDashboard = () => {
     if (!token) return;
 
     axios
-      .get(`${BASE_URL}api/provider-dashboard-counts/`, {
+      .get(`${BASE_URL}/api/provider-dashboard-counts/`, {
         headers: { Authorization: `Token ${token}` },
       })
       .then((res) => {

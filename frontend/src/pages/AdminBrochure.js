@@ -53,7 +53,7 @@ useEffect(() => {
                 src={
                   store.logo?.startsWith("http")
                     ? store.logo
-                    : `${BASE_URL}${store.logo}`
+                    : `${BASE_URL}/${store.logo}`
                 }
                 alt={store.name}
                 className="img-fluid"

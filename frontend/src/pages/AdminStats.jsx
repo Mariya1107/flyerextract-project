@@ -13,7 +13,7 @@ const AdminStats = () => {
   const [monthlyUploads, setMonthlyUploads] = useState([]);
 
   useEffect(() => {
-    axios.get(`${BASE_URL}flyers/all/`)
+    axios.get(`${BASE_URL}/flyers/all/`)
       .then(res => {
         setFlyers(res.data);
 
@@ -34,7 +34,7 @@ const AdminStats = () => {
         setFlyerCountsPerStore(pieData);
       });
 
-    axios.get(`${BASE_URL}products/all/`)
+    axios.get(`${BASE_URL}/products/all/`)
       .then(res => setProducts(res.data));
   }, []);
 

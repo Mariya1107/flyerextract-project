@@ -49,7 +49,7 @@ const DashboardLayout2 = () => {
   const profileImageUrl = adminData?.profile_photo
     ? adminData.profile_photo.startsWith("http")
       ? adminData.profile_photo
-      : `${BASE_URL}${adminData.profile_photo}`
+      : `${BASE_URL}/${adminData.profile_photo}`
     : null;
 
   return (

@@ -17,7 +17,7 @@ const UploadBrochure = () => {
 
   useEffect(() => {
     axios
-      .get(`${BASE_URL}regions/`)
+      .get(`${BASE_URL}/regions/`)
       .then((res) => setRegionList(res.data))
       .catch((err) => console.error("Region fetch error:", err));
   }, []);
@@ -40,7 +40,7 @@ const UploadBrochure = () => {
     if (imageFile) formData.append("image", imageFile);
 
     try {
-      const res = await axios.post(`${BASE_URL}flyers/upload_pending/`, formData, {
+      const res = await axios.post(`${BASE_URL}/flyers/upload_pending/`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Token ${token}`,

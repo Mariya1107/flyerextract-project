@@ -20,7 +20,7 @@ const handleLogin = async (e) => {
     password: credentials.password.trim(),
   };
   try {
-    const res = await axios.post(`${BASE_URL}api/accounts/login/admin/`, cleanedCredentials);
+    const res = await axios.post(`${BASE_URL}/api/accounts/login/admin/`, cleanedCredentials);
     console.log("Login response:", res.data);
 
     const token = res.data.token || res.data.key;

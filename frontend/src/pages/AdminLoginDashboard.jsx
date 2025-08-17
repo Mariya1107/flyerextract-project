@@ -38,7 +38,7 @@ const AdminLoginDashboard = () => {
 
     // Fetch dashboard counts
     axios
-      .get(`${BASE_URL}api/dashboard-counts/`, { headers })
+      .get(`${BASE_URL}/api/dashboard-counts/`, { headers })
       .then((res) => {
         setUsersCount(res.data.users);
         setProvidersCount(res.data.providers);
@@ -51,7 +51,7 @@ const AdminLoginDashboard = () => {
 
     // Fetch server status
     axios
-      .get(`${BASE_URL}api/accounts/server-status/`, { headers })
+      .get(`${BASE_URL}/api/accounts/server-status/`, { headers })
       .then((res) => {
         setServerStatus(res.data.status === 'online' ? 'Online' : 'Offline');
       })

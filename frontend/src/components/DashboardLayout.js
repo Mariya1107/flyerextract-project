@@ -65,7 +65,7 @@ const DashboardLayout = () => {
   const profileImageUrl = providerData?.profile_photo
     ? providerData.profile_photo.startsWith("http")
       ? providerData.profile_photo
-      : `${BASE_URL}${providerData.profile_photo}`
+      : `${BASE_URL}/${providerData.profile_photo}`
     : null;
 
   return (

@@ -21,7 +21,7 @@ const ProviderBrochureDash = () => {
 
     if (providerId && token) {
       axios
-        .get(`${BASE_URL}api/accounts/brochures/${providerId}/pages/`, {
+        .get(`${BASE_URL}/api/accounts/brochures/${providerId}/pages/`, {
           headers: {
             Authorization: `Token ${token}`
           }

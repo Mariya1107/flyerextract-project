@@ -83,19 +83,19 @@ const CropProducts = () => {
   const overlayRef = useRef();
 
   useEffect(() => {
-    axios.get(`${BASE_URL}flyers/all/`).then((res) => {
+    axios.get(`${BASE_URL}/flyers/all/`).then((res) => {
       const selected = res.data.find((f) => f.id === parseInt(flyerId));
       setFlyer(selected);
 
       if (selected?.pdf) {
         const url = selected.pdf.startsWith("http")
           ? selected.pdf
-          : `${BASE_URL}${selected.pdf}`;
+          : `${BASE_URL}/${selected.pdf}`;
         loadPdfDocument(url);
       } else if (selected?.image) {
         const imgUrl = selected.image.startsWith("http")
           ? selected.image
-          : `${BASE_URL}${selected.image}`;
+          : `${BASE_URL}/${selected.image}`;
 
         const img = new Image();
         img.crossOrigin = "anonymous"; // avoid CORS issues
@@ -121,7 +121,7 @@ const CropProducts = () => {
     });
 
     axios
-      .get(`${BASE_URL}products/${flyerId}/`)
+      .get(`${BASE_URL}/products/${flyerId}/`)
       .then((res) => setProducts(res.data));
   }, [flyerId]);
 
@@ -232,7 +232,7 @@ const CropProducts = () => {
       formData.append("flyer_id", flyerId);
       formData.append("image", blob, "crop.jpg");
 
-      const res = await axios.post(`${BASE_URL}api/products/upload/`, formData);
+      const res = await axios.post(`${BASE_URL}/api/products/upload/`, formData);
       alert(`✅ Uploaded: ${res.data.name} (₹${res.data.price})`);
       setSelection(null);
       setProducts((prev) => [...prev, res.data]);

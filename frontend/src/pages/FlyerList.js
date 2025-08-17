@@ -14,7 +14,7 @@ const FlyerList = () => {
   const [numPages, setNumPages] = useState({});
 
   useEffect(() => {
-    axios.get(`${BASE_URL}flyers/${id}/`)
+    axios.get(`${BASE_URL}/flyers/${id}/`)
       .then((res) => setFlyers(res.data))
       .catch((err) => console.error("Error fetching flyers:", err));
   }, [id]);

@@ -29,7 +29,7 @@ const Authorisation = ({
 
   const handleSignup = async () => {
     try {
-      const res = await axios.post(`${BASE_URL}api/accounts/register/`, {
+      const res = await axios.post(`${BASE_URL}/api/accounts/register/`, {
         username: formData.username,
         email: formData.email,
         password: formData.password,
@@ -56,7 +56,7 @@ const Authorisation = ({
 
   const handleSignin = async () => {
     try {
-      const res = await axios.post(`${BASE_URL}api/accounts/login/`, {
+      const res = await axios.post(`${BASE_URL}/api/accounts/login/`, {
         username: formData.signinUser,
         password: formData.signinPass,
       });
