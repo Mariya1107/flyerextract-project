@@ -25,9 +25,31 @@
 .product-name {
   font-size: 16px;
   font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* ✅ New flex row for price + icon */
+.product-footer {
+  display: flex;
+  justify-content: space-between; /* price left, cart right */
+  align-items: center;
+  margin-top: 6px;
 }
 
 .product-price {
   font-size: 14px;
   color: #555;
+  font-weight: 600;
+}
+
+.cart-icon {
+  font-size: 1.3rem;
+  color: #007bff;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.cart-icon:hover {
+  transform: scale(1.2);
+  color: #0056b3;
 }

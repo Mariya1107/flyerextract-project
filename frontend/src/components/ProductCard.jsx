@@ -1,9 +1,9 @@
 import React from 'react';
 import './ProductCard.css';
-import backendBaseURL from '../config'; // ✅ import your base URL
+import { FaShoppingCart } from "react-icons/fa";
+import backendBaseURL from '../config';
 
 const ProductCard = ({ product }) => {
-  // ✅ If product.image is relative, prepend it with backendBaseURL
   const imageUrl = product.image?.startsWith('http')
     ? product.image
     : `${backendBaseURL}${product.image}`;
@@ -17,7 +17,12 @@ const ProductCard = ({ product }) => {
       />
       <div className="product-info">
         <strong className="product-name">{product.name}</strong>
-        <p className="product-price">Price {product.price}</p>
+        
+        {/* ✅ Flex container for price + cart icon */}
+        <div className="product-footer">
+          <p className="product-price">₹{product.price}</p>
+          <FaShoppingCart className="cart-icon" />
+        </div>
       </div>
     </div>
   );
