@@ -4,30 +4,50 @@ import { useNavigate } from "react-router-dom";
 import BASE_URL from "../config";
 import "../pages/ProviderLoginDashboard.css";
 import "./ProvidersAdminDash.css"; // Reuse styles
-const token = localStorage.getItem("token");
+
 const AdminBrochureExtract = () => {
   const [stores, setStores] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-useEffect(() => {
-  const fetchStores = async () => {
-    try {
-      const res = await axios.get(`${BASE_URL}/api/accounts/stores/`, {
-        headers: {
-          Authorization: `Token ${token}`, // include if required
-        },
-      });
+  useEffect(() => {
+    const fetchStores = async () => {
+      try {
+        const token =
+          localStorage.getItem("adminToken") || localStorage.getItem("token");
 
-      // handle paginated response from DRF
-      setStores(res.data.results || res.data);
-    } catch (err) {
-      console.error("Failed to fetch stores", err);
-    }
-  };
+        if (!token) {
+          setError("⚠️ No token found. Redirecting to login...");
+          setLoading(false);
+          navigate("/admin-login");
+          return;
+        }
 
-  fetchStores();
-}, []);
+        const res = await axios.get(`${BASE_URL}/api/accounts/stores/`, {
+          headers: {
+            Authorization: `Token ${token}`,
+          },
+        });
 
+        // handle paginated response from DRF
+        setStores(res.data.results || res.data);
+      } catch (err) {
+        console.error("Failed to fetch stores", err);
+        if (err.response?.status === 401) {
+          setError("❌ Unauthorized. Please log in again.");
+          navigate("/admin-login");
+        } else {
+          setError("❌ Failed to fetch stores. Server error.");
+        }
+        setStores([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStores();
+  }, [navigate]);
 
   const handleStoreClick = (storeId) => {
     navigate(`/admin-dashboard/store/${storeId}/brochure-extract`);
@@ -39,33 +59,41 @@ useEffect(() => {
         <h2 className="dashboard-title">All Store Brochure Extracts</h2>
       </div>
 
-      <div className="category-grid">
-        {stores.map((store) => (
-          <div
-            className="category-card"
-            key={store.id}
-            onClick={() => handleStoreClick(store.id)}
-          >
-            <div className="category-icon">
-              <img
-                src={
-                  store.logo?.startsWith("http")
-                    ? store.logo
-                    : `${BASE_URL}/${store.logo}`
-                }
-                alt={store.name}
-                className="img-fluid"
-                onError={(e) =>
-                  (e.target.src =
-                    "https://via.placeholder.com/100x100?text=Logo")
-                }
-              />
+      {loading ? (
+        <p>⏳ Loading stores...</p>
+      ) : error ? (
+        <p className="error-text">{error}</p>
+      ) : stores.length === 0 ? (
+        <p className="no-flyers">🚫 No stores found.</p>
+      ) : (
+        <div className="category-grid">
+          {stores.map((store) => (
+            <div
+              className="category-card"
+              key={store.id}
+              onClick={() => handleStoreClick(store.id)}
+            >
+              <div className="category-icon">
+                <img
+                  src={
+                    store.logo?.startsWith("http")
+                      ? store.logo
+                      : `${BASE_URL}/${store.logo}`
+                  }
+                  alt={store.name}
+                  className="img-fluid"
+                  onError={(e) =>
+                    (e.target.src =
+                      "https://via.placeholder.com/100x100?text=Logo")
+                  }
+                />
+              </div>
+              <h6>{store.name}</h6>
+              <p>Extract Brochures</p>
             </div>
-            <h6>{store.name}</h6>
-            <p>Extract Brochures</p>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

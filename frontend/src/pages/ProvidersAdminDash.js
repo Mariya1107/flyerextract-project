@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import BASE_URL from "../config";
 import "../pages/ProviderLoginDashboard.css";
 import "./ProvidersAdminDash.css";
@@ -13,21 +14,30 @@ const ProvidersAdminDash = () => {
   const [addForm, setAddForm] = useState({ name: "", logo: null });
   const [addMessage, setAddMessage] = useState("");
 
-  const token = localStorage.getItem("token");
+  const navigate = useNavigate();
+  const token =
+    localStorage.getItem("adminToken") || localStorage.getItem("token");
 
   const fetchStores = async () => {
-  try {
-    const res = await axios.get(`${BASE_URL}/api/accounts/stores/`, {
-      headers: {
-        Authorization: `Token ${token}`, // if your API requires auth
-      },
-    });
-    console.log("Stores API response:", res.data);
-    setStores(res.data);
-  } catch (err) {
-    console.error("Error fetching stores", err);
-  }
-};
+    if (!token) {
+      console.warn("⚠️ No token found, redirecting to login");
+      navigate("/admin-login");
+      return;
+    }
+
+    try {
+      const res = await axios.get(`${BASE_URL}/api/accounts/stores/`, {
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      });
+
+      console.log("Stores API response:", res.data);
+      setStores(res.data.results || res.data);
+    } catch (err) {
+      console.error("Error fetching stores", err);
+    }
+  };
 
   useEffect(() => {
     fetchStores();
@@ -83,14 +93,14 @@ const ProvidersAdminDash = () => {
         s.id === res.data.id ? res.data : s
       );
       setStores(updatedStores);
-      setMessage("Store updated successfully!");
+      setMessage("✅ Store updated successfully!");
       setTimeout(() => {
         setSelectedStore(null);
         setMessage("");
       }, 1000);
     } catch (error) {
       console.error("Update failed", error);
-      setMessage("Update failed. Check console.");
+      setMessage("❌ Update failed. Check console.");
     }
   };
 
@@ -116,7 +126,7 @@ const ProvidersAdminDash = () => {
       );
 
       setStores([...stores, res.data]);
-      setAddMessage("Store added successfully!");
+      setAddMessage("✅ Store added successfully!");
       setAddForm({ name: "", logo: null });
 
       setTimeout(() => {
@@ -125,7 +135,7 @@ const ProvidersAdminDash = () => {
       }, 1000);
     } catch (error) {
       console.error("Add failed", error);
-      setAddMessage("Add failed. Check console.");
+      setAddMessage("❌ Add failed. Check console.");
     }
   };
 
@@ -143,15 +153,15 @@ const ProvidersAdminDash = () => {
       );
 
       if (res.status === 200) {
-        alert("Store deleted successfully!");
+        alert("✅ Store deleted successfully!");
         setSelectedStore(null);
         fetchStores();
       } else {
-        alert("Failed to delete store");
+        alert("❌ Failed to delete store");
       }
     } catch (error) {
       console.error("Delete error:", error);
-      alert("Something went wrong while deleting");
+      alert("❌ Something went wrong while deleting");
     }
   };
 
@@ -293,6 +303,5 @@ const ProvidersAdminDash = () => {
     </div>
   );
 };
-
 
 export default ProvidersAdminDash;

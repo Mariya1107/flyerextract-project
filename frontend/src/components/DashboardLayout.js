@@ -91,15 +91,6 @@ const DashboardLayout = () => {
                 </button>
               </li>
 
-              <li>
-                <button
-                  onClick={() => navigate("/provider-dashboard/providers")}
-                  className={isActive("/provider-dashboard/providers") ? "active" : ""}
-                >
-                  <Icon name="P" />
-                  <span>Providers</span>
-                </button>
-              </li>
 
             
 <li>
