@@ -113,9 +113,9 @@ class ProductListByFlyer(generics.ListAPIView):
     serializer_class = ProductSerializer
 
     def get_queryset(self):
-        return Product.objects.filter(flyer_id=self.kwargs['flyer_id'])
-    
-    
+        # Efficiently fetch related flyer and store to avoid extra queries
+        return Product.objects.filter(flyer_id=self.kwargs['flyer_id']).select_related('flyer__store')
+
 
 # --------------------------- GPT-4 Vision Extraction ---------------------------
 

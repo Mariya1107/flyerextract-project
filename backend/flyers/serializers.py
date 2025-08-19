@@ -63,16 +63,14 @@ class FlyerMinimalSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     flyer = FlyerMinimalSerializer(read_only=True)
+    store_name = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
-        fields = [
-            'id',
-            'name',
-            'price',
-            'image',
-            'flyer'
-        ]
+        fields = ['id', 'name', 'price', 'image', 'flyer', 'store_name']
+
+    def get_store_name(self, obj):
+        return obj.flyer.store.name if obj.flyer and obj.flyer.store else "Unknown"
 
 
 class ProviderApplicationSerializer(serializers.ModelSerializer):
