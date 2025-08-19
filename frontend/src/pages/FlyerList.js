@@ -32,23 +32,22 @@ const FlyerList = () => {
       ) : (
         <div className="flyer-grid">
           {flyers.map((flyer) => (
-             <Link to={`/flyers/${flyer.id}`} key={flyer.id} className="flyer-card fade-in">
+            <Link to={`/flyers/${flyer.id}`} key={flyer.id} className="flyer-card fade-in">
               <div className="flyer-img-wrapper">
                 <div className="flyer-overlay-container">
                   {flyer.image ? (
                     <img src={flyer.image} alt={flyer.title} className="flyer-img" />
                   ) : (
-                   <div className="pdf-container">
-  <Document
-    file={flyer.pdf}
-    onLoadSuccess={(pdf) => onDocumentLoadSuccess(flyer.id, pdf)}
-    loading="Loading PDF..."
-  >
-    <Page pageNumber={1} width={240} />
-  </Document>
-</div>
+                    <div className="pdf-container">
+                      <Document
+                        file={flyer.pdf}
+                        onLoadSuccess={(pdf) => onDocumentLoadSuccess(flyer.id, pdf)}
+                        loading="Loading PDF..."
+                      >
+                        <Page pageNumber={1} width={240} />
+                      </Document>
+                    </div>
                   )}
-
                   <div className="flyer-hover-overlay">
                     <button className="flyer-hover-btn">View Details</button>
                   </div>
@@ -57,6 +56,11 @@ const FlyerList = () => {
               </div>
 
               <div className="flyer-info">
+                {flyer.expires_at && (
+                  <p className="flyer-expiry">
+                    Expires at: {new Date(flyer.expires_at).toLocaleDateString()}
+                  </p>
+                )}
                 <button className="flyer-view-btn">Explore →</button>
               </div>
             </Link>
