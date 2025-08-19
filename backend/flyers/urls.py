@@ -20,7 +20,8 @@ from .views import (
     StoreSearchAPIView,
     update_flyer,
     dashboard_counts,
-    provider_dashboard_counts
+    provider_dashboard_counts,
+    store_by_name
 )
 
 urlpatterns = [
@@ -68,4 +69,7 @@ urlpatterns = [
     path('api/flyers/create/', create_flyer, name='flyer-create'),
     path('api/flyers/<int:flyer_id>/delete/', delete_flyer, name='flyer-delete'),
     path('flyers/<int:flyer_id>/edit/', update_flyer, name='update-flyer'),
+
+    path("stores/by-name/<str:name>/", store_by_name, name="store-by-name"),
+    
 ]

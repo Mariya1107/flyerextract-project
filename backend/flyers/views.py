@@ -24,6 +24,7 @@ from .models import PendingFlyer
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
+from .serializers import StoreWithPhoneSerializer
 
 from rest_framework import generics
 from rest_framework.generics import ListAPIView
@@ -479,3 +480,13 @@ def provider_dashboard_counts(request):
         "products": products_count,
         "providers": providers_count
     })
+
+@api_view(["GET"])
+def store_by_name(request, name):
+    try:
+        store = Store.objects.get(name__iexact=name.strip())
+    except Store.DoesNotExist:
+        return Response({"error": "Store not found"}, status=404)
+
+    serializer = StoreWithPhoneSerializer(store)
+    return Response(serializer.data)

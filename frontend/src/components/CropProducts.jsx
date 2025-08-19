@@ -33,7 +33,7 @@ const ProductGrid = ({ products }) => {
             <img src={product.image} alt={product.name} className="product-img" />
             <div className="product-details">
               <strong>{product.name}</strong>
-              <div className="price-tag">₹  {product.price}</div>
+              <div className="price-tag">₹ {product.price}</div>
             </div>
           </div>
         ))}

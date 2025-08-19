@@ -71,36 +71,43 @@ const AddToCart = () => {
     0
   );
 
+  // ✅ Fetch phone dynamically from backend
+  const getStorePhone = async (storeName) => {
+    try {
+      const res = await fetch(`/api/stores/by-name/${storeName}/`);
+      if (!res.ok) throw new Error("Failed to fetch store phone");
+      const data = await res.json();
+      return data.phone || null;
+    } catch (err) {
+      console.error("Error fetching store phone:", err);
+      return null;
+    }
+  };
+
   // ✅ WhatsApp messaging function
-  const sendWhatsAppMessages = () => {
+  const sendWhatsAppMessages = async () => {
     if (cartItems.length === 0) return;
 
-    // Group products by store_name
-    const storeGroups = cartItems.reduce((acc, item) => {
-      const store = item.store_name?.trim() || "Unknown";
-      if (!acc[store]) acc[store] = [];
-      acc[store].push(item);
-      return acc;
-    }, {});
+    // Get unique store names
+    const uniqueStores = [...new Set(cartItems.map((i) => i.store_name))];
 
-    // Map store names to WhatsApp numbers (with country code)
-    const storeNumbers = {
-      "Lulu": "919349031000",
-      "Nestle": "918547409237",
-    };
+    for (const storeName of uniqueStores) {
+      const phone = await getStorePhone(storeName);
+      if (!phone) continue;
 
-    // Send message for each store dynamically
-    Object.entries(storeGroups).forEach(([store, products]) => {
-      const number = storeNumbers[store];
-      if (!number) return; // skip if number not found
+      const products = cartItems.filter((i) => i.store_name === storeName);
+      const message = `Order to ${storeName}:\n` +
+        products.map(
+          (p) => `${p.name} x${p.quantity} - ₹${p.price * p.quantity}`
+        ).join("\n") +
+        `\nSubtotal: ₹${products.reduce(
+          (sum, p) => sum + p.price * p.quantity,
+          0
+        )}`;
 
-      const message = `Order to ${store}:\n` +
-        products.map(p => `${p.name} x${p.quantity} - ₹${p.price * p.quantity}`).join("\n") +
-        `\nSubtotal: ₹${products.reduce((sum, p) => sum + p.price * p.quantity, 0)}`;
-
-      const url = `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
+      const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
       window.open(url, "_blank");
-    });
+    }
   };
 
   return (
@@ -122,7 +129,7 @@ const AddToCart = () => {
                 />
                 <div className="cart-item-details">
                   <h3>{item.name}</h3>
-                  <p className="store-name">store: {item.store_name || "Unknown"}</p>
+                  <p className="store-name">Store: {item.store_name || "Unknown"}</p>
                   <p className="price">₹ {item.price}</p>
                   <div className="cart-controls">
                     <button

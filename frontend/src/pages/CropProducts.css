@@ -865,7 +865,7 @@ body {
 
 .card-footer {
   display: flex;
-  justify-content: space-between; /* price left, cart right */
+  justify-content:center; 
   align-items: center;
   margin-top: 10px;
 }
@@ -874,6 +874,7 @@ body {
   font-size: 1rem;
   font-weight: bold;
   color: #333; /* adjust to match your theme */
+  
 }
 
 .cart-icon {
@@ -881,9 +882,36 @@ body {
   color: #333;        /* make sure it’s visible */
   cursor: pointer;    /* shows hand cursor */
   transition: color 0.2s ease;
-  margin-left: 140px;
+  margin-left: 130px;
 }
 
 .cart-icon:hover {
   color: #adb7c2; /* change color on hover */
+}
+.product-details {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: "Inter", sans-serif;
+}
+
+.product-details strong {
+  font-size: 1rem;
+  color: #222;
+  font-weight: 600;
+}
+
+.product-footer {
+  display: flex;
+  
+  align-items: center;
+  
+}
+
+.price-tag {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2d2d2d;
+  
+  
 }

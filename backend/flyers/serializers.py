@@ -123,3 +123,13 @@ class PendingFlyerSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("You must provide at least a PDF or an image.")
         return data
 
+class StoreWithPhoneSerializer(serializers.ModelSerializer):
+    phone = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Store
+        fields = ["id", "name", "phone"]
+
+    def get_phone(self, obj):
+        provider = obj.providers.first()  # pick the first provider linked to this store
+        return provider.phone if provider else None
