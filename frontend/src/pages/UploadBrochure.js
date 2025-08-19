@@ -12,28 +12,44 @@ const UploadBrochure = () => {
   const [regionId, setRegionId] = useState("");
   const [showForm, setShowForm] = useState(true);
 
-  const token = localStorage.getItem("token");
+  // ✅ Use both admin and provider tokens
+  const token = localStorage.getItem("token") || localStorage.getItem("adminToken");
   const storeId = localStorage.getItem("store_id");
 
   useEffect(() => {
-    axios
-      .get(`${BASE_URL}/regions/`)
-      .then((res) => setRegionList(res.data))
-      .catch((err) => console.error("Region fetch error:", err));
+    const fetchRegions = async () => {
+      try {
+        const res = await axios.get(`${BASE_URL}/regions/`);
+        setRegionList(res.data);
+      } catch (err) {
+        console.error("Region fetch error:", err);
+      }
+    };
+    fetchRegions();
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!token) {
+      alert("⚠️ You must be logged in to upload a brochure.");
+      return;
+    }
+
     if (!storeId || !regionId) {
-      alert("Store and Region are required!");
+      alert("⚠️ Store and Region are required!");
+      return;
+    }
+
+    if (!pdfFile && !imageFile) {
+      alert("⚠️ Please select at least a PDF or an Image file.");
       return;
     }
 
     const formData = new FormData();
     formData.append("title", title);
-    formData.append("store_id", parseInt(storeId));    // 🛠️ Ensure it's an int
-    formData.append("region_id", parseInt(regionId));  // 🛠️ Ensure it's an int
+    formData.append("store_id", parseInt(storeId));
+    formData.append("region_id", parseInt(regionId));
     formData.append("expires_at", expiryDate);
 
     if (pdfFile) formData.append("pdf", pdfFile);
@@ -46,15 +62,22 @@ const UploadBrochure = () => {
           Authorization: `Token ${token}`,
         },
       });
-      alert("Brochure uploaded!");
+
+      alert("✅ Brochure uploaded successfully!");
+      // Reset form
       setTitle("");
       setPdfFile(null);
       setImageFile(null);
       setExpiryDate("");
       setRegionId("");
     } catch (err) {
-      console.error("Upload error: ", err.response?.data || err);
-      alert("Upload failed");
+      console.error("Upload error:", err.response?.data || err);
+      const message =
+        err.response?.data?.detail ||
+        err.response?.data?.non_field_errors?.[0] ||
+        err.response?.data ||
+        err.message;
+      alert(`❌ Upload failed: ${message}`);
     }
   };
 
@@ -76,11 +99,7 @@ const UploadBrochure = () => {
           onChange={(e) => setTitle(e.target.value)}
           required
         />
-        <select
-          value={regionId}
-          onChange={(e) => setRegionId(e.target.value)}
-          required
-        >
+        <select value={regionId} onChange={(e) => setRegionId(e.target.value)} required>
           <option value="">Select Region</option>
           {regionList.map((region) => (
             <option key={region.id} value={region.id}>
