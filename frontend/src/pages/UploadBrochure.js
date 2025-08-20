@@ -1,3 +1,4 @@
+// src/pages/UploadBrochure.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import BASE_URL from "../config";
@@ -12,37 +13,52 @@ const UploadBrochure = () => {
   const [regionId, setRegionId] = useState("");
   const [showForm, setShowForm] = useState(true);
 
-  // ✅ Use both admin and provider tokens
-  const token = localStorage.getItem("token") || localStorage.getItem("adminToken");
+  // ✅ Make sure we pull the correct token
+  const token =
+    localStorage.getItem("providerToken") || // <-- use providerToken first
+    localStorage.getItem("adminToken") ||
+    localStorage.getItem("token");
+
   const storeId = localStorage.getItem("store_id");
 
+  // fetch regions
   useEffect(() => {
     const fetchRegions = async () => {
+      if (!token) {
+        console.error("⚠ No token found. Cannot fetch regions.");
+        return;
+      }
       try {
-        const res = await axios.get(`${BASE_URL}/regions/`);
+        const res = await axios.get(`${BASE_URL}regions/`, {
+          headers: { Authorization: `Token ${token}` },
+        });
         setRegionList(res.data);
       } catch (err) {
-        console.error("Region fetch error:", err);
+        console.error("Region fetch error:", err.response?.data || err);
+        alert(
+          `⚠ Unable to fetch regions: ${
+            err.response?.data?.detail || err.message
+          }`
+        );
       }
     };
     fetchRegions();
-  }, []);
+  }, [token]);
 
+  // handle form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!token) {
-      alert("⚠️ You must be logged in to upload a brochure.");
+      alert("⚠ You must be logged in to upload a brochure.");
       return;
     }
-
     if (!storeId || !regionId) {
-      alert("⚠️ Store and Region are required!");
+      alert("⚠ Store and Region are required!");
       return;
     }
-
     if (!pdfFile && !imageFile) {
-      alert("⚠️ Please select at least a PDF or an Image file.");
+      alert("⚠ Please select at least a PDF or an Image file.");
       return;
     }
 
@@ -51,12 +67,11 @@ const UploadBrochure = () => {
     formData.append("store_id", parseInt(storeId));
     formData.append("region_id", parseInt(regionId));
     formData.append("expires_at", expiryDate);
-
     if (pdfFile) formData.append("pdf", pdfFile);
     if (imageFile) formData.append("image", imageFile);
 
     try {
-      const res = await axios.post(`${BASE_URL}/flyers/upload_pending/`, formData, {
+      await axios.post(`${BASE_URL}flyers/upload_pending/`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Token ${token}`,
@@ -64,7 +79,7 @@ const UploadBrochure = () => {
       });
 
       alert("✅ Brochure uploaded successfully!");
-      // Reset form
+      // reset form
       setTitle("");
       setPdfFile(null);
       setImageFile(null);
@@ -75,7 +90,7 @@ const UploadBrochure = () => {
       const message =
         err.response?.data?.detail ||
         err.response?.data?.non_field_errors?.[0] ||
-        err.response?.data ||
+        JSON.stringify(err.response?.data) ||
         err.message;
       alert(`❌ Upload failed: ${message}`);
     }
@@ -99,7 +114,11 @@ const UploadBrochure = () => {
           onChange={(e) => setTitle(e.target.value)}
           required
         />
-        <select value={regionId} onChange={(e) => setRegionId(e.target.value)} required>
+        <select
+          value={regionId}
+          onChange={(e) => setRegionId(e.target.value)}
+          required
+        >
           <option value="">Select Region</option>
           {regionList.map((region) => (
             <option key={region.id} value={region.id}>
@@ -114,9 +133,17 @@ const UploadBrochure = () => {
           required
         />
         <label>PDF File (optional)</label>
-        <input type="file" accept=".pdf" onChange={(e) => setPdfFile(e.target.files[0])} />
+        <input
+          type="file"
+          accept=".pdf"
+          onChange={(e) => setPdfFile(e.target.files[0])}
+        />
         <label>Image File (optional)</label>
-        <input type="file" accept="image/*" onChange={(e) => setImageFile(e.target.files[0])} />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setImageFile(e.target.files[0])}
+        />
         <button type="submit">Upload</button>
       </form>
     </div>

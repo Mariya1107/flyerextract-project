@@ -53,11 +53,8 @@ const Home = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get(`${BASE_URL}/stores/`)
-      
-      .then((res) => {
-    console.log("Stores API response:", res.data);
-    setStores(res.data);})
+    axios.get(`${BASE_URL}stores/`)
+      .then((res) => setStores(res.data))
       .catch((err) => console.error("Error fetching stores", err));
   }, []);
 
@@ -127,8 +124,6 @@ const Home = () => {
 
     alert(`Logged in as ${signinUser}`);
     setShowAuthModal(false);
-    
-
   };
 
   // 🔍 Updated filter logic
@@ -149,225 +144,142 @@ const Home = () => {
   return (
     <>
       {/* HERO */}
-      <section className="hero-section" id="home">
-        <div className="container hero-flex">
-          <div className="hero-left">
-            <h1>Connect with Nearby Shops</h1>
-            <p className="sub-title">
+     <section className="py-5 bg-light" id="home" style={{
+    backgroundImage: `url("/slider.png")`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    minHeight: "60vh"
+  }}>
+      <div className="container  py-5">
+        <div className="row align-items-center">
+          <div className="col-lg-8 mx-auto text-center">
+            <h1 className="text-white fw-bold mb-3 fs-1">
+          Connect with Nearby Shops
+            </h1>
+            <p className="text-light mb-4 fs-5">
               We can connect you to the supermarket, first time and every time.
             </p>
 
-            <div className="banner-form">
-              <form>
-                <div className="search-row">
+            <form>
+              <div className="row g-2 justify-content-center">
+                {/* Search Input */}
+                <div className="col-md-4">
                   <div className="input-group">
-                    <span className="input-icon">
+                    <span className="input-group-text">
                       <FontAwesomeIcon icon={faSearch} />
                     </span>
                     <input
                       type="text"
+                      className="form-control"
                       placeholder="Search for Supermarket"
-                      className="search-input"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
                   </div>
+                </div>
 
+                {/* Location Input */}
+                <div className="col-md-4">
                   <div className="input-group">
-                    <span className="input-icon">
+                    <span className="input-group-text">
                       <FontAwesomeIcon icon={faMapPin} />
                     </span>
                     <input
                       type="text"
+                      className="form-control"
                       placeholder="Enter Location"
-                      className="search-input"
                       value={locationTerm}
                       onChange={(e) => setLocationTerm(e.target.value)}
                     />
                   </div>
+                </div>
 
-                  <Link
-                    to="/search"
-                    className="btn-search d-inline-flex align-items-center"
-                  >
-                    <FontAwesomeIcon icon={faSearch} className="me-2" /> Search
+                {/* Search Button */}
+                <div className="col-md-2 d-grid">
+                  <Link to="/search" className="btn for_btn for_signin">
+                    <FontAwesomeIcon icon={faSearch} className="me-2" />
+                    Search
                   </Link>
                 </div>
-              </form>
-            </div>
+              </div>
+            </form>
           </div>
         </div>
-      </section>
-
+      </div>
+    </section>
       {/* CATEGORY SECTION */}
-      <section className="section category-section">
-        <div className="container">
-          <div className="text-center mb-4">
-            <h2 className="mb-1">
-              Explore our <span className="text-linear-primary">Categories</span>
-            </h2>
-            <p className="sub-title">
-              Service categories help organize and structure the offerings on a marketplace.
-            </p>
-          </div>
+    <section className="py-5 bg-light" style={{background:"linear-gradient(to bottom, #f7f9fc, #e3e8f4)"}}>
+  <div className="container">
+    {/* Section Title */}
+    <div className="text-center mb-4">
+      <h2 className="mb-1">
+        Explore our <span className="text-primary">Categories</span>
+      </h2>
+      <p className="text-muted">
+        Service categories help organize and structure the offerings on a marketplace.
+      </p>
+    </div>
 
-          <div className="category-grid">
-            {filteredStores.map((store) => (
-              <div
-                className="category-card"
-                key={store.id}
-                onClick={() => navigate(`/store/${store.id}/flyers`)}
-              >
-                <div className="category-icon">
-                  <img
-                    src={
-                      store.logo?.startsWith("http")
-                        ? store.logo
-                        : `${BASE_URL}/${store.logo}`
-                    }
-                    alt={store.name}
-                    className="img-fluid"
-                    onError={(e) =>
-                      (e.target.src = "https://via.placeholder.com/100x100?text=Logo")
-                    }
-                  />
-                </div>
-                <h6>{store.name}</h6>
-                <p>View Flyers</p>
-              </div>
-            ))}
-            {filteredStores.length === 0 && (
-              <p className="text-center mt-4">No supermarkets matched your search.</p>
-            )}
-          </div>
+    {/* Categories Grid */}
+    <div className="row g-4">
 
-          <div className="category-footer mt-4">
-            <Link to="/all-stores" className="btn btn-dark">
-              View All <FontAwesomeIcon icon={faArrowRight} className="ms-2" />
-            </Link>
+    {/*test*/}
+
+
+      {filteredStores.map((store) => (
+        <div
+          className="col-6 col-md-4 col-lg-2"
+          key={store.id}
+          onClick={() => navigate(`/store/${store.id}/flyers`)}
+          style={{ cursor: "pointer" }}
+        >
+          <div className="card text-center shadow-sm h-100">
+            <div className="card-body">
+              <img
+                src={
+                  store.logo?.startsWith("http")
+                    ? store.logo
+                    : `${BASE_URL}${store.logo}`
+                }
+                alt={store.name}
+                className="img-fluid mb-3"
+                style={{ maxHeight: "100px", objectFit: "contain" }}
+                onError={(e) =>
+                  (e.target.src = "https://via.placeholder.com/100x100?text=Logo")
+                }
+              />
+              <h6 className="fw-bold">{store.name}</h6>
+              <p className="text-muted small">View Flyers</p>
+            </div>
           </div>
         </div>
-      </section>
+      ))}
+
+      {filteredStores.length === 0 && (
+        <div className="col-12 text-center mt-4">
+          <p>No supermarkets matched your search.</p>
+        </div>
+      )}
+    </div>
+
+    {/* Footer Button */}
+    <div className="text-center mt-4">
+      <Link to="/all-stores" className="btn btn-dark">
+        View All <FontAwesomeIcon icon={faArrowRight} className="ms-2" />
+      </Link>
+    </div>
+  </div>
+</section>
+
        {/* About Section */}
-      <section id="about-us" className="section about-section bg-creme">
-
-        <div className="container">
-          <div className="row align-items-center">
-            <div className="col-md-6">
-              <div className="section-header mb-md-0 mb-4">
-                <h2 className="text-white display-4">
-                  ABOUT US <br />
-                   <span className="text-linear-primary"> ONE PLACE FOR ALL OFFERS</span>
-                </h2>
-                <p className="text-light">
-                  A versatile platform that lets customers get to know all offers and shops at their figer tips . Be able to browse,  select and shop right here . 
-                </p>
-                <a
-                  href="#" className="btn btn-linear-primary"
-
-                >  <Link to="/becomeshop">
-                    <FontAwesomeIcon icon={faUser} className="me-2" />
-                    Register NOW
-
-                  </Link></a>
-
-              </div>
-            </div>
-            <div className="col-md-6 text-md-end">
-              <div className="business-img">
-                <img
-                  src="/assets/Business1.jpg"
-                  className="img-fluid"
-                  alt="Business"
-                  style={{ minWidth: "880px",minHeight: "680px", borderRadius: "40px", }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+ 
 {/* Business Section */}
-      <section className="section business-section bg-black">
-        <div className="container">
-          <div className="row align-items-center">
-            <div className="col-md-6">
-              <div className="section-header mb-md-0 mb-4">
-                <h2 className="text-white display-4">
-                  Add Services & Grow <br />your
-                  <span className="text-linear-primary"> business with us</span>
-                </h2>
-                <p className="text-light">
-                  A versatile platform that connects you with local professionals across various categories,<br />
-                  from home services like plumbing and electrical work to personal services like<br />
-                  photography and tutoring.
-                </p>
-                <a
-                  href="#" className="btn btn-linear-primary"
-
-                >  <Link to="/becomeshop">
-                    <FontAwesomeIcon icon={faUser} className="me-2" />
-                    Become a Shop With Us
-
-                  </Link></a>
-
-              </div>
-            </div>
-            <div className="col-md-6 text-md-end">
-              <div className="business-img">
-                <img
-                  src="/assets/Business2.jpg"
-                  className="img-fluid"
-                  alt="Business"
-                  style={{ maxWidth: "500px", borderRadius: "40px", }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
      
 
 
-
       {/* Cities Section */}
-      <section className="section info-section">
-        <div className="container">
-          <div className="accordion-item border-0 bg-transparent">
-            <div className="popular-cities-header d-flex align-items-center justify-content-between w-100">
-              <h2 className="fw-bold m-0 mb-0">Popular Cities</h2>
-              <button
-                className="toggle-button1"
-                onClick={() => setIsCitiesOpen(prev => !prev)}
-                aria-label="Toggle Cities"
-              >
-                <span className={`dropdown-arrow ${isCitiesOpen ? "open" : ""}`} />
-              </button>
-            </div>
-            <hr style={{ borderTop: "1px solid lightgray", margin: "10px 0" }} />
-            {isCitiesOpen && (
-              <div className="accordion-body px-0 pt-3">
-                <div className="row row-cols-xl-6 row-cols-md-4 row-cols-sm-2 row-cols-1">
-                  {[
-                    "Detroit", "Greensboro", "Kansas City", "Memphis", "El Paso",
-                    "Harrisburg", "Las Vegas", "Miami", "Fort Lauderdale", "Hartford",
-                    "Long Beach", "Milwaukee", "Fort Worth", "Houston", "Los Angeles",
-                    "Minneapolis", "Fresno", "Indianapolis", "Louisville", "Modesto",
-                    "Grand Rapids", "Jacksonville", "Madison", "Nashville"
-                  ].map((city, idx) => (
-                    <div className="col" key={idx}>
-                      <div className="main-links">
-                        <a href="#">{city}</a>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
-
+     
       {/* Modals */}
       <Authorisation
         showAuthModal={showAuthModal}

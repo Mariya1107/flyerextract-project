@@ -332,13 +332,15 @@ def delete_flyer(request, flyer_id):
     
 @api_view(['POST'])
 @parser_classes([MultiPartParser, FormParser])
-@permission_classes([IsAuthenticated])  # Provider must be authenticated
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def upload_pending_flyer(request):
     serializer = PendingFlyerSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
         return Response({'message': 'Flyer submitted for approval'}, status=201)
     return Response(serializer.errors, status=400)
+
 
 class PendingFlyerListView(generics.ListAPIView):
     queryset = PendingFlyer.objects.all()

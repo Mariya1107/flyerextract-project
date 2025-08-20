@@ -1,5 +1,7 @@
 from .models import Country, Region, Store, Flyer, Product, ProviderApplication, PendingFlyer
 from rest_framework import serializers
+from django.utils.text import slugify
+from django.utils.crypto import get_random_string
 
 
 class CountrySerializer(serializers.ModelSerializer):
@@ -33,8 +35,12 @@ class StoreSerializer(serializers.ModelSerializer):
 
 
 class FlyerSerializer(serializers.ModelSerializer):
-    store_id = serializers.PrimaryKeyRelatedField(queryset=Store.objects.all(), write_only=True, source='store')
-    region_id = serializers.PrimaryKeyRelatedField(queryset=Region.objects.all(), write_only=True, source='region')
+    store_id = serializers.PrimaryKeyRelatedField(
+        queryset=Store.objects.all(), write_only=True, source='store'
+    )
+    region_id = serializers.PrimaryKeyRelatedField(
+        queryset=Region.objects.all(), write_only=True, source='region'
+    )
 
     store = StoreSerializer(read_only=True)
     region = RegionSerializer(read_only=True)
@@ -86,11 +92,16 @@ class StoreWithFlyersSerializer(serializers.ModelSerializer):
         model = Store
         fields = ['id', 'name', 'logo', 'flyers']
 
+
 class PendingFlyerSerializer(serializers.ModelSerializer):
-    store_id = serializers.PrimaryKeyRelatedField(queryset=Store.objects.all(), write_only=True, source='store')
+    store_id = serializers.PrimaryKeyRelatedField(
+        queryset=Store.objects.all(), write_only=True, source='store'
+    )
     store_id_value = serializers.IntegerField(source='store.id', read_only=True)
 
-    region_id = serializers.PrimaryKeyRelatedField(queryset=Region.objects.all(), write_only=True, source='region')
+    region_id = serializers.PrimaryKeyRelatedField(
+        queryset=Region.objects.all(), write_only=True, source='region'
+    )
     region_id_value = serializers.IntegerField(source='region.id', read_only=True)
 
     store = StoreSerializer(read_only=True)
@@ -111,7 +122,7 @@ class PendingFlyerSerializer(serializers.ModelSerializer):
             'store_id_value',
             'region_id',
             'region_id_value',
-            'expires_at'
+            'expires_at',
         ]
         extra_kwargs = {
             'pdf': {'required': False, 'allow_null': True},

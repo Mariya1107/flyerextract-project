@@ -24,7 +24,7 @@ const ApprovalAdmin = () => {
       });
       setPendingFlyers(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
-      console.error('Error fetching pending flyers:', err);
+      console.error('❌ Error fetching pending flyers:', err);
     }
   };
 
@@ -41,19 +41,19 @@ const ApprovalAdmin = () => {
   const handleApprove = async (flyer) => {
     console.log("📤 Approving flyer:", flyer);
 
-    const storeId = flyer?.store?.id;
-    const regionId = flyer?.region?.id;
+    const storeId = flyer?.store?.id || flyer?.store_id;
+    const regionId = flyer?.region?.id || flyer?.region_id;
 
     if (!storeId || !regionId) {
-      console.error("❌ Missing store_id or region_id:", { storeId, regionId });
+      console.error("❌ Missing store or region:", { storeId, regionId });
       alert("Missing store or region info. Cannot approve flyer.");
       return;
     }
 
     const formData = new FormData();
     formData.append("title", flyer.title);
-    formData.append("store_id", storeId);
-    formData.append("region_id", regionId);
+    formData.append("store_id", storeId);   // ✅ backend expects store_id
+    formData.append("region_id", regionId); // ✅ backend expects region_id
     formData.append("expires_at", flyer.expires_at || "2025-08-31");
 
     if (flyer.image && typeof flyer.image === "string") {
@@ -67,19 +67,19 @@ const ApprovalAdmin = () => {
     }
 
     try {
-      await axios.post(`${BASE_URL}/api/flyers/create/`, formData, {
+      // ✅ Correct endpoint for flyer creation
+      await axios.post(`${BASE_URL}/api/flyers/`, formData, {
         headers: {
           Authorization: `Token ${token}`,
           "Content-Type": "multipart/form-data",
         },
       });
 
-      // ✅ Cleanup from pending list
+      // cleanup: remove from pending list
       try {
         await axios.delete(`${BASE_URL}/api/reject-flyer/${flyer.id}/`, {
           headers: { Authorization: `Token ${token}` },
         });
-
         alert("✅ Brochure approved and removed from pending list!");
       } catch (cleanupErr) {
         console.warn("⚠️ Flyer created but failed to remove from pending list:", cleanupErr);
@@ -89,25 +89,25 @@ const ApprovalAdmin = () => {
       fetchPendingFlyers();
     } catch (error) {
       console.error("❌ Error approving flyer:", error.response?.data || error.message);
-      alert("❌ Approval failed: " + (error.response?.data?.detail || error.message));
+      alert("❌ Approval failed: " + JSON.stringify(error.response?.data || error.message));
     }
   };
-const handleReject = async (flyerId) => {
-  const confirmed = window.confirm('Are you sure you want to reject this flyer?');
-  if (!confirmed) return;
 
-  
-  try {
-    await axios.delete(`${BASE_URL}/api/reject-flyer/${flyerId}/`, {
-      headers: { Authorization: `Token ${token}` },
-    });
-    alert("❌ Flyer rejected and removed.");
-    fetchPendingFlyers(); // Refresh the list
-  } catch (error) {
-    console.error("❌ Error rejecting flyer:", error.response?.data || error.message);
-    alert("❌ Failed to reject flyer: " + (error.response?.data?.detail || error.message));
-  }
-};
+  const handleReject = async (flyerId) => {
+    const confirmed = window.confirm('Are you sure you want to reject this flyer?');
+    if (!confirmed) return;
+
+    try {
+      await axios.delete(`${BASE_URL}/api/reject-flyer/${flyerId}/`, {
+        headers: { Authorization: `Token ${token}` },
+      });
+      alert("❌ Flyer rejected and removed.");
+      fetchPendingFlyers();
+    } catch (error) {
+      console.error("❌ Error rejecting flyer:", error.response?.data || error.message);
+      alert("❌ Failed to reject flyer: " + JSON.stringify(error.response?.data || error.message));
+    }
+  };
 
   return (
     <div className="flyer-list-wrapper">

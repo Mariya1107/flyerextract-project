@@ -6,7 +6,8 @@
 
 .flyer-list-wrapper {
   padding: 60px 20px;
-  background: linear-gradient(-55deg, #ea9dd0, #e5eafa, #e9f4ff, #ddf6e7);
+  /* background: linear-gradient(-55deg, #ea9dd0, #e5eafa, #e9f4ff, #ddf6e7); */
+  background:linear-gradient(to bottom, #f7f9fc, #e3e8f4);
   background-size: 400% 400%;
   animation: aurora 8s ease infinite;
   min-height: 100vh;
@@ -227,11 +228,34 @@
   font-size: 16px;
   color: #444;
 }
+.displayblock
+{
+  display: block !important;
+}
+.for_padding
+{
+  padding-top:5px;
+}
 
+.bg-light {
+    --bs-bg-opacity: 1;
+    background-color: rgb(255 255 255) !important;
+}
+.card_img
+{
+  height: 250px !important;
+  overflow: hidden;
+}
 
-.flyer-expiry {
-  font-size: 1.2rem;
-  color: #ff0000; /* red for visibility */
-  text-align: right;
-  margin-bottom: 4px;
+.card:hover
+{
+  box-shadow: 0px 4px 10px #ccc !important;
+}
+
+@media(max-width:767px)
+{
+  .search-bar
+  {
+    width:100% !important;
+  }
 }

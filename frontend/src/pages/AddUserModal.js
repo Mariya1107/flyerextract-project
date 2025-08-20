@@ -16,32 +16,32 @@ const AddUserModal = ({ onClose, onUserAdded }) => {
     is_staff: false,
     is_superuser: false,
     profile_photo: null,
-    store: "", // updated: store instead of store_id to match backend field
+    stores: [], // Updated to match backend ManyToManyField
   });
 
   const [storeOptions, setStoreOptions] = useState([]);
 
+  // Fetch store options on mount
   useEffect(() => {
     const token = localStorage.getItem("adminToken");
     axios.get(`${BASE_URL}/api/accounts/stores/`, {
-      headers: {
-        Authorization: `Token ${token}`,
-      }
+      headers: { Authorization: `Token ${token}` }
     })
-    .then(res => {
-      setStoreOptions(res.data);
-    })
-    .catch(err => {
-      console.error("Error fetching stores:", err);
-    });
+    .then(res => setStoreOptions(res.data))
+    .catch(err => console.error("Error fetching stores:", err));
   }, []);
 
   const handleChange = (e) => {
     const { name, value, type, checked, files } = e.target;
+
     if (type === "checkbox") {
       setFormData({ ...formData, [name]: checked });
     } else if (type === "file") {
       setFormData({ ...formData, profile_photo: files[0] });
+    } else if (name === "stores") {
+      // allow selecting multiple stores
+      const options = Array.from(e.target.selectedOptions, option => option.value);
+      setFormData({ ...formData, stores: options });
     } else {
       setFormData({ ...formData, [name]: value });
     }
@@ -52,25 +52,30 @@ const AddUserModal = ({ onClose, onUserAdded }) => {
     const token = localStorage.getItem("adminToken");
     const data = new FormData();
 
+    // Append all fields to FormData
     Object.entries(formData).forEach(([key, value]) => {
       if (value !== null && value !== "") {
-        data.append(key, value);
+        if (key === "stores") {
+          value.forEach(storeId => data.append("stores", storeId)); // For ManyToMany
+        } else {
+          data.append(key, value);
+        }
       }
     });
 
-   axios.post(`${BASE_URL}/api/accounts/admin/users/create/`, data, {
+    axios.post(`${BASE_URL}/api/accounts/admin/users/create/`, data, {
       headers: {
         Authorization: `Token ${token}`,
         "Content-Type": "multipart/form-data"
       }
     })
     .then(() => {
-      onUserAdded(); // refresh list
-      onClose();     // close modal
+      onUserAdded(); // Refresh user list
+      onClose();     // Close modal
     })
     .catch((error) => {
       console.error("Error adding user:", error.response?.data || error.message);
-      alert("Error adding user. Please check input values.");
+      alert("❌ Error adding user. Please check input values.");
     });
   };
 
@@ -86,12 +91,13 @@ const AddUserModal = ({ onClose, onUserAdded }) => {
           <input name="phone" placeholder="Phone" onChange={handleChange} />
           <select name="gender" onChange={handleChange}>
             <option value="">Select Gender</option>
-            <option value="M">Male</option>
-            <option value="F">Female</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
           </select>
           <input name="password" placeholder="Password" type="password" onChange={handleChange} required />
 
- <label>
+          <label>
             <input type="checkbox" name="is_active" onChange={handleChange} /> Active
           </label>
           <label>
@@ -105,10 +111,14 @@ const AddUserModal = ({ onClose, onUserAdded }) => {
           </label>
 
           <label>
-            Store:
-            <select name="store" value={formData.store} onChange={handleChange}>
-              <option value="">Select Store</option>
-              {storeOptions.map((store) => (
+            Stores (select multiple with Ctrl/Cmd):
+            <select
+              name="stores"
+              multiple
+              value={formData.stores}
+              onChange={handleChange}
+            >
+              {storeOptions.map(store => (
                 <option key={store.id} value={store.id}>{store.name}</option>
               ))}
             </select>

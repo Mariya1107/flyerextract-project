@@ -2,7 +2,8 @@
   --primary: #c8bcff;
   --secondary: #7f5af0;
   --accent: #ffd166;
-  --bg: linear-gradient(135deg, #ffe0f0, #e5f6ff, #fff7cc);
+  /* --bg: linear-gradient(135deg, #ffe0f0, #e5f6ff, #fff7cc); */
+  --bg:linear-gradient(to bottom, #f7f9fc, #e3e8f4);
   --text-dark: #2d2d2d;
   --text-light: #fff;
 }
@@ -28,34 +29,36 @@ body {
 }
 
 .flyer-header-card {
-  background: var(--primary);
-  color: white;
-  padding: 20px 28px;
-  border-radius: 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-  margin-bottom: 30px;
-  width: 100%;
+  background: #c8bcff00;
+    color: white;
+    padding: 20px 28px;
+    border-radius: 16px;
+    display: flex
+;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    /* box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1); */
+    margin-bottom: 30px;
+    width: 100%;
 }
 
 .back-button {
-  background: #fff;
-  color: var(--primary);
-  border: none;
-  padding: 10px 18px;
-  font-weight: bold;
-  font-size: 15px;
-  border-radius: 50px;
-  cursor: pointer;
-  transition: all 0.3s ease;
+    background: #fff;
+    color: #a611c4;
+    border: none;
+    padding: 10px 18px;
+    font-weight: bold;
+    font-size: 15px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
 .back-button:hover {
-  transform: scale(1.05);
-  background-color: var(--accent);
+      transform: scale(1.05);
+    background-color: #c346c6;
+    color: #fff;
 }
 
 .search-bar {
@@ -69,14 +72,14 @@ body {
 }
 
 .flyer-preview {
-  background: #fefefe;
-  border-radius: 16px;
-  padding: 10px;
-  text-align: center;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-  width: 100%;
-  max-width: 400px;
-  position: relative;
+    /* background: #fefefe; */
+    border-radius: 16px;
+    padding: 10px;
+    text-align: center;
+    /* box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); */
+    width: 100%;
+    max-width: 100%;
+    position: relative;
 }
 
 .flyer-img {
@@ -142,6 +145,7 @@ body {
   font-size: 1rem;
   color: #333;
   margin-top: 12px;
+  text-align:center;
 }
 
 .react-pdf__Page {
@@ -162,11 +166,11 @@ body {
 }
 
 .product-header {
-  display: flex;
+  display: block;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
-  margin-left: 350px;
+  /* margin-left: 350px; */
 }
 
 .toggle-view-btn {
@@ -491,8 +495,8 @@ body {
 }
 .flyer-detail-container {
   width: 100%;
-  max-width: 1000px;
-  background: linear-gradient(135deg, #ffe0f0 0%, #e5f6ff 50%, #e0ffe0 100%);
+  max-width: 700px;
+  background:linear-gradient(to bottom, #f7f9fc, #e3e8f4);
   border-radius: 24px;
   padding: 2rem;
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
@@ -841,7 +845,7 @@ body {
 
 /* Modal Box */
 .search-modal {
-  background: linear-gradient(135deg, #262f47, #311b2e);
+  background: #fff;
   padding: 24px;
   border-radius: 16px;
   max-width: 600px;
@@ -865,7 +869,7 @@ body {
 
 .card-footer {
   display: flex;
-  justify-content:center; 
+  justify-content: space-between; /* price left, cart right */
   align-items: center;
   margin-top: 10px;
 }
@@ -874,7 +878,6 @@ body {
   font-size: 1rem;
   font-weight: bold;
   color: #333; /* adjust to match your theme */
-  
 }
 
 .cart-icon {
@@ -882,36 +885,16 @@ body {
   color: #333;        /* make sure it’s visible */
   cursor: pointer;    /* shows hand cursor */
   transition: color 0.2s ease;
-  margin-left: 130px;
+  margin-left: 140px;
 }
 
 .cart-icon:hover {
   color: #adb7c2; /* change color on hover */
 }
-.product-details {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  font-family: "Inter", sans-serif;
-}
 
-.product-details strong {
-  font-size: 1rem;
-  color: #222;
-  font-weight: 600;
-}
-
-.product-footer {
-  display: flex;
-  
-  align-items: center;
-  
-}
-
-.price-tag {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #2d2d2d;
-  
-  
+@media(max-width:768px){
+  .back-button
+  {
+    display: none !important;
+  }
 }

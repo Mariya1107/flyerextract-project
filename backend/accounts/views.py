@@ -17,6 +17,7 @@ from flyers.models import ProviderApplication
 from flyers.serializers import ProviderApplicationSerializer
 from flyers.models import Flyer
 from flyers.serializers import FlyerSerializer
+from rest_framework import status
 
 User = get_user_model()
 
@@ -356,13 +357,13 @@ def delete_provider_application(request, application_id):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def provider_brochures_pages(request, provider_id):
-    if request.user.id != provider_id:
+    # Ensure correct user & role
+    if request.user.id != provider_id or not request.user.is_provider:
         return Response({"error": "Unauthorized access"}, status=403)
 
-    flyers = Flyer.objects.filter(store__provider__id=provider_id)
+    flyers = Flyer.objects.filter(store__provider_id=provider_id)
     serializer = FlyerSerializer(flyers, many=True, context={'request': request})
     return Response(serializer.data)
-
 
 @api_view(['GET'])
 def server_status(request):

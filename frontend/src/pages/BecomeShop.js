@@ -1,74 +1,126 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "./BecomeShop.css";
-import ProviderModal1 from "../components/ProviderModal1";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser } from "@fortawesome/free-solid-svg-icons";
+import { faUser, faChartLine, faShoppingCart, faBullhorn, faCogs } from "@fortawesome/free-solid-svg-icons";
+import ProviderModal1 from "../components/ProviderModal1";
+import "./BecomeShop.css";
+
+
 
 const BecomeShop = () => {
-  const navigate = useNavigate();
   const [showProviderModal1, setShowProviderModal1] = useState(false);
 
   return (
-    <div className="become-shop-container">
-      {/* Heading */}
-      <header className="become-shop-header">
-        <h1>Become a Shop Partner</h1>
-        <p>
-          Grow your business by sharing your offers and flyers with thousands
-          of customers.
-        </p>
-      </header>
-
-      {/* About Us */}
-      <section className="become-shop-section">
-        <h2>About Us</h2>
-        <p>
-          We are an all-in-one platform where customers can discover, browse,
-          and shop from local stores. From supermarket flyers to exclusive
-          offers, we bring everything into one easy-to-use place. Our goal is
-          to connect businesses with the right audience and make shopping
-          smarter for everyone.
-        </p>
+    <div className="">
+      {/* Hero Section */}
+      <section className="hero-section text-center text-white py-5"  style={{
+    backgroundImage: `url("/about.png")`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat"
+  
+  }} >
+        <div className="container py-5">
+          <h1 className="mb-3">Become a Shop Partner</h1>
+          <p className="lead mb-4">
+            Grow your business by sharing your offers and flyers with thousands of customers.
+          </p>
+          <button
+            className="for_btn btn btn-lg"
+            onClick={() => setShowProviderModal1(true)}
+          >
+            <FontAwesomeIcon icon={faUser} className="me-2" />
+            Join Now
+          </button>
+        </div>
       </section>
 
-      {/* Why Join */}
-      <section className="become-shop-section">
-        <h2>Why Join Us?</h2>
-        <ul>
-          <li>📢 Upload and share your flyers with thousands of customers.</li>
-          <li>🛒 Showcase your offers and products in real-time.</li>
-          <li>📈 Expand your reach and attract new customers.</li>
-          <li>💳 Enable buyers to purchase directly from your offers.</li>
-          <li>💼 Manage everything in one simple dashboard.</li>
-        </ul>
+      {/* About Section */}
+      <section className="py-5" style={{background:"#fff"}}>
+        <div className="container">
+          <h2 className="text-center mb-4">About Us</h2>
+          <p className="text-center text-muted">
+            We are an all-in-one platform where customers can discover, browse,
+            and shop from local stores. From supermarket flyers to exclusive offers, 
+            we bring everything into one easy-to-use place. Our goal is to connect businesses 
+            with the right audience and make shopping smarter for everyone.
+          </p>
+        </div>
       </section>
 
-      {/* How It Works */}
-      <section className="become-shop-section">
-        <h2>How It Works</h2>
-        <ol>
-          <li>Create your provider account.</li>
-          <li>Upload your store flyers and offers.</li>
-          <li>Reach thousands of potential customers instantly.</li>
-          <li>Manage orders and promotions from your dashboard.</li>
-        </ol>
+      {/* Why Join Section */}
+      <section className="why-join-section py-5 bg-light">
+        <div className="container">
+          <h2 className="text-center mb-5">Why Join Us?</h2>
+          <div className="row g-4">
+            <div className="col-md-4">
+              <div className="feature-card p-4 text-center h-100 shadow-sm">
+                <FontAwesomeIcon icon={faBullhorn} size="2x" className="mb-3 text-primary" />
+                <h5>Promote Your Offers</h5>
+                <p>Upload and share your flyers with thousands of customers.</p>
+              </div>
+            </div>
+            <div className="col-md-4">
+              <div className="feature-card p-4 text-center h-100 shadow-sm">
+                <FontAwesomeIcon icon={faShoppingCart} size="2x" className="mb-3 text-primary" />
+                <h5>Showcase Products</h5>
+                <p>Display your offers and products in real-time to attract buyers.</p>
+              </div>
+            </div>
+            <div className="col-md-4">
+              <div className="feature-card p-4 text-center h-100 shadow-sm">
+                <FontAwesomeIcon icon={faChartLine} size="2x" className="mb-3 text-primary" />
+                <h5>Grow Your Business</h5>
+                <p>Expand your reach and manage everything from a single dashboard.</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
-      {/* CTA */}
-      <div className="become-shop-cta">
-        <a
-          href="#"
-          className="btn btn-linear-primary"
-          onClick={(e) => {
-            e.preventDefault();
-            setShowProviderModal1(true);
-          }}
+      {/* How It Works Section */}
+      <section className="how-it-works-section py-5">
+        <div className="container">
+          <h2 className="text-center mb-5">How It Works</h2>
+          <div className="row g-4">
+            <div className="col-md-3 text-center">
+              <div className="step-card p-3 h-100 shadow-sm">
+                <FontAwesomeIcon icon={faUser} size="2x" className="mb-2 text-primary" />
+                <h6>Create Account</h6>
+              </div>
+            </div>
+            <div className="col-md-3 text-center">
+              <div className="step-card p-3 h-100 shadow-sm">
+                <FontAwesomeIcon icon={faCogs} size="2x" className="mb-2 text-primary" />
+                <h6>Upload Flyers</h6>
+              </div>
+            </div>
+            <div className="col-md-3 text-center">
+              <div className="step-card p-3 h-100 shadow-sm">
+                <FontAwesomeIcon icon={faBullhorn} size="2x" className="mb-2 text-primary" />
+                <h6>Reach Customers</h6>
+              </div>
+            </div>
+            <div className="col-md-3 text-center">
+              <div className="step-card p-3 h-100 shadow-sm">
+                <FontAwesomeIcon icon={faChartLine} size="2x" className="mb-2 text-primary" />
+                <h6>Manage Dashboard</h6>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="cta-section text-center py-5 bg-primary text-white">
+        <h3 className="mb-4">Ready to Grow Your Business?</h3>
+        <button
+          className="btn btn-light btn-lg"
+          onClick={() => setShowProviderModal1(true)}
         >
           <FontAwesomeIcon icon={faUser} className="me-2" />
           Become a Shop With Us
-        </a>
-      </div>
+        </button>
+      </section>
 
       {/* Modal */}
       {showProviderModal1 && (

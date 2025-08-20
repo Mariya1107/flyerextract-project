@@ -42,3 +42,31 @@
 .join-btn:hover {
   background-color: var(--primary-color-dark);
 }
+
+.for_btn
+{
+  background:linear-gradient(90deg, #ff2bb2, #1e90ff) !important;
+  color:#fff !important;
+  border: 1px solid #a952d0 !important;
+  font-size: 16px !important;
+}
+
+.shadow-sm {
+    box-shadow: 0 0.125rem 3rem 9px rgba(0, 0, 0, 0.075) !important;
+}
+
+.text-primary {
+    --bs-text-opacity: 1;
+    color: rgb(155 24 167) !important;
+}
+
+.bg-primary {
+    --bs-bg-opacity: 1;
+    background-color: rgb(155 24 167) !important;
+}
+
+.btn:hover {
+    color: var(--bs-btn-hover-color);
+    background-color: #bd48c8;
+    border-color: var(--bs-btn-hover-border-color);
+}
