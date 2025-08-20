@@ -14,7 +14,7 @@ const AddToCart = () => {
     setCartItems(savedCart);
   }, []);
 
-  // ✅ Handle product from location.state, merge with existing cart
+  // ✅ Handle product from location.state
   useEffect(() => {
     if (location.state?.product) {
       const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -30,22 +30,22 @@ const AddToCart = () => {
             : item
         );
       } else {
-        updatedCart = [...savedCart, { ...location.state.product, quantity: 1 }];
+        updatedCart = [
+          ...savedCart,
+          { ...location.state.product, quantity: 1 },
+        ];
       }
 
       localStorage.setItem("cart", JSON.stringify(updatedCart));
       setCartItems(updatedCart);
 
-      // ✅ Clear location.state to prevent re-adding on refresh
       navigate(location.pathname, { replace: true });
     }
   }, [location.state, location.pathname, navigate]);
 
-  // ✅ Update localStorage whenever cart changes
+  // ✅ Keep localStorage in sync
   useEffect(() => {
-    if (cartItems.length > 0) {
-      localStorage.setItem("cart", JSON.stringify(cartItems));
-    }
+    localStorage.setItem("cart", JSON.stringify(cartItems));
   }, [cartItems]);
 
   const handleQuantityChange = (id, amount) => {
@@ -73,6 +73,42 @@ const AddToCart = () => {
     0
   );
 
+  // ✅ Group items by store
+  const groupedByStore = cartItems.reduce((acc, item) => {
+    const store = item.store_name || item.storeName || "Unknown";
+    if (!acc[store]) acc[store] = [];
+    acc[store].push(item);
+    return acc;
+  }, {});
+
+  // ✅ Mapping store → WhatsApp number
+  const storeNumbers = {
+    lulu: "917025385200",
+    nestle: "918547409237",
+  };
+
+  // ✅ Build WhatsApp order link
+  const buildWhatsAppLink = (store, products) => {
+    const total = products.reduce(
+      (sum, p) => sum + p.price * p.quantity,
+      0
+    );
+
+    const message =
+      `🛒 Order from ${store}\n\n` +
+      products
+        .map(
+          (p) => `${p.name} x${p.quantity} - ₹${p.price * p.quantity}`
+        )
+        .join("\n") +
+      `\n\nSubtotal: ₹${total}`;
+
+    const number =
+      storeNumbers[store.toLowerCase()] || storeNumbers["lulu"];
+
+    return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
+  };
+
   return (
     <div className="cart-container">
       <h2 className="cart-title">🛒 Your Shopping Cart</h2>
@@ -90,14 +126,12 @@ const AddToCart = () => {
                   alt={item.name}
                   className="cart-item-img"
                 />
-
                 <div className="cart-item-details">
                   <h3>{item.name}</h3>
                   <p className="store-name">
-                    store: {item.storeName || "Unknown"}
+                    Store: {item.store_name || item.storeName || "Unknown"}
                   </p>
                   <p className="price">₹ {item.price}</p>
-
                   <div className="cart-controls">
                     <button
                       className="qty-btn"
@@ -112,16 +146,14 @@ const AddToCart = () => {
                     >
                       +
                     </button>
-
                     <button
                       className="btn remove-btn"
                       onClick={() => handleRemove(item.id)}
                     >
-                      ✖ 
+                      ✖
                     </button>
                   </div>
                 </div>
-
                 <div className="cart-item-total">
                   ₹ {item.price * item.quantity}
                 </div>
@@ -134,12 +166,18 @@ const AddToCart = () => {
             <h3>Order Summary</h3>
             <p>Total Items: {cartItems.length}</p>
             <h3>Subtotal: ₹ {subtotal}</h3>
-            <button
-              className="checkout-btn"
-              onClick={() => navigate("/checkout")}
-            >
-              Proceed to Checkout →
-            </button>
+
+            <div className="store-checkout">
+              {Object.entries(groupedByStore).map(([store, products]) => (
+                <button
+                  key={store}
+                  className="checkout-btn"
+                  onClick={() => window.open(buildWhatsAppLink(store, products), "_blank")}
+                >
+                  Send Order to {store}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       )}
@@ -148,3 +186,4 @@ const AddToCart = () => {
 };
 
 export default AddToCart;
+
