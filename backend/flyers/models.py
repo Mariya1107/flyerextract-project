@@ -4,14 +4,14 @@ from django.db import models
 class Country(models.Model):
     name = models.CharField(max_length=100)
 
-    def __str__(self):
+    def _str_(self):
         return self.name
 
 class Region(models.Model):
     name = models.CharField(max_length=100)
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
 
-    def __str__(self):
+    def _str_(self):
         return f"{self.name}, {self.country.name}"
     
 class Store(models.Model):
@@ -20,7 +20,7 @@ class Store(models.Model):
     provider = models.ForeignKey('accounts.CustomUser', on_delete=models.CASCADE, related_name='provider_stores', null=True, blank=True)
 
 
-    def __str__(self):
+    def _str_(self):
         return self.name
 
 class Flyer(models.Model):
@@ -32,7 +32,7 @@ class Flyer(models.Model):
     created_at = models.DateField(auto_now_add=True)
     expires_at = models.DateField()
 
-    def __str__(self):
+    def _str_(self):
         return f"{self.title} - {self.region.name}"
 
 class Product(models.Model):
@@ -41,7 +41,7 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     image = models.ImageField(upload_to='product_images/', null=True, blank=True)
 
-    def __str__(self):
+    def _str_(self):
         return self.name
 
 
@@ -68,7 +68,7 @@ class ProviderApplication(models.Model):
     
     
 
-    def __str__(self):
+    def _str_(self):
         return f"{self.full_name} ({self.company_name})"
     
 
@@ -81,5 +81,5 @@ class PendingFlyer(models.Model):
     expires_at = models.DateField()
     created_at = models.DateField(auto_now_add=True)
 
-    def __str__(self):
+    def _str_(self):
         return f"{self.title} - Pending"

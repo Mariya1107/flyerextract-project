@@ -1,3 +1,4 @@
+// src/pages/AdminStoreBrochure.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -27,20 +28,18 @@ const AdminStoreBrochure = () => {
     expires_at: '',
   });
 
-  // ✅ Get token from localStorage
   const token = localStorage.getItem('adminToken');
 
-  // ✅ Apply token globally to Axios
+  // Ensure axios has token
   useEffect(() => {
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Token ${token}`;
     } else {
       console.error('No token found. Redirecting to login...');
-      navigate('/admin-login'); // or your login route
+      navigate('/admin-login');
     }
   }, [token, navigate]);
 
-  // ✅ Fetch brochures
   const fetchBrochures = async () => {
     try {
       const res = await axios.get(`${BASE_URL}/api/stores-with-flyers/`);
@@ -52,7 +51,6 @@ const AdminStoreBrochure = () => {
     }
   };
 
-  // ✅ Fetch stores & regions
   const fetchDropdownData = async () => {
     try {
       const [storesRes, regionsRes] = await Promise.all([
@@ -89,32 +87,50 @@ const AdminStoreBrochure = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const data = new FormData();
 
-    Object.entries(formData).forEach(([key, value]) => {
-      if (value !== null && value !== '') {
-        data.append(key, value);
-      }
-    });
+    if (!formData.region_id || !formData.title) {
+      alert('Region and title are required.');
+      return;
+    }
 
     try {
-      await axios.post(`${BASE_URL}/api/flyers/create/`, data, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+      const data = new FormData();
+      Object.entries(formData).forEach(([key, value]) => {
+        if (value !== null && value !== '') data.append(key, value);
       });
+
+      const token = localStorage.getItem('adminToken'); // 🔑 ensure latest
+      await axios.post(`${BASE_URL}/api/flyers/create/`, data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Token ${token}`,
+        },
+      });
+
       setShowForm(false);
+      setFormData({
+        store_id: storeId,
+        region_id: '',
+        title: '',
+        pdf: null,
+        image: null,
+        expires_at: '',
+      });
       fetchBrochures();
     } catch (error) {
       console.error('Error submitting form:', error.response?.data || error.message);
-      alert('Error creating brochure.');
+      alert(`Error creating brochure: ${JSON.stringify(error.response?.data || error.message)}`);
     }
   };
 
   const handleDelete = async (flyerId) => {
-    const confirmed = window.confirm('Are you sure you want to delete this brochure?');
-    if (!confirmed) return;
+    if (!window.confirm('Are you sure you want to delete this brochure?')) return;
 
     try {
-      await axios.delete(`${BASE_URL}/api/flyers/${flyerId}/delete/`);
+      const token = localStorage.getItem('adminToken');
+      await axios.delete(`${BASE_URL}/api/flyers/${flyerId}/delete/`, {
+        headers: { Authorization: `Token ${token}` },
+      });
       fetchBrochures();
     } catch (error) {
       console.error('Error deleting flyer:', error.response?.data || error.message);

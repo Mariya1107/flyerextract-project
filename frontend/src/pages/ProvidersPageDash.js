@@ -26,7 +26,7 @@ const ProvidersPageDash = () => {
           >
             <div className="category-icon">
               <img
-                src={store.logo?.startsWith("http") ? store.logo : `${BASE_URL}${store.logo}`}
+                src={store.logo?.startsWith("http") ? store.logo : `${BASE_URL}/${store.logo}`}
                 alt={store.name}
                 className="img-fluid"
                 onError={(e) => (e.target.src = "https://via.placeholder.com/100x100?text=Logo")}

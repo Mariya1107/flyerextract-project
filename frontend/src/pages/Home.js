@@ -53,7 +53,7 @@ const Home = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get(`${BASE_URL}stores/`)
+    axios.get(`${BASE_URL}/stores/`)
       .then((res) => setStores(res.data))
       .catch((err) => console.error("Error fetching stores", err));
   }, []);
@@ -240,7 +240,7 @@ const Home = () => {
                 src={
                   store.logo?.startsWith("http")
                     ? store.logo
-                    : `${BASE_URL}${store.logo}`
+                    : `${BASE_URL}/${store.logo}`
                 }
                 alt={store.name}
                 className="img-fluid mb-3"

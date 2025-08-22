@@ -29,7 +29,7 @@ const UploadBrochure = () => {
         return;
       }
       try {
-        const res = await axios.get(`${BASE_URL}regions/`, {
+        const res = await axios.get(`${BASE_URL}/regions/`, {
           headers: { Authorization: `Token ${token}` },
         });
         setRegionList(res.data);
@@ -71,7 +71,7 @@ const UploadBrochure = () => {
     if (imageFile) formData.append("image", imageFile);
 
     try {
-      await axios.post(`${BASE_URL}flyers/upload_pending/`, formData, {
+      await axios.post(`${BASE_URL}/flyers/upload_pending/`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Token ${token}`,
