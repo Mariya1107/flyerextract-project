@@ -64,7 +64,7 @@ const ProductGrid = ({ products, onProductClick, handleAddToCart }) => {
 };
 
 const CropProducts = () => {
-  const { flyer_slug } = useParams(); // use slug now
+  const { flyer_slug } = useParams();
   const navigate = useNavigate();
 
   const [flyer, setFlyer] = useState(null);
@@ -231,13 +231,22 @@ const CropProducts = () => {
       });
 
       const formData = new FormData();
-      formData.append("flyer_slug", flyer_slug); // upload by slug
+      formData.append("flyer_slug", flyer_slug);
       formData.append("image", blob, "crop.jpg");
 
+      // Create local URL for instant preview
+      const localUrl = URL.createObjectURL(blob);
+
       const res = await axios.post(`${BASE_URL}/api/products/upload/`, formData);
+
+      // Add product immediately with local URL
+      setProducts((prev) => [
+        ...prev,
+        { ...res.data, image: localUrl }
+      ]);
+
       alert(`✅ Uploaded: ${res.data.name} (₹${res.data.price})`);
       setSelection(null);
-      setProducts((prev) => [...prev, res.data]);
     } catch (err) {
       alert("❌ Upload failed.");
     }
