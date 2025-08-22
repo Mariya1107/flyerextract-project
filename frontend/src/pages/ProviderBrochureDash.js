@@ -5,7 +5,7 @@ import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import './FlyerList.css';
 import BASE_URL from '../config';
 
-// PDF.js worker
+// Setup PDF.js worker
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 const ProviderBrochureDash = () => {
@@ -14,20 +14,23 @@ const ProviderBrochureDash = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const providerId = localStorage.getItem('providerId');
     const token = localStorage.getItem('providerToken');
 
-    if (!token) {
-      console.warn('⚠️ Missing providerToken in localStorage');
+    if (!providerId || !token) {
+      console.warn('⚠️ Missing providerId or providerToken in localStorage');
       setLoading(false);
       return;
     }
 
-    // Fetch brochures (flyers) for logged-in provider
+    // ✅ Ensure no double slash in URL
+    const url = `${BASE_URL.replace(/\/$/, '')}/api/accounts/brochures/${providerId}/pages/`;
+
     axios
-      .get(`${BASE_URL}/api/accounts/api/flyers_by_provider/`, {
+      .get(url, {
         headers: {
-          Authorization: `Token ${token}`
-        }
+          Authorization: `Token ${token}`,
+        },
       })
       .then((res) => {
         console.log('Brochures response:', res.data);
