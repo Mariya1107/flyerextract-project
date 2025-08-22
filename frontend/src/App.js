@@ -9,7 +9,6 @@ import BrochureViewer from "./pages/ProviderBrochureDash.js";
 import ProviderLogin from "./components/ProviderLogin";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-
 // Provider Dashboard pages
 import ProviderLoginDashboard from './pages/ProviderLoginDashboard';
 import UploadBrochure from "./pages/UploadBrochure";
@@ -35,9 +34,9 @@ import CropProducts from './pages/CropProducts';
 
 // Layout wrappers
 import DashboardLayoutWrapper from "./components/DashboardLayoutWrapper";
-import DashboardLayoutWrapper2 from "./components/DashboardLayoutWrapper2"; // ✅ NEW
+import DashboardLayoutWrapper2 from "./components/DashboardLayoutWrapper2";
 
-// 🛒 Import Cart Page
+// 🛒 Cart Page
 import AddToCart from "./pages/AddToCart";
 
 function App() {
@@ -48,14 +47,20 @@ function App() {
         {/* 🌐 Public Routes */}
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
-          <Route path="flyers/:flyerId" element={<FlyerDetail />} />
+
+          {/* Flyers by Region */}
+          <Route path="flyers/:region_slug" element={<FlyerList />} />
+
+          {/* Flyers by Store */}
+          <Route path="store/:store_slug/flyers" element={<FlyerList />} />
+
+          {/* Flyer Details */}
+          <Route path="flyers/:flyer_slug/detail" element={<FlyerDetail />} />
+
+          {/* Other Public Pages */}
           <Route path="brochure/:id" element={<BrochureViewer />} />
-          <Route path="flyers" element={<FlyerList />} />
-          <Route path="store/:id/flyers" element={<FlyerList />} />
           <Route path="provider-login" element={<ProviderLogin />} />
           <Route path="becomeshop" element={<BecomeShop />} />
-
-          {/* 🛒 Cart Route */}
           <Route path="cart" element={<AddToCart />} />
         </Route>
 
@@ -78,12 +83,12 @@ function App() {
           <Route path="countries" element={<CountryAdmin />} />
           <Route path="regions" element={<RegionAdmin />} />
           <Route path="provider-applications" element={<ProviderApplicationDash />} />
-          <Route path="store/:storeId/brochures" element={<AdminStoreBrochure />} />
+          <Route path="store/:store_slug/brochures" element={<AdminStoreBrochure />} />
           <Route path="store-brochures" element={<AdminBrochure />} />
           <Route path="approvals" element={<ApprovalAdmin />} />
-          <Route path="crop-products/:flyerId" element={<CropProducts />} />
+          <Route path="crop-products/:flyer_slug" element={<CropProducts />} />
           <Route path="storebrochure-extracts" element={<AdminBrochureExtract />} />
-          <Route path="store/:storeId/brochure-extract" element={<AdminStoreBrochureExtract />} />
+          <Route path="store/:store_slug/brochure-extract" element={<AdminStoreBrochureExtract />} />
         </Route>
 
       </Routes>

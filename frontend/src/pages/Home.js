@@ -47,7 +47,7 @@ const Home = () => {
 
   const [stores, setStores] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [locationTerm, setLocationTerm] = useState(""); // 👈 Added
+  const [locationTerm, setLocationTerm] = useState(""); 
   const [isCitiesOpen, setIsCitiesOpen] = useState(true);
 
   const navigate = useNavigate();
@@ -126,7 +126,7 @@ const Home = () => {
     setShowAuthModal(false);
   };
 
-  // 🔍 Updated filter logic
+  // Filter stores based on search and location
   const filteredStores = stores.filter((store) => {
     const name = store.name?.toLowerCase() || "";
     const region = store.region?.name?.toLowerCase() || "";
@@ -144,142 +144,125 @@ const Home = () => {
   return (
     <>
       {/* HERO */}
-     <section className="py-5 bg-light" id="home" style={{
-    backgroundImage: `url("/slider.png")`,
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-    backgroundRepeat: "no-repeat",
-    minHeight: "60vh"
-  }}>
-      <div className="container  py-5">
-        <div className="row align-items-center">
-          <div className="col-lg-8 mx-auto text-center">
-            <h1 className="text-white fw-bold mb-3 fs-1">
-          Connect with Nearby Shops
-            </h1>
-            <p className="text-light mb-4 fs-5">
-              We can connect you to the supermarket, first time and every time.
-            </p>
+      <section className="py-5 bg-light" id="home" style={{
+        backgroundImage: `url("/slider.png")`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        minHeight: "60vh"
+      }}>
+        <div className="container py-5">
+          <div className="row align-items-center">
+            <div className="col-lg-8 mx-auto text-center">
+              <h1 className="text-white fw-bold mb-3 fs-1">
+                Connect with Nearby Shops
+              </h1>
+              <p className="text-light mb-4 fs-5">
+                We can connect you to the supermarket, first time and every time.
+              </p>
 
-            <form>
-              <div className="row g-2 justify-content-center">
-                {/* Search Input */}
-                <div className="col-md-4">
-                  <div className="input-group">
-                    <span className="input-group-text">
-                      <FontAwesomeIcon icon={faSearch} />
-                    </span>
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Search for Supermarket"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                    />
+              <form>
+                <div className="row g-2 justify-content-center">
+                  <div className="col-md-4">
+                    <div className="input-group">
+                      <span className="input-group-text">
+                        <FontAwesomeIcon icon={faSearch} />
+                      </span>
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Search for Supermarket"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-md-4">
+                    <div className="input-group">
+                      <span className="input-group-text">
+                        <FontAwesomeIcon icon={faMapPin} />
+                      </span>
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Enter Location"
+                        value={locationTerm}
+                        onChange={(e) => setLocationTerm(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-md-2 d-grid">
+                    <Link to="/search" className="btn for_btn for_signin">
+                      <FontAwesomeIcon icon={faSearch} className="me-2" />
+                      Search
+                    </Link>
                   </div>
                 </div>
-
-                {/* Location Input */}
-                <div className="col-md-4">
-                  <div className="input-group">
-                    <span className="input-group-text">
-                      <FontAwesomeIcon icon={faMapPin} />
-                    </span>
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Enter Location"
-                      value={locationTerm}
-                      onChange={(e) => setLocationTerm(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                {/* Search Button */}
-                <div className="col-md-2 d-grid">
-                  <Link to="/search" className="btn for_btn for_signin">
-                    <FontAwesomeIcon icon={faSearch} className="me-2" />
-                    Search
-                  </Link>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </section>
-      {/* CATEGORY SECTION */}
-    <section className="py-5 bg-light" style={{background:"linear-gradient(to bottom, #f7f9fc, #e3e8f4)"}}>
-  <div className="container">
-    {/* Section Title */}
-    <div className="text-center mb-4">
-      <h2 className="mb-1">
-        Explore our <span className="text-primary">Categories</span>
-      </h2>
-      <p className="text-muted">
-        Service categories help organize and structure the offerings on a marketplace.
-      </p>
-    </div>
-
-    {/* Categories Grid */}
-    <div className="row g-4">
-
-    {/*test*/}
-
-
-      {filteredStores.map((store) => (
-        <div
-          className="col-6 col-md-4 col-lg-2"
-          key={store.id}
-          onClick={() => navigate(`/store/${store.id}/flyers`)}
-          style={{ cursor: "pointer" }}
-        >
-          <div className="card text-center shadow-sm h-100">
-            <div className="card-body">
-              <img
-                src={
-                  store.logo?.startsWith("http")
-                    ? store.logo
-                    : `${BASE_URL}/${store.logo}`
-                }
-                alt={store.name}
-                className="img-fluid mb-3"
-                style={{ maxHeight: "100px", objectFit: "contain" }}
-                onError={(e) =>
-                  (e.target.src = "https://via.placeholder.com/100x100?text=Logo")
-                }
-              />
-              <h6 className="fw-bold">{store.name}</h6>
-              <p className="text-muted small">View Flyers</p>
+              </form>
             </div>
           </div>
         </div>
-      ))}
+      </section>
 
-      {filteredStores.length === 0 && (
-        <div className="col-12 text-center mt-4">
-          <p>No supermarkets matched your search.</p>
+      {/* CATEGORY SECTION */}
+      <section className="py-5 bg-light" style={{background:"linear-gradient(to bottom, #f7f9fc, #e3e8f4)"}}>
+        <div className="container">
+          <div className="text-center mb-4">
+            <h2 className="mb-1">
+              Explore our <span className="text-primary">Categories</span>
+            </h2>
+            <p className="text-muted">
+              Service categories help organize and structure the offerings on a marketplace.
+            </p>
+          </div>
+
+          <div className="row g-4">
+            {filteredStores.map((store) => (
+              <div
+                className="col-6 col-md-4 col-lg-2"
+                key={store.id}
+                onClick={() => navigate(`/store/${store.slug}/flyers`)} // ✅ Use slug here
+                style={{ cursor: "pointer" }}
+              >
+                <div className="card text-center shadow-sm h-100">
+                  <div className="card-body">
+                    <img
+                      src={
+                        store.logo?.startsWith("http")
+                          ? store.logo
+                          : `${BASE_URL}/${store.logo}`
+                      }
+                      alt={store.name}
+                      className="img-fluid mb-3"
+                      style={{ maxHeight: "100px", objectFit: "contain" }}
+                      onError={(e) =>
+                        (e.target.src = "https://via.placeholder.com/100x100?text=Logo")
+                      }
+                    />
+                    <h6 className="fw-bold">{store.name}</h6>
+                    <p className="text-muted small">View Flyers</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {filteredStores.length === 0 && (
+              <div className="col-12 text-center mt-4">
+                <p>No supermarkets matched your search.</p>
+              </div>
+            )}
+          </div>
+
+          <div className="text-center mt-4">
+            <Link to="/all-stores" className="btn btn-dark">
+              View All <FontAwesomeIcon icon={faArrowRight} className="ms-2" />
+            </Link>
+          </div>
         </div>
-      )}
-    </div>
+      </section>
 
-    {/* Footer Button */}
-    <div className="text-center mt-4">
-      <Link to="/all-stores" className="btn btn-dark">
-        View All <FontAwesomeIcon icon={faArrowRight} className="ms-2" />
-      </Link>
-    </div>
-  </div>
-</section>
-
-       {/* About Section */}
- 
-{/* Business Section */}
-     
-
-
-      {/* Cities Section */}
-     
       {/* Modals */}
       <Authorisation
         showAuthModal={showAuthModal}

@@ -1,4 +1,3 @@
-// src/pages/AddToCart.jsx
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./AddToCart.css";
@@ -8,50 +7,49 @@ const AddToCart = () => {
   const navigate = useNavigate();
   const [cartItems, setCartItems] = useState([]);
 
-  // ✅ Load cart from localStorage on first render
+  // Load cart from localStorage
   useEffect(() => {
     const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
     setCartItems(savedCart);
   }, []);
 
-  // ✅ Handle product from location.state
+  // Add product if passed via location.state
   useEffect(() => {
-    if (location.state?.product) {
-      const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
-      const existingIndex = savedCart.findIndex(
-        (item) => item.id === location.state.product.id
-      );
+    const product = location.state?.product;
+    if (!product) return;
 
-      let updatedCart;
-      if (existingIndex !== -1) {
-        updatedCart = savedCart.map((item, idx) =>
-          idx === existingIndex
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      } else {
-        updatedCart = [
-          ...savedCart,
-          { ...location.state.product, quantity: 1 },
-        ];
-      }
+    addToCart(product);
 
-      localStorage.setItem("cart", JSON.stringify(updatedCart));
-      setCartItems(updatedCart);
-
-      navigate(location.pathname, { replace: true });
-    }
+    navigate(location.pathname, { replace: true });
   }, [location.state, location.pathname, navigate]);
 
-  // ✅ Keep localStorage in sync
-  useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cartItems));
-  }, [cartItems]);
+  const generateSlug = (product) => {
+    if (product.slug) return product.slug;
+    return `${product.name.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}`;
+  };
 
-  const handleQuantityChange = (id, amount) => {
+  const addToCart = (product) => {
+    const prod = { ...product, slug: generateSlug(product) };
+
+    setCartItems((prev) => {
+      const existingIndex = prev.findIndex((item) => item.slug === prod.slug);
+      let updatedCart;
+      if (existingIndex !== -1) {
+        updatedCart = prev.map((item, idx) =>
+          idx === existingIndex ? { ...item, quantity: item.quantity + 1 } : item
+        );
+      } else {
+        updatedCart = [...prev, { ...prod, quantity: 1 }];
+      }
+      localStorage.setItem("cart", JSON.stringify(updatedCart));
+      return updatedCart;
+    });
+  };
+
+  const handleQuantityChange = (slug, amount) => {
     setCartItems((prev) => {
       const updated = prev.map((item) =>
-        item.id === id
+        item.slug === slug
           ? { ...item, quantity: Math.max(1, item.quantity + amount) }
           : item
       );
@@ -60,52 +58,48 @@ const AddToCart = () => {
     });
   };
 
-  const handleRemove = (id) => {
+  const handleRemove = (slug) => {
     setCartItems((prev) => {
-      const updated = prev.filter((item) => item.id !== id);
+      const updated = prev.filter((item) => item.slug !== slug);
       localStorage.setItem("cart", JSON.stringify(updated));
       return updated;
     });
   };
 
-  const subtotal = cartItems.reduce(
-    (acc, item) => acc + item.price * item.quantity,
-    0
-  );
+  // Subtotal rounded to 2 digits
+  const subtotal = cartItems
+    .reduce((acc, item) => acc + Number(item.price || 0) * item.quantity, 0)
+    .toFixed(2);
 
-  // ✅ Group items by store
   const groupedByStore = cartItems.reduce((acc, item) => {
-    const store = item.store_name || item.storeName || "Unknown";
-    if (!acc[store]) acc[store] = [];
-    acc[store].push(item);
+    const storeSlug = item.store_slug || "unknown";
+    if (!acc[storeSlug]) acc[storeSlug] = [];
+    acc[storeSlug].push(item);
     return acc;
   }, {});
 
-  // ✅ Mapping store → WhatsApp number
   const storeNumbers = {
     lulu: "917025385200",
     nestle: "918547409237",
+    unknown: "917025385200",
   };
 
-  // ✅ Build WhatsApp order link
-  const buildWhatsAppLink = (store, products) => {
-    const total = products.reduce(
-      (sum, p) => sum + p.price * p.quantity,
-      0
-    );
-
+  const buildWhatsAppLink = (storeSlug, products) => {
+    const total = products
+      .reduce((sum, p) => sum + Number(p.price || 0) * p.quantity, 0)
+      .toFixed(2);
     const message =
-      `🛒 Order from ${store}\n\n` +
+      `🛒 Order from ${storeSlug}\n\n` +
       products
         .map(
-          (p) => `${p.name} x${p.quantity} - ₹${p.price * p.quantity}`
+          (p) =>
+            `${p.name} x${p.quantity} - ₹${(
+              Number(p.price || 0) * p.quantity
+            ).toFixed(2)}`
         )
         .join("\n") +
       `\n\nSubtotal: ₹${total}`;
-
-    const number =
-      storeNumbers[store.toLowerCase()] || storeNumbers["lulu"];
-
+    const number = storeNumbers[storeSlug.toLowerCase()] || storeNumbers["unknown"];
     return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
   };
 
@@ -117,10 +111,9 @@ const AddToCart = () => {
         <p className="empty-cart">Your cart is empty.</p>
       ) : (
         <div className="cart-layout">
-          {/* LEFT SIDE – CART ITEMS */}
           <div className="cart-items">
             {cartItems.map((item) => (
-              <div className="cart-item" key={item.id}>
+              <div className="cart-item" key={item.slug}>
                 <img
                   src={item.image || "https://via.placeholder.com/150"}
                   alt={item.name}
@@ -129,52 +122,52 @@ const AddToCart = () => {
                 <div className="cart-item-details">
                   <h3>{item.name}</h3>
                   <p className="store-name">
-                    Store: {item.store_name || item.storeName || "Unknown"}
+                    Store: {item.store_name || item.store_slug || "Unknown"}
                   </p>
-                  <p className="price">₹ {item.price}</p>
+                  <p className="price">₹ {Number(item.price || 0).toFixed(2)}</p>
                   <div className="cart-controls">
                     <button
                       className="qty-btn"
-                      onClick={() => handleQuantityChange(item.id, -1)}
+                      onClick={() => handleQuantityChange(item.slug, -1)}
                     >
                       –
                     </button>
                     <span className="quantity">{item.quantity}</span>
                     <button
                       className="qty-btn"
-                      onClick={() => handleQuantityChange(item.id, 1)}
+                      onClick={() => handleQuantityChange(item.slug, 1)}
                     >
                       +
                     </button>
                     <button
                       className="btn remove-btn"
-                      onClick={() => handleRemove(item.id)}
+                      onClick={() => handleRemove(item.slug)}
                     >
                       ✖
                     </button>
                   </div>
                 </div>
                 <div className="cart-item-total">
-                  ₹ {item.price * item.quantity}
+                  ₹ {(Number(item.price || 0) * item.quantity).toFixed(2)}
                 </div>
               </div>
             ))}
           </div>
 
-          {/* RIGHT SIDE – SUMMARY */}
           <div className="cart-summary">
             <h3>Order Summary</h3>
             <p>Total Items: {cartItems.length}</p>
             <h3>Subtotal: ₹ {subtotal}</h3>
-
             <div className="store-checkout">
-              {Object.entries(groupedByStore).map(([store, products]) => (
+              {Object.entries(groupedByStore).map(([storeSlug, products]) => (
                 <button
-                  key={store}
+                  key={storeSlug}
                   className="checkout-btn"
-                  onClick={() => window.open(buildWhatsAppLink(store, products), "_blank")}
+                  onClick={() =>
+                    window.open(buildWhatsAppLink(storeSlug, products), "_blank")
+                  }
                 >
-                  Send Order to {store}
+                  Send Order to {storeSlug}
                 </button>
               ))}
             </div>
@@ -186,4 +179,3 @@ const AddToCart = () => {
 };
 
 export default AddToCart;
-

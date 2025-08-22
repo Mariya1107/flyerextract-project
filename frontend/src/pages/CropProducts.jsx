@@ -64,11 +64,11 @@ const ProductGrid = ({ products, onProductClick, handleAddToCart }) => {
 };
 
 const CropProducts = () => {
-  const { flyerId } = useParams();
+  const { flyer_slug } = useParams(); // use slug now
   const navigate = useNavigate();
 
   const [flyer, setFlyer] = useState(null);
-  const [canvasEl, setCanvasEl] = useState(null); // always store a canvas
+  const [canvasEl, setCanvasEl] = useState(null);
   const [selection, setSelection] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [pdfDoc, setPdfDoc] = useState(null);
@@ -83,8 +83,9 @@ const CropProducts = () => {
   const overlayRef = useRef();
 
   useEffect(() => {
-    axios.get(`${BASE_URL}/flyers/all/`).then((res) => {
-      const selected = res.data.find((f) => f.id === parseInt(flyerId));
+    // Fetch flyer by slug
+    axios.get(`${BASE_URL}/flyers/slug/${flyer_slug}/`).then((res) => {
+      const selected = res.data;
       setFlyer(selected);
 
       if (selected?.pdf) {
@@ -98,7 +99,7 @@ const CropProducts = () => {
           : `${BASE_URL}/${selected.image}`;
 
         const img = new Image();
-        img.crossOrigin = "anonymous"; // avoid CORS issues
+        img.crossOrigin = "anonymous";
         img.src = imgUrl;
         img.onload = () => {
           const canvas = document.createElement("canvas");
@@ -120,10 +121,11 @@ const CropProducts = () => {
       }
     });
 
+    // Fetch products by flyer slug
     axios
-      .get(`${BASE_URL}/products/${flyerId}/`)
+      .get(`${BASE_URL}/products/${flyer_slug}/`)
       .then((res) => setProducts(res.data));
-  }, [flyerId]);
+  }, [flyer_slug]);
 
   const loadPdfDocument = async (url) => {
     const loadingTask = pdfjsLib.getDocument(url);
@@ -229,7 +231,7 @@ const CropProducts = () => {
       });
 
       const formData = new FormData();
-      formData.append("flyer_id", flyerId);
+      formData.append("flyer_slug", flyer_slug); // upload by slug
       formData.append("image", blob, "crop.jpg");
 
       const res = await axios.post(`${BASE_URL}/api/products/upload/`, formData);

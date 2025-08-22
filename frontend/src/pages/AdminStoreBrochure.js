@@ -1,17 +1,18 @@
 // src/pages/AdminStoreBrochure.js
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Document, Page, pdfjs } from 'react-pdf';
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
-import './FlyerList.css';
-import './UsersAdminDash.css';
-import BASE_URL from '../config';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useParams, useNavigate } from "react-router-dom";
+import { Document, Page, pdfjs } from "react-pdf";
+import "react-pdf/dist/esm/Page/AnnotationLayer.css";
+import "./FlyerList.css";
+import "./UsersAdminDash.css";
+import BASE_URL from "../config";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 const AdminStoreBrochure = () => {
-  const { storeId } = useParams();
+  const { store_slug } = useParams(); 
+  const storeSlug = store_slug;
   const navigate = useNavigate();
 
   const [brochures, setBrochures] = useState([]);
@@ -20,33 +21,39 @@ const AdminStoreBrochure = () => {
   const [storeOptions, setStoreOptions] = useState([]);
   const [regionOptions, setRegionOptions] = useState([]);
   const [formData, setFormData] = useState({
-    store_id: storeId,
-    region_id: '',
-    title: '',
+    store_slug: storeSlug || "",
+    region_id: "",
+    title: "",
     pdf: null,
     image: null,
-    expires_at: '',
+    expires_at: "",
   });
 
-  const token = localStorage.getItem('adminToken');
+  const token = localStorage.getItem("adminToken");
 
-  // Ensure axios has token
   useEffect(() => {
     if (token) {
-      axios.defaults.headers.common['Authorization'] = `Token ${token}`;
+      axios.defaults.headers.common["Authorization"] = `Token ${token}`;
     } else {
-      console.error('No token found. Redirecting to login...');
-      navigate('/admin-login');
+      console.error("No token found. Redirecting to login...");
+      navigate("/admin-login");
     }
   }, [token, navigate]);
 
+  useEffect(() => {
+    setFormData((prev) => ({ ...prev, store_slug: storeSlug || "" }));
+  }, [storeSlug]);
+
   const fetchBrochures = async () => {
+    if (!storeSlug) {
+      setBrochures([]);
+      return;
+    }
     try {
-      const res = await axios.get(`${BASE_URL}/api/stores-with-flyers/`);
-      const store = res.data.find((s) => s.id === parseInt(storeId));
-      setBrochures(store ? store.flyers : []);
+      const res = await axios.get(`${BASE_URL}/flyers/store/${storeSlug}/`);
+      setBrochures(res.data || []);
     } catch (err) {
-      console.error('Error fetching brochures:', err.response?.data || err.message);
+      console.error("Error fetching brochures:", err.response?.data || err.message);
       setBrochures([]);
     }
   };
@@ -54,13 +61,13 @@ const AdminStoreBrochure = () => {
   const fetchDropdownData = async () => {
     try {
       const [storesRes, regionsRes] = await Promise.all([
-        axios.get(`${BASE_URL}/api/accounts/stores/`),
+        axios.get(`${BASE_URL}/stores/`),
         axios.get(`${BASE_URL}/regions/`),
       ]);
-      setStoreOptions(storesRes.data);
-      setRegionOptions(regionsRes.data);
+      setStoreOptions(storesRes.data.results || storesRes.data);
+      setRegionOptions(regionsRes.data.results || regionsRes.data);
     } catch (err) {
-      console.error('Error fetching dropdown options:', err.response?.data || err.message);
+      console.error("Error fetching dropdown options:", err.response?.data || err.message);
     }
   };
 
@@ -69,7 +76,7 @@ const AdminStoreBrochure = () => {
       fetchBrochures();
       fetchDropdownData();
     }
-  }, [storeId, token]);
+  }, [storeSlug, token]);
 
   const onDocumentLoadSuccess = (brochureId, { numPages }) => {
     setNumPages((prev) => ({ ...prev, [brochureId]: numPages }));
@@ -81,25 +88,23 @@ const AdminStoreBrochure = () => {
     const { name, value, type, files } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === 'file' ? files[0] : value,
+      [name]: type === "file" ? files[0] : value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!formData.region_id || !formData.title) {
-      alert('Region and title are required.');
+      alert("Region and title are required.");
       return;
     }
 
     try {
       const data = new FormData();
       Object.entries(formData).forEach(([key, value]) => {
-        if (value !== null && value !== '') data.append(key, value);
+        if (value !== null && value !== "") data.append(key, value);
       });
 
-      const token = localStorage.getItem('adminToken'); // 🔑 ensure latest
       await axios.post(`${BASE_URL}/api/flyers/create/`, data, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -109,32 +114,31 @@ const AdminStoreBrochure = () => {
 
       setShowForm(false);
       setFormData({
-        store_id: storeId,
-        region_id: '',
-        title: '',
+        store_slug: storeSlug,
+        region_id: "",
+        title: "",
         pdf: null,
         image: null,
-        expires_at: '',
+        expires_at: "",
       });
       fetchBrochures();
     } catch (error) {
-      console.error('Error submitting form:', error.response?.data || error.message);
+      console.error("Error submitting form:", error.response?.data || error.message);
       alert(`Error creating brochure: ${JSON.stringify(error.response?.data || error.message)}`);
     }
   };
 
-  const handleDelete = async (flyerId) => {
-    if (!window.confirm('Are you sure you want to delete this brochure?')) return;
+  const handleDelete = async (flyerSlug) => {
+    if (!window.confirm("Are you sure you want to delete this brochure?")) return;
 
     try {
-      const token = localStorage.getItem('adminToken');
-      await axios.delete(`${BASE_URL}/api/flyers/${flyerId}/delete/`, {
+      await axios.delete(`${BASE_URL}/api/flyers/${flyerSlug}/delete/`, {
         headers: { Authorization: `Token ${token}` },
       });
       fetchBrochures();
     } catch (error) {
-      console.error('Error deleting flyer:', error.response?.data || error.message);
-      alert('Failed to delete brochure.');
+      console.error("Error deleting flyer:", error.response?.data || error.message);
+      alert("Failed to delete brochure.");
     }
   };
 
@@ -156,15 +160,16 @@ const AdminStoreBrochure = () => {
               <label>
                 Store:
                 <select
-                  name="store_id"
-                  value={formData.store_id}
+                  name="store_slug"
+                  value={formData.store_slug}
                   onChange={handleFormChange}
                   required
                   disabled
                 >
-                  <option value="">Select Store</option>
                   {storeOptions.map((store) => (
-                    <option key={store.id} value={store.id}>{store.name}</option>
+                    <option key={store.id} value={store.slug}>
+                      {store.name}
+                    </option>
                   ))}
                 </select>
               </label>
@@ -232,11 +237,15 @@ const AdminStoreBrochure = () => {
               <div className="flyer-img-wrapper">
                 <div className="flyer-overlay-container">
                   {brochure.image ? (
-                    <img src={brochure.image} alt={brochure.title || 'Brochure'} className="flyer-img" />
+                    <img
+                      src={brochure.image.startsWith("http") ? brochure.image : `${BASE_URL}${brochure.image}`}
+                      alt={brochure.title || "Brochure"}
+                      className="flyer-img"
+                    />
                   ) : brochure.pdf ? (
                     <div className="pdf-container">
                       <Document
-                        file={brochure.pdf}
+                        file={brochure.pdf.startsWith("http") ? brochure.pdf : `${BASE_URL}${brochure.pdf}`}
                         onLoadSuccess={(pdf) => onDocumentLoadSuccess(brochure.id, pdf)}
                         loading="Loading PDF..."
                       >
@@ -247,7 +256,7 @@ const AdminStoreBrochure = () => {
                     <p>No preview available</p>
                   )}
                   <div className="flyer-hover-overlay">
-                    <button className="flyer-hover-btn" onClick={() => handleDelete(brochure.id)}>
+                    <button className="flyer-hover-btn" onClick={() => handleDelete(brochure.slug)}>
                       Delete
                     </button>
                   </div>
@@ -255,8 +264,17 @@ const AdminStoreBrochure = () => {
                 <span className="flyer-tag">📌 Brochure</span>
               </div>
               <div className="flyer-info">
-                <strong>{brochure.title || 'Untitled Brochure'}</strong>
-                <button className="flyer-view-btn" disabled>Explore →</button>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <strong>{brochure.title || "Untitled Brochure"}</strong>
+                  {brochure.expires_at && (
+                    <span style={{ color: "red", fontSize: "1.1rem" }}>
+                      Expires: {new Date(brochure.expires_at).toLocaleDateString()}
+                    </span>
+                  )}
+                </div>
+                <button className="flyer-view-btn" disabled>
+                  Explore →
+                </button>
               </div>
             </div>
           ))}

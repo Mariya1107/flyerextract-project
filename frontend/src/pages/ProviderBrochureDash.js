@@ -23,7 +23,6 @@ const ProviderBrochureDash = () => {
       return;
     }
 
-    // ✅ Ensure no double slash in URL
     const url = `${BASE_URL.replace(/\/$/, '')}/api/accounts/brochures/${providerId}/pages/`;
 
     axios
@@ -33,8 +32,7 @@ const ProviderBrochureDash = () => {
         },
       })
       .then((res) => {
-        console.log('Brochures response:', res.data);
-        setBrochures(res.data);
+        setBrochures(res.data || []);
         setLoading(false);
       })
       .catch((err) => {
@@ -45,6 +43,11 @@ const ProviderBrochureDash = () => {
 
   const onDocumentLoadSuccess = (brochureId, { numPages }) => {
     setNumPages((prev) => ({ ...prev, [brochureId]: numPages }));
+  };
+
+  const getFullUrl = (path) => {
+    if (!path) return '';
+    return path.startsWith('http') ? path : `${BASE_URL}${path}`;
   };
 
   if (loading) {
@@ -65,17 +68,19 @@ const ProviderBrochureDash = () => {
                 <div className="flyer-overlay-container">
                   {brochure.image ? (
                     <img
-                      src={brochure.image}
-                      alt={brochure.title}
+                      src={getFullUrl(brochure.image)}
+                      alt={brochure.title || 'Brochure'}
                       className="flyer-img"
+                      onError={(e) =>
+                        (e.target.src =
+                          'https://via.placeholder.com/240x300?text=No+Image')
+                      }
                     />
                   ) : brochure.pdf ? (
                     <div className="pdf-container">
                       <Document
-                        file={brochure.pdf}
-                        onLoadSuccess={(pdf) =>
-                          onDocumentLoadSuccess(brochure.id, pdf)
-                        }
+                        file={getFullUrl(brochure.pdf)}
+                        onLoadSuccess={(pdf) => onDocumentLoadSuccess(brochure.id, pdf)}
                         loading="Loading PDF..."
                       >
                         <Page pageNumber={1} width={240} />
@@ -95,6 +100,21 @@ const ProviderBrochureDash = () => {
               </div>
 
               <div className="flyer-info">
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                  }}
+                >
+                  <strong>{brochure.title || 'Untitled Brochure'}</strong>
+                  {brochure.expires_at && (
+                    <span style={{ color: 'red', fontSize: '1.1rem' }}>
+                      Expires: {new Date(brochure.expires_at).toLocaleDateString()}
+                    </span>
+                  )}
+                </div>
                 <button className="flyer-view-btn" disabled>
                   Explore →
                 </button>

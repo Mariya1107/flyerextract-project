@@ -1,3 +1,4 @@
+// src/pages/AdminStoreBrochureExtract.js
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams, useNavigate, Link } from "react-router-dom";
@@ -7,11 +8,13 @@ import "./FlyerList.css";
 import "./UsersAdminDash.css";
 import BASE_URL from "../config";
 
+// Configure PDF.js worker
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 const AdminStoreBrochureExtract = () => {
   const navigate = useNavigate();
-  const { storeId } = useParams();
+  const { store_slug } = useParams(); 
+  const storeSlug = store_slug;
 
   const [brochures, setBrochures] = useState([]);
   const [numPages, setNumPages] = useState({});
@@ -21,8 +24,7 @@ const AdminStoreBrochureExtract = () => {
   useEffect(() => {
     const fetchBrochures = async () => {
       try {
-        const token =
-          localStorage.getItem("adminToken") || localStorage.getItem("token");
+        const token = localStorage.getItem("adminToken") || localStorage.getItem("token");
 
         if (!token) {
           setError("⚠️ No admin token found. Redirecting to login...");
@@ -31,14 +33,12 @@ const AdminStoreBrochureExtract = () => {
           return;
         }
 
-        const res = await axios.get(`${BASE_URL}/api/stores-with-flyers/`, {
-          headers: {
-            Authorization: `Token ${token}`,
-          },
+        const res = await axios.get(`${BASE_URL}/flyers/store/${storeSlug}/`, {
+          headers: { Authorization: `Token ${token}` },
         });
 
-        const store = res.data.find((s) => s.id === parseInt(storeId));
-        setBrochures(store ? store.flyers : []);
+        const data = res.data.results || res.data || [];
+        setBrochures(data);
       } catch (err) {
         console.error("Error fetching brochures:", err);
         if (err.response?.status === 401) {
@@ -54,10 +54,15 @@ const AdminStoreBrochureExtract = () => {
     };
 
     fetchBrochures();
-  }, [storeId, navigate]);
+  }, [storeSlug, navigate]);
 
   const onDocumentLoadSuccess = (brochureId, { numPages }) => {
     setNumPages((prev) => ({ ...prev, [brochureId]: numPages }));
+  };
+
+  const getFullUrl = (path) => {
+    if (!path) return "";
+    return path.startsWith("http") ? path : `${BASE_URL}${path}`;
   };
 
   return (
@@ -75,16 +80,12 @@ const AdminStoreBrochureExtract = () => {
       ) : (
         <div className="flyer-grid">
           {brochures.map((brochure) => (
-            <div key={brochure.id} className="flyer-card fade-in">
+            <div key={brochure.slug || brochure.id} className="flyer-card fade-in">
               <div className="flyer-img-wrapper">
                 <div className="flyer-overlay-container">
                   {brochure.image ? (
                     <img
-                      src={
-                        brochure.image.startsWith("http")
-                          ? brochure.image
-                          : `${BASE_URL}/${brochure.image}`
-                      }
+                      src={getFullUrl(brochure.image)}
                       alt={brochure.title || "Brochure"}
                       className="flyer-img"
                       onError={(e) =>
@@ -95,9 +96,9 @@ const AdminStoreBrochureExtract = () => {
                   ) : brochure.pdf ? (
                     <div className="pdf-container">
                       <Document
-                        file={brochure.pdf}
+                        file={getFullUrl(brochure.pdf)}
                         onLoadSuccess={(pdf) =>
-                          onDocumentLoadSuccess(brochure.id, pdf)
+                          onDocumentLoadSuccess(brochure.slug || brochure.id, pdf)
                         }
                         loading="Loading PDF..."
                       >
@@ -109,7 +110,7 @@ const AdminStoreBrochureExtract = () => {
                   )}
 
                   <div className="flyer-hover-overlay">
-                    <Link to={`/admin-dashboard/crop-products/${brochure.id}`}>
+                    <Link to={`/admin-dashboard/crop-products/${brochure.slug}`}>
                       <button className="flyer-hover-btn">Crop</button>
                     </Link>
                   </div>
@@ -118,7 +119,14 @@ const AdminStoreBrochureExtract = () => {
               </div>
 
               <div className="flyer-info">
-                <strong>{brochure.title || "Untitled Brochure"}</strong>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap" }}>
+                  <strong>{brochure.title || "Untitled Brochure"}</strong>
+                  {brochure.expires_at && (
+                    <span style={{ color: "red", fontSize: "1.1rem" }}>
+                      Expires: {new Date(brochure.expires_at).toLocaleDateString()}
+                    </span>
+                  )}
+                </div>
                 <button className="flyer-view-btn" disabled>
                   Explore →
                 </button>

@@ -1,34 +1,46 @@
 from django.db import models
-
+from django.utils.text import slugify
 
 class Country(models.Model):
     name = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=255, unique=True, blank=True, null=True)
 
-    def __str__(self):   # ✅ fixed
+    def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)[:255]
+        super().save(*args, **kwargs)
 
 
 class Region(models.Model):
     name = models.CharField(max_length=100)
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
+    slug = models.SlugField(max_length=255, unique=True, blank=True, null=True)
 
-    def __str__(self):   # ✅ fixed
+    def __str__(self):
         return f"{self.name}, {self.country.name}"
-    
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(f"{self.name}-{self.country.name}")[:255]
+        super().save(*args, **kwargs)
+
 
 class Store(models.Model):
     name = models.CharField(max_length=255)
     logo = models.ImageField(upload_to='store_logos/', blank=True, null=True)
-    provider = models.ForeignKey(
-        'accounts.CustomUser',
-        on_delete=models.CASCADE,
-        related_name='provider_stores',
-        null=True,
-        blank=True
-    )
+    provider = models.ForeignKey('accounts.CustomUser', on_delete=models.CASCADE, related_name='provider_stores', null=True, blank=True)
+    slug = models.SlugField(max_length=255, unique=True, blank=True, null=True)
 
-    def __str__(self):   # ✅ fixed
+    def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)[:255]
+        super().save(*args, **kwargs)
 
 
 class Flyer(models.Model):
@@ -39,9 +51,15 @@ class Flyer(models.Model):
     image = models.ImageField(upload_to='flyers/images/', blank=True, null=True)
     created_at = models.DateField(auto_now_add=True)
     expires_at = models.DateField()
+    slug = models.SlugField(max_length=255, unique=True, blank=True, null=True)
 
-    def __str__(self):   # ✅ fixed
+    def __str__(self):
         return f"{self.title} - {self.region.name}"
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(f"{self.title}-{self.region.name}")[:255]
+        super().save(*args, **kwargs)
 
 
 class Product(models.Model):
@@ -49,9 +67,15 @@ class Product(models.Model):
     name = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     image = models.ImageField(upload_to='product_images/', null=True, blank=True)
+    slug = models.SlugField(max_length=255, unique=True, blank=True, null=True)
 
-    def __str__(self):   # ✅ fixed
+    def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(f"{self.name}-{self.flyer.title}")[:255]
+        super().save(*args, **kwargs)
 
 
 class ProviderApplication(models.Model):
@@ -70,10 +94,16 @@ class ProviderApplication(models.Model):
     document = models.FileField(upload_to="provider_docs/")
     submitted_at = models.DateTimeField(auto_now_add=True)
     reviewed = models.BooleanField(default=False)
+    slug = models.SlugField(max_length=255, unique=True, blank=True, null=True)
 
-    def __str__(self):   # ✅ fixed
+    def __str__(self):
         return f"{self.full_name} ({self.company_name})"
-    
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(f"{self.full_name}-{self.company_name}")[:255]
+        super().save(*args, **kwargs)
+
 
 class PendingFlyer(models.Model):
     store = models.ForeignKey(Store, on_delete=models.CASCADE)
@@ -83,6 +113,13 @@ class PendingFlyer(models.Model):
     image = models.ImageField(upload_to='pending_flyers/images/', blank=True, null=True)
     expires_at = models.DateField()
     created_at = models.DateField(auto_now_add=True)
+    slug = models.SlugField(max_length=255, unique=True, blank=True, null=True)
 
-    def __str__(self):   # ✅ fixed
+    def __str__(self):
         return f"{self.title} - Pending"
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            store_name = self.store.name if self.store else "unknown"
+            self.slug = slugify(f"{self.title}-{store_name}")[:255]
+        super().save(*args, **kwargs)

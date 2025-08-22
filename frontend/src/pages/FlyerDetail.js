@@ -9,67 +9,63 @@ import "./CropProducts.css";
 import "./ProductGrid.css";
 import { FaShoppingCart } from "react-icons/fa";
 
+// PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
+// --------------------------- Product Grid ---------------------------
 const ProductGrid = ({ products, onProductClick, handleAddToCart }) => {
   const [visibleCount, setVisibleCount] = useState(6);
   const [showAll, setShowAll] = useState(false);
+
+  const getImageUrl = (image) =>
+    !image ? "" : image.startsWith("http") ? image : `${BASE_URL}${image.startsWith("/") ? "" : "/"}${image}`;
 
   return (
     <div className="product-section">
       <div className="product-header">
         <h2 className="section-title">Products</h2>
-        {products.length > 3 && (
-          <button
-            className="toggle-view-btn"
-            onClick={() => setShowAll((prev) => !prev)}
-          >
+        {products.length > visibleCount && (
+          <button className="toggle-view-btn" onClick={() => setShowAll((prev) => !prev)}>
             {showAll ? "Show Less ▲" : "View All ▼"}
           </button>
         )}
       </div>
 
       <div className="product-grid">
-        {products
-          .slice(0, showAll ? products.length : visibleCount)
-          .map((product, index) => (
-            <div
-              key={index}
-              className="product-card"
-              onClick={() => onProductClick(product)}
-              style={{ cursor: "pointer" }}
-            >
-              <img
-                src={product.image}
-                alt={product.name}
-                className="product-img"
-              />
-              <div className="product-details">
-                <strong>{product.name}</strong>
-                <div className="product-footer">
-                  <span className="price-tag">₹ {product.price}</span>
-                  <FaShoppingCart
-                    className="cart-icon"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleAddToCart(product);
-                    }}
-                  />
-                </div>
+        {products.slice(0, showAll ? products.length : visibleCount).map((product) => (
+          <div
+            key={product.id}
+            className="product-card"
+            onClick={() => onProductClick(product)}
+            style={{ cursor: "pointer" }}
+          >
+            <img src={getImageUrl(product.image)} alt={product.name} className="product-img" />
+            <div className="product-details">
+              <strong>{product.name}</strong>
+              <div className="product-footer">
+                <span className="price-tag">₹ {product.price}</span>
+                <FaShoppingCart
+                  className="cart-icon"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleAddToCart(product);
+                  }}
+                />
               </div>
             </div>
-          ))}
+          </div>
+        ))}
       </div>
     </div>
   );
 };
 
+// --------------------------- Flyer Detail Page ---------------------------
 const FlyerDetail = () => {
-  const { flyerId } = useParams();
+  const { flyer_slug } = useParams();
   const navigate = useNavigate();
 
   const [flyer, setFlyer] = useState(null);
-  const [canvasEl, setCanvasEl] = useState(null);
   const [pdfDoc, setPdfDoc] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -78,28 +74,47 @@ const FlyerDetail = () => {
   const [showSearchModal, setShowSearchModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
+  const getFileUrl = (file) =>
+    !file ? "" : file.startsWith("http") ? file : `${BASE_URL}${file.startsWith("/") ? "" : "/"}${file}`;
+
+  // ---------------- Fetch Flyer & Products ----------------
   useEffect(() => {
-     axios.get(`${BASE_URL}/flyers/all/`).then((res) => {
-      const selected = res.data.find((f) => f.id === parseInt(flyerId));
-      setFlyer(selected);
+    const fetchFlyer = async () => {
+      try {
+        const res = await axios.get(`${BASE_URL}/flyers/slug/${flyer_slug}/`);
+        setFlyer(res.data);
 
-      if (!selected?.image && selected?.pdf) {
-        const url = selected.pdf.startsWith("http")
-          ? selected.pdf
-          : `${BASE_URL}/${selected.pdf}`;
-        loadPdfDocument(url);
+        if (!res.data.image && res.data.pdf) {
+          loadPdfDocument(getFileUrl(res.data.pdf));
+        }
+      } catch (err) {
+        console.error("Error fetching flyer:", err);
       }
-    });
+    };
 
-     axios.get(`${BASE_URL}/products/${flyerId}/`).then((res) => setProducts(res.data));
-  }, [flyerId]);
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get(`${BASE_URL}/products/${flyer_slug}/`);
+        setProducts(res.data);
+      } catch (err) {
+        console.error("Error fetching products:", err);
+      }
+    };
 
+    fetchFlyer();
+    fetchProducts();
+  }, [flyer_slug]);
+
+  // ---------------- PDF Handling ----------------
   const loadPdfDocument = async (url) => {
-    const loadingTask = pdfjsLib.getDocument(url);
-    const pdf = await loadingTask.promise;
-    setPdfDoc(pdf);
-    setTotalPages(pdf.numPages);
-    renderPdfPage(pdf, 1);
+    try {
+      const pdf = await pdfjsLib.getDocument(url).promise;
+      setPdfDoc(pdf);
+      setTotalPages(pdf.numPages);
+      renderPdfPage(pdf, 1);
+    } catch (err) {
+      console.error("Failed to load PDF:", err);
+    }
   };
 
   const renderPdfPage = async (pdf, pageNumber) => {
@@ -114,13 +129,18 @@ const FlyerDetail = () => {
 
     await page.render({ canvasContext: ctx, viewport }).promise;
 
-    setCanvasEl(canvas);
     const container = document.getElementById("pdf-canvas-container");
     if (container) {
       container.innerHTML = "";
       container.appendChild(canvas);
+
+      // ✅ Match flyer image styling
       canvas.style.width = "100%";
+      canvas.style.maxHeight = "1000px";
+      canvas.style.objectFit = "contain";
+      canvas.style.borderRadius = "12px";
       canvas.style.display = "block";
+      canvas.style.margin = "0 auto";
     }
   };
 
@@ -140,6 +160,7 @@ const FlyerDetail = () => {
     }
   };
 
+  // ---------------- Search & Cart ----------------
   const handleSearchChange = (e) => {
     const term = e.target.value;
     setSearchTerm(term);
@@ -154,6 +175,7 @@ const FlyerDetail = () => {
     p.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // ---------------- Render ----------------
   return (
     <div className="container">
       <div className="flyer-header-card">
@@ -171,29 +193,40 @@ const FlyerDetail = () => {
       <div className="flyer-preview">
         {flyer?.image ? (
           <img
-           src={flyer.image.startsWith("http") ? flyer.image : `${BASE_URL}/${flyer.image}`}
+            src={getFileUrl(flyer.image)}
             alt={flyer.title}
-            style={{
-              width: "100%",
-              maxHeight: "1000px",
-              objectFit: "contain",
-              borderRadius: "12px"
-            }}
+            style={{ width: "100%", maxHeight: "1000px", objectFit: "contain", borderRadius: "12px" }}
           />
-        ) : (
+        ) : flyer?.pdf ? (
           <>
-            <div id="pdf-canvas-container" style={{ width: "100%", position: "relative" }} />
+            <div
+              id="pdf-canvas-container"
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            />
             <div className="pdf-controls">
-              <button onClick={goToPrev} disabled={currentPage <= 1}>‹</button>
-              <button onClick={goToNext} disabled={currentPage >= totalPages}>›</button>
+              <button onClick={goToPrev} disabled={currentPage <= 1}>
+                ‹
+              </button>
+              <button onClick={goToNext} disabled={currentPage >= totalPages}>
+                ›
+              </button>
             </div>
           </>
+        ) : (
+          <p>No flyer image or PDF available.</p>
         )}
       </div>
 
-      <p className="page-info">
-        Page {currentPage} / {totalPages}
-      </p>
+      {pdfDoc && (
+        <p className="page-info">
+          Page {currentPage} / {totalPages}
+        </p>
+      )}
 
       <ProductGrid
         products={products}
@@ -227,10 +260,7 @@ const FlyerDetail = () => {
             {selectedProduct ? (
               <div className="product-grid-modal">
                 <div className="product-card">
-                  <img
-                    src={selectedProduct.image || "https://via.placeholder.com/150"}
-                    alt={selectedProduct.name}
-                  />
+                  <img src={getFileUrl(selectedProduct.image)} alt={selectedProduct.name} />
                   <div className="product-details">
                     <strong>{selectedProduct.name}</strong>
                     <div className="product-footer">
@@ -252,7 +282,7 @@ const FlyerDetail = () => {
               <div className="product-grid-modal">
                 {filteredProducts.map((p) => (
                   <div key={p.id} className="product-card">
-                    <img src={p.image || "https://via.placeholder.com/150"} alt={p.name} />
+                    <img src={getFileUrl(p.image)} alt={p.name} />
                     <div className="product-details">
                       <strong>{p.name}</strong>
                       <div className="product-footer">

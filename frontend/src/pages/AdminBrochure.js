@@ -11,6 +11,12 @@ const AdminBrochure = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  // Helper to get full image URL
+  const getImageUrl = (logo) => {
+    if (!logo) return "https://via.placeholder.com/100x100?text=Logo";
+    return logo.startsWith("http") ? logo : `${BASE_URL}${logo.startsWith("/") ? "" : "/"}${logo}`;
+  };
+
   useEffect(() => {
     const fetchStores = async () => {
       try {
@@ -21,13 +27,13 @@ const AdminBrochure = () => {
           return;
         }
 
-        const res = await axios.get(`${BASE_URL}/api/accounts/stores/`, {
+        const res = await axios.get(`${BASE_URL}/stores/`, {
           headers: {
-            Authorization: `Token ${token}`, // DRF TokenAuthentication
+            Authorization: `Token ${token}`,
           },
         });
 
-        setStores(res.data.results || res.data); // works with paginated + non-paginated
+        setStores(res.data.results || res.data); // handle paginated + non-paginated
       } catch (err) {
         console.error("Failed to fetch stores", err);
         setError("❌ Failed to load stores. Unauthorized or server error.");
@@ -39,8 +45,9 @@ const AdminBrochure = () => {
     fetchStores();
   }, []);
 
-  const handleStoreClick = (storeId) => {
-    navigate(`/admin-dashboard/store/${storeId}/brochures`);
+  // Navigate using store slug instead of ID
+  const handleStoreClick = (storeSlug) => {
+    navigate(`/admin-dashboard/store/${storeSlug}/brochures`);
   };
 
   return (
@@ -61,21 +68,14 @@ const AdminBrochure = () => {
             <div
               className="category-card"
               key={store.id}
-              onClick={() => handleStoreClick(store.id)}
+              onClick={() => handleStoreClick(store.slug)} // Use slug here
             >
               <div className="category-icon">
                 <img
-                  src={
-                    store.logo?.startsWith("http")
-                      ? store.logo
-                      : `${BASE_URL}/${store.logo}`
-                  }
+                  src={getImageUrl(store.logo)}
                   alt={store.name}
                   className="img-fluid"
-                  onError={(e) =>
-                    (e.target.src =
-                      "https://via.placeholder.com/100x100?text=Logo")
-                  }
+                  onError={(e) => (e.target.src = "https://via.placeholder.com/100x100?text=Logo")}
                 />
               </div>
               <h6>{store.name}</h6>
