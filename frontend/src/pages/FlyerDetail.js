@@ -1,3 +1,4 @@
+// src/pages/FlyerDetail.jsx
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -6,17 +7,16 @@ import * as pdfjsLib from "pdfjs-dist";
 import "pdfjs-dist/web/pdf_viewer.css";
 import "./CropProducts.css";
 import "./ProductGrid.css";
+import { FaShoppingCart } from "react-icons/fa";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
-const ProductGrid = ({ products, onProductClick }) => {
+const ProductGrid = ({ products, onProductClick, handleAddToCart }) => {
   const [visibleCount, setVisibleCount] = useState(6);
   const [showAll, setShowAll] = useState(false);
 
   return (
-
-//  product-section
-    <div className="">
+    <div className="product-section">
       <div className="product-header">
         <h2 className="section-title">Products</h2>
         {products.length > 3 && (
@@ -39,10 +39,23 @@ const ProductGrid = ({ products, onProductClick }) => {
               onClick={() => onProductClick(product)}
               style={{ cursor: "pointer" }}
             >
-              <img src={product.image} alt={product.name} className="product-img" />
+              <img
+                src={product.image}
+                alt={product.name}
+                className="product-img"
+              />
               <div className="product-details">
                 <strong>{product.name}</strong>
-                <div className="">₹ {product.price}</div>
+                <div className="product-footer">
+                  <span className="price-tag">₹ {product.price}</span>
+                  <FaShoppingCart
+                    className="cart-icon"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAddToCart(product);
+                    }}
+                  />
+                </div>
               </div>
             </div>
           ))}
@@ -66,7 +79,7 @@ const FlyerDetail = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   useEffect(() => {
-    axios.get(`${BASE_URL}/flyers/all/`).then((res) => {
+     axios.get(`${BASE_URL}/flyers/all/`).then((res) => {
       const selected = res.data.find((f) => f.id === parseInt(flyerId));
       setFlyer(selected);
 
@@ -78,7 +91,7 @@ const FlyerDetail = () => {
       }
     });
 
-    axios.get(`${BASE_URL}/products/${flyerId}/`).then((res) => setProducts(res.data));
+     axios.get(`${BASE_URL}/products/${flyerId}/`).then((res) => setProducts(res.data));
   }, [flyerId]);
 
   const loadPdfDocument = async (url) => {
@@ -133,6 +146,10 @@ const FlyerDetail = () => {
     setShowSearchModal(term.trim().length > 0);
   };
 
+  const handleAddToCart = (product) => {
+    navigate("/cart", { state: { product } });
+  };
+
   const filteredProducts = products.filter((p) =>
     p.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -152,28 +169,27 @@ const FlyerDetail = () => {
       </div>
 
       <div className="flyer-preview">
-  {flyer?.image ? (
-    <img
-      src={flyer.image.startsWith("http") ? flyer.image : `${BASE_URL}/${flyer.image}`}
-      alt={flyer.title}
-      style={{
-        width: "100%",
-        maxHeight: "1000px",
-        objectFit: "contain",
-        borderRadius: "12px"
-      }}
-    />
-  ) : (
-    <>
-      <div id="pdf-canvas-container" style={{ width: "100%", position: "relative" }} />
-      <div className="pdf-controls">
-        <button onClick={goToPrev} disabled={currentPage <= 1}>‹</button>
-        <button onClick={goToNext} disabled={currentPage >= totalPages}>›</button>
+        {flyer?.image ? (
+          <img
+           src={flyer.image.startsWith("http") ? flyer.image : `${BASE_URL}/${flyer.image}`}
+            alt={flyer.title}
+            style={{
+              width: "100%",
+              maxHeight: "1000px",
+              objectFit: "contain",
+              borderRadius: "12px"
+            }}
+          />
+        ) : (
+          <>
+            <div id="pdf-canvas-container" style={{ width: "100%", position: "relative" }} />
+            <div className="pdf-controls">
+              <button onClick={goToPrev} disabled={currentPage <= 1}>‹</button>
+              <button onClick={goToNext} disabled={currentPage >= totalPages}>›</button>
+            </div>
+          </>
+        )}
       </div>
-    </>
-  )}
-</div>
-
 
       <p className="page-info">
         Page {currentPage} / {totalPages}
@@ -182,6 +198,7 @@ const FlyerDetail = () => {
       <ProductGrid
         products={products}
         onProductClick={(product) => setSelectedProduct(product)}
+        handleAddToCart={handleAddToCart}
       />
 
       {(showSearchModal || selectedProduct) && (
@@ -203,7 +220,9 @@ const FlyerDetail = () => {
               ✖
             </button>
 
-            <h2 style={{color:"#000"}}>{selectedProduct ? "Product Details" : "Search Results"}</h2>
+            <h2 style={{ color: "#000" }}>
+              {selectedProduct ? "Product Details" : "Search Results"}
+            </h2>
 
             {selectedProduct ? (
               <div className="product-grid-modal">
@@ -214,7 +233,16 @@ const FlyerDetail = () => {
                   />
                   <div className="product-details">
                     <strong>{selectedProduct.name}</strong>
-                    <span className="">₹ {selectedProduct.price}</span>
+                    <div className="product-footer">
+                      <span className="price-tag">₹ {selectedProduct.price}</span>
+                      <FaShoppingCart
+                        className="cart-icon"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAddToCart(selectedProduct);
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -227,7 +255,16 @@ const FlyerDetail = () => {
                     <img src={p.image || "https://via.placeholder.com/150"} alt={p.name} />
                     <div className="product-details">
                       <strong>{p.name}</strong>
-                      <span className="price-tag">₹ {p.price}</span>
+                      <div className="product-footer">
+                        <span className="price-tag">₹ {p.price}</span>
+                        <FaShoppingCart
+                          className="cart-icon"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleAddToCart(p);
+                          }}
+                        />
+                      </div>
                     </div>
                   </div>
                 ))}
