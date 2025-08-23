@@ -27,6 +27,7 @@ const Authorisation = ({
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  // ✅ Signup
   const handleSignup = async () => {
     try {
       const res = await axios.post(`${BASE_URL}/api/accounts/register/`, {
@@ -38,13 +39,17 @@ const Authorisation = ({
         gender: formData.gender,
       });
 
-      setUserData({
+      const newUser = {
         firstname: formData.firstname,
         email: formData.email,
         phone: formData.phone,
         gender: formData.gender,
         username: formData.username,
-      });
+      };
+
+      // ✅ Save user in state + localStorage
+      setUserData(newUser);
+      localStorage.setItem("userData", JSON.stringify(newUser));
 
       alert("Registered successfully!");
       setAuthMode("signin");
@@ -54,21 +59,27 @@ const Authorisation = ({
     }
   };
 
+  // ✅ Signin
   const handleSignin = async () => {
     try {
       const res = await axios.post(`${BASE_URL}/api/accounts/login/`, {
         username: formData.signinUser,
         password: formData.signinPass,
       });
+
       localStorage.setItem("token", res.data.token);
 
-      setUserData({
-        firstname: formData.signinUser,
+      const loggedInUser = {
+        firstname: formData.signinUser, // 👈 replace with real API user info if available
         email: "demo@example.com",
         phone: "+123456789",
         gender: "Not specified",
         username: formData.signinUser,
-      });
+      };
+
+      // ✅ Save user in state + localStorage
+      setUserData(loggedInUser);
+      localStorage.setItem("userData", JSON.stringify(loggedInUser));
 
       alert("Login successful!");
       setShowAuthModal(false);
@@ -120,10 +131,7 @@ const Authorisation = ({
                 />
               </div>
 
-              <button
-                className="auth-btn-gradient"
-                onClick={handleSignin}
-              >
+              <button className="auth-btn-gradient" onClick={handleSignin}>
                 Sign In
               </button>
 
@@ -136,7 +144,11 @@ const Authorisation = ({
             </>
           ) : (
             <div
-              style={{ maxHeight: "75vh", overflowY: "auto", paddingRight: "6px" }}
+              style={{
+                maxHeight: "75vh",
+                overflowY: "auto",
+                paddingRight: "6px",
+              }}
             >
               <button
                 className="auth-close-btn"

@@ -8,10 +8,14 @@ from .views import (
     list_regions, add_region, delete_region,
     create_provider_application, list_provider_applications,
     get_provider_application, update_provider_application,
-    delete_provider_application, provider_brochures_pages, server_status # ✅ Added region views
+    delete_provider_application, provider_brochures_pages,
+    server_status,
+    # Cart views
+    get_cart, add_to_cart, update_cart_item, remove_from_cart, clear_cart
 )
 
 urlpatterns = [
+    # Auth / User
     path('register/', register_user, name='register'),
     path('login/', login_user, name='login'),
     path('login/provider/', login_provider, name='provider-login'),
@@ -38,19 +42,28 @@ urlpatterns = [
     path('countries/add/', create_country, name='create-country'),
     path('countries/<int:country_id>/', delete_country, name='delete-country'),
 
-    # ✅ Region management
-    path('regions/', list_regions, name='list-regions'),                     # GET all regions
-    path('regions/add/', add_region, name='add-region'),                     # POST add region
-    path('regions/<int:region_id>/', delete_region, name='delete-region'),   # DELETE region
+    # Region management
+    path('regions/', list_regions, name='list-regions'),
+    path('regions/add/', add_region, name='add-region'),
+    path('regions/<int:region_id>/', delete_region, name='delete-region'),
 
-
-    # ✅ ProviderApplication management
+    # ProviderApplication management
     path('provider/applications/create/', create_provider_application),
     path('provider/applications/', list_provider_applications),
     path('provider/applications/<int:application_id>/', get_provider_application),
     path('provider/applications/<int:application_id>/update/', update_provider_application),
     path('provider/applications/<int:application_id>/delete/', delete_provider_application),
 
-     # ✅ Flyers management
+    # Flyers management
     path('brochures/<int:provider_id>/pages/', provider_brochures_pages),
+
+    # ---------------- CART SYSTEM ---------------- #
+    path('cart/', get_cart, name='get-cart'),
+    path('cart/<slug:cart_slug>/', get_cart, name='get-cart-slug'),
+    path('cart/add/', add_to_cart, name='add-to-cart'),
+    path('cart/<slug:cart_slug>/add/', add_to_cart, name='add-to-cart-slug'),
+    path('cart/item/<slug:item_slug>/update/', update_cart_item, name='update-cart-item'),
+    path('cart/item/<slug:item_slug>/remove/', remove_from_cart, name='remove-cart-item'),
+    path('cart/clear/', clear_cart, name='clear-cart'),
+    path('cart/<slug:cart_slug>/clear/', clear_cart, name='clear-cart-slug'),
 ]

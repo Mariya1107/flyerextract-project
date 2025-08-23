@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Layout from "./components/Layout";
@@ -40,6 +40,16 @@ import DashboardLayoutWrapper2 from "./components/DashboardLayoutWrapper2";
 import AddToCart from "./pages/AddToCart";
 
 function App() {
+  const [userData, setUserData] = useState(null);
+
+  // Load user session from localStorage
+  useEffect(() => {
+    const storedUser = localStorage.getItem("userData");
+    if (storedUser) {
+      setUserData(JSON.parse(storedUser));
+    }
+  }, []);
+
   return (
     <Router>
       <Routes>
@@ -61,7 +71,9 @@ function App() {
           <Route path="brochure/:id" element={<BrochureViewer />} />
           <Route path="provider-login" element={<ProviderLogin />} />
           <Route path="becomeshop" element={<BecomeShop />} />
-          <Route path="cart" element={<AddToCart />} />
+
+          {/* 🛒 Cart now receives userData */}
+          <Route path="cart" element={<AddToCart userData={userData} />} />
         </Route>
 
         {/* 🧑‍💼 Provider Dashboard */}

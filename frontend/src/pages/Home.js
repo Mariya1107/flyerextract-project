@@ -14,12 +14,10 @@ import ProviderModal1 from "../components/ProviderModal1";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faChevronDown,
-  faLock,
-  faUser,
   faSearch,
   faMapPin,
   faArrowRight,
+  faShoppingCart,
 } from "@fortawesome/free-solid-svg-icons";
 
 import "./Home.css";
@@ -30,7 +28,9 @@ import Authorisation from "../components/Authorisation";
 const Home = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState("signup");
-  const [userData, setUserData] = useState(null);
+  const [userData, setUserData] = useState(
+    JSON.parse(localStorage.getItem("currentUser")) || null // ✅ use currentUser key
+  ); 
   const [showProviderModal, setShowProviderModal] = useState(false);
   const [showAdminModal, setShowAdminModal] = useState(false);
   const [showProviderModal1, setShowProviderModal1] = useState(false);
@@ -48,12 +48,12 @@ const Home = () => {
   const [stores, setStores] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [locationTerm, setLocationTerm] = useState(""); 
-  const [isCitiesOpen, setIsCitiesOpen] = useState(true);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get(`${BASE_URL}/stores/`)
+    axios
+      .get(`${BASE_URL}/stores/`)
       .then((res) => setStores(res.data))
       .catch((err) => console.error("Error fetching stores", err));
   }, []);
@@ -93,16 +93,20 @@ const Home = () => {
       return;
     }
 
-    setUserData({
+    const newUser = {
       firstname,
       email,
       phone,
       gender,
       username,
       profileImage: null,
-    });
+    };
+
+    setUserData(newUser);
+    localStorage.setItem("currentUser", JSON.stringify(newUser)); // ✅ save currentUser
 
     setShowAuthModal(false);
+    navigate("/cart"); 
   };
 
   const handleSignin = () => {
@@ -113,17 +117,32 @@ const Home = () => {
       return;
     }
 
-    setUserData({
+    const signedUser = {
       firstname: signinUser,
       email: "demo@example.com",
       phone: "+123456789",
       gender: "Not specified",
       username: signinUser,
       profileImage: null,
-    });
+    };
+
+    setUserData(signedUser);
+    localStorage.setItem("currentUser", JSON.stringify(signedUser)); // ✅ save currentUser
 
     alert(`Logged in as ${signinUser}`);
     setShowAuthModal(false);
+    navigate("/cart"); 
+  };
+
+  // ✅ Cart click requires login
+  const handleCartClick = () => {
+    if (!userData) {
+      alert("Please sign in to access your cart.");
+      setAuthMode("signin");
+      setShowAuthModal(true); 
+    } else {
+      navigate("/cart"); 
+    }
   };
 
   // Filter stores based on search and location
@@ -144,13 +163,17 @@ const Home = () => {
   return (
     <>
       {/* HERO */}
-      <section className="py-5 bg-light" id="home" style={{
-        backgroundImage: `url("/slider.png")`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        minHeight: "60vh"
-      }}>
+      <section
+        className="py-5 bg-light"
+        id="home"
+        style={{
+          backgroundImage: `url("/slider.png")`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          minHeight: "60vh",
+        }}
+      >
         <div className="container py-5">
           <div className="row align-items-center">
             <div className="col-lg-8 mx-auto text-center">
@@ -158,7 +181,8 @@ const Home = () => {
                 Connect with Nearby Shops
               </h1>
               <p className="text-light mb-4 fs-5">
-                We can connect you to the supermarket, first time and every time.
+                We can connect you to the supermarket, first time and every
+                time.
               </p>
 
               <form>
@@ -207,14 +231,18 @@ const Home = () => {
       </section>
 
       {/* CATEGORY SECTION */}
-      <section className="py-5 bg-light" style={{background:"linear-gradient(to bottom, #f7f9fc, #e3e8f4)"}}>
+      <section
+        className="py-5 bg-light"
+        style={{ background: "linear-gradient(to bottom, #f7f9fc, #e3e8f4)" }}
+      >
         <div className="container">
           <div className="text-center mb-4">
             <h2 className="mb-1">
               Explore our <span className="text-primary">Categories</span>
             </h2>
             <p className="text-muted">
-              Service categories help organize and structure the offerings on a marketplace.
+              Service categories help organize and structure the offerings on a
+              marketplace.
             </p>
           </div>
 
@@ -223,7 +251,7 @@ const Home = () => {
               <div
                 className="col-6 col-md-4 col-lg-2"
                 key={store.id}
-                onClick={() => navigate(`/store/${store.slug}/flyers`)} // ✅ Use slug here
+                onClick={() => navigate(`/store/${store.slug}/flyers`)}
                 style={{ cursor: "pointer" }}
               >
                 <div className="card text-center shadow-sm h-100">
@@ -238,7 +266,8 @@ const Home = () => {
                       className="img-fluid mb-3"
                       style={{ maxHeight: "100px", objectFit: "contain" }}
                       onError={(e) =>
-                        (e.target.src = "https://via.placeholder.com/100x100?text=Logo")
+                        (e.target.src =
+                          "https://via.placeholder.com/100x100?text=Logo")
                       }
                     />
                     <h6 className="fw-bold">{store.name}</h6>
@@ -269,7 +298,11 @@ const Home = () => {
         setShowAuthModal={setShowAuthModal}
         authMode={authMode}
         setAuthMode={setAuthMode}
-        setUserData={setUserData}
+        setUserData={(user) => {
+          setUserData(user);
+          localStorage.setItem("currentUser", JSON.stringify(user)); // ✅ consistent
+          navigate("/cart");
+        }}
       />
       {showProviderModal && (
         <div className="modal-overlay">
@@ -282,9 +315,7 @@ const Home = () => {
           setShowModal={setShowProviderModal1}
         />
       )}
-      {showAdminModal && (
-        <AdminLogin setShowAdminModal={setShowAdminModal} />
-      )}
+      {showAdminModal && <AdminLogin setShowAdminModal={setShowAdminModal} />}
 
       {/* Custom Cursor */}
       <div className="tx-js-cursor xb-cursor">

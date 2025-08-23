@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils.text import slugify
 
+
+# ---------------- COUNTRY ---------------- #
 class Country(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=255, unique=True, blank=True, null=True)
@@ -14,6 +16,7 @@ class Country(models.Model):
         super().save(*args, **kwargs)
 
 
+# ---------------- REGION ---------------- #
 class Region(models.Model):
     name = models.CharField(max_length=100)
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
@@ -28,6 +31,7 @@ class Region(models.Model):
         super().save(*args, **kwargs)
 
 
+# ---------------- STORE ---------------- #
 class Store(models.Model):
     name = models.CharField(max_length=255)
     logo = models.ImageField(upload_to='store_logos/', blank=True, null=True)
@@ -43,6 +47,7 @@ class Store(models.Model):
         super().save(*args, **kwargs)
 
 
+# ---------------- FLYER ---------------- #
 class Flyer(models.Model):
     store = models.ForeignKey(Store, on_delete=models.CASCADE)
     region = models.ForeignKey(Region, on_delete=models.CASCADE)
@@ -62,6 +67,7 @@ class Flyer(models.Model):
         super().save(*args, **kwargs)
 
 
+# ---------------- PRODUCT ---------------- #
 class Product(models.Model):
     flyer = models.ForeignKey(Flyer, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
@@ -78,6 +84,7 @@ class Product(models.Model):
         super().save(*args, **kwargs)
 
 
+# ---------------- PROVIDER APPLICATION ---------------- #
 class ProviderApplication(models.Model):
     GENDER_CHOICES = [
         ('male', 'Male'),
@@ -105,6 +112,7 @@ class ProviderApplication(models.Model):
         super().save(*args, **kwargs)
 
 
+# ---------------- PENDING FLYER ---------------- #
 class PendingFlyer(models.Model):
     store = models.ForeignKey(Store, on_delete=models.CASCADE)
     region = models.ForeignKey(Region, on_delete=models.SET_NULL, null=True, blank=True)
