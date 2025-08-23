@@ -78,17 +78,21 @@ def login_admin(request):
     return Response({"error": "Invalid credentials or not admin"}, status=403)
 
 
+# ---------------- USER PROFILE ---------------- #
+
 @api_view(['GET', 'PUT'])
 @permission_classes([IsAuthenticated])
 @parser_classes([MultiPartParser, FormParser])
 def user_profile(request):
-    serializer = UserProfileSerializer(request.user, data=request.data if request.method == 'PUT' else None, partial=True)
     if request.method == 'PUT':
+        serializer = UserProfileSerializer(instance=request.user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=400)
-    return Response(serializer.data)
+    else:  # GET
+        serializer = UserProfileSerializer(instance=request.user)
+        return Response(serializer.data)
 
 
 @api_view(['GET'])
@@ -103,13 +107,15 @@ def list_all_users(request):
 @permission_classes([IsAuthenticated])
 @parser_classes([MultiPartParser, FormParser])
 def get_logged_in_user_info(request):
-    serializer = UserProfileSerializer(request.user, data=request.data if request.method == 'PUT' else None, partial=True)
     if request.method == 'PUT':
+        serializer = UserProfileSerializer(instance=request.user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=400)
-    return Response(serializer.data)
+    else:  # GET
+        serializer = UserProfileSerializer(instance=request.user)
+        return Response(serializer.data)
 
 
 @api_view(['GET'])
