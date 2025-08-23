@@ -86,15 +86,12 @@ class Product(models.Model):
 
 # ---------------- PROVIDER APPLICATION ---------------- #
 class ProviderApplication(models.Model):
-    GENDER_CHOICES = [
-        ('male', 'Male'),
-        ('female', 'Female'),
-    ]
+  
 
     full_name = models.CharField(max_length=100)
     email = models.EmailField()
     phone = models.CharField(max_length=15)
-    gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True)
+    
     company_name = models.CharField(max_length=100)
     address = models.TextField()
     gst_number = models.CharField(max_length=50, blank=True)

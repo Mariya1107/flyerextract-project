@@ -50,7 +50,7 @@ class ProductAdmin(admin.ModelAdmin):
 class ProviderApplicationAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("full_name", "company_name")}
     list_display = ("full_name", "email", "company_name", "submitted_at", "gst_number", "slug")
-    list_filter = ("gender", "company_name", "reviewed")
+    list_filter = ( "company_name", "reviewed")
     search_fields = ("full_name", "email", "phone", "company_name")
     lookup_field = "slug"
 

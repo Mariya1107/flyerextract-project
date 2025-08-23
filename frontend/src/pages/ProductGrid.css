@@ -8,12 +8,14 @@
 
 /* Main section */
 .product-section {
-  background: var(--bg-gradient);
+  /* background: var(--bg-gradient); */
+  background: none;
   padding: 3rem 1.5rem;
   border-radius: 28px;
   margin: 2rem auto;
   max-width: 1250px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+  /* box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08); */
+  box-shadow: none;
 }
 
 .section-title {

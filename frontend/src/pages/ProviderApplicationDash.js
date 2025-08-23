@@ -12,7 +12,7 @@ const ProviderApplicationDash = () => {
     full_name: "",
     email: "",
     phone: "",
-    gender: "",
+    
     company_name: "",
     address: "",
     gst_number: "",
@@ -62,7 +62,7 @@ const ProviderApplicationDash = () => {
         full_name: "",
         email: "",
         phone: "",
-        gender: "",
+       
         company_name: "",
         address: "",
         gst_number: "",
@@ -168,17 +168,7 @@ const ProviderApplicationDash = () => {
                 className="form-input"
                 required
               />
-              <select
-                name="gender"
-                value={formData.gender}
-                onChange={handleChange}
-                className="form-input"
-                required
-              >
-                <option value="">Select Gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-              </select>
+              
               <input
                 name="company_name"
                 placeholder="Company Name"

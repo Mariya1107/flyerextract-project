@@ -101,14 +101,13 @@ body {
 .pdf-controls {
   position: absolute;
   top: 40%;
-  left: -10%;
-  right: -10%;
+  left: 0%;
+  right: 0%;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   padding: 0 10px;
-  pointer-events: none;
+  pointer-events: none;
 }
-
 .pdf-controls button {
   pointer-events: all;
   color: #654bdc;

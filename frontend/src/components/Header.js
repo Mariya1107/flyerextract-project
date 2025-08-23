@@ -15,17 +15,17 @@ const Header = ({
       <Container>
         {/* Logo */}
         <Navbar.Brand as={Link} to="/">
-          <img src="/assets/Logo.png" alt="Logo" style={{ height: "50px" }} />
+          <img src="/Logo.png" alt="Logo" style={{ height: "50px" }} />
         </Navbar.Brand>
 
         <Navbar.Toggle aria-controls="navbar-nav" />
-        <Navbar.Collapse id="navbar-nav">
+        <Navbar.Collapse id="navbar-nav" style={{marginLeft:"3%"}}>
           {/* Navigation Links */}
           <Nav className="me-auto">
-            <Nav.Link as={Link} to="/">Home</Nav.Link>
-            <Nav.Link as={Link} to="/becomeshop">Become a Shop With Us</Nav.Link>
-            <Nav.Link href="#about-us">About Us</Nav.Link>
-            <Nav.Link
+            <Nav.Link as={Link} to="/" style={{color:"black", fontWeight:"500", paddingLeft:"30px"}}>Home</Nav.Link>
+            <Nav.Link as={Link} to="/becomeshop"  style={{color:"black", fontWeight:"500", paddingLeft:"30px"}}>Become a Shop With Us</Nav.Link>
+            <Nav.Link href="#about-us"  style={{color:"black", fontWeight:"500", paddingLeft:"30px"}}>About Us</Nav.Link>
+            <Nav.Link style={{color:"black", fontWeight:"500", paddingLeft:"30px"}}
               href="#"
               onClick={(e) => {
                 e.preventDefault();
@@ -38,7 +38,9 @@ const Header = ({
 
           {/* Right Buttons */}
           <div className="d-flex">
-            <Button className="btn me-2 signin_btn"
+            <Button className="btn me-2 signin_btn" style={{background:"#fbbb12",
+    border: "1px solid #d89e05",
+    color: "#000"}}
             
               onClick={() => {
                 setAuthMode("signin");

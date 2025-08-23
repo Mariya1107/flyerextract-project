@@ -11,7 +11,7 @@ import BASE_URL from "../config";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 const AdminStoreBrochure = () => {
-  const { store_slug } = useParams(); 
+  const { store_slug } = useParams();
   const storeSlug = store_slug;
   const navigate = useNavigate();
 
@@ -21,7 +21,7 @@ const AdminStoreBrochure = () => {
   const [storeOptions, setStoreOptions] = useState([]);
   const [regionOptions, setRegionOptions] = useState([]);
   const [formData, setFormData] = useState({
-    store_slug: storeSlug || "",
+    store_id: "",
     region_id: "",
     title: "",
     pdf: null,
@@ -31,24 +31,18 @@ const AdminStoreBrochure = () => {
 
   const token = localStorage.getItem("adminToken");
 
+  // Set auth header
   useEffect(() => {
-    if (token) {
-      axios.defaults.headers.common["Authorization"] = `Token ${token}`;
-    } else {
-      console.error("No token found. Redirecting to login...");
+    if (!token) {
       navigate("/admin-login");
+    } else {
+      axios.defaults.headers.common["Authorization"] = `Token ${token}`;
     }
   }, [token, navigate]);
 
-  useEffect(() => {
-    setFormData((prev) => ({ ...prev, store_slug: storeSlug || "" }));
-  }, [storeSlug]);
-
+  // Fetch brochures for the store
   const fetchBrochures = async () => {
-    if (!storeSlug) {
-      setBrochures([]);
-      return;
-    }
+    if (!storeSlug) return setBrochures([]);
     try {
       const res = await axios.get(`${BASE_URL}/flyers/store/${storeSlug}/`);
       setBrochures(res.data || []);
@@ -58,14 +52,23 @@ const AdminStoreBrochure = () => {
     }
   };
 
+  // Fetch stores and regions
   const fetchDropdownData = async () => {
     try {
       const [storesRes, regionsRes] = await Promise.all([
         axios.get(`${BASE_URL}/stores/`),
         axios.get(`${BASE_URL}/regions/`),
       ]);
-      setStoreOptions(storesRes.data.results || storesRes.data);
-      setRegionOptions(regionsRes.data.results || regionsRes.data);
+      const stores = storesRes.data.results || storesRes.data;
+      const regions = regionsRes.data.results || regionsRes.data;
+      setStoreOptions(stores);
+      setRegionOptions(regions);
+
+      // Preselect current store if slug matches
+      if (storeSlug) {
+        const selected = stores.find((s) => s.slug === storeSlug);
+        if (selected) setFormData((prev) => ({ ...prev, store_id: selected.id }));
+      }
     } catch (err) {
       console.error("Error fetching dropdown options:", err.response?.data || err.message);
     }
@@ -94,8 +97,8 @@ const AdminStoreBrochure = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.region_id || !formData.title) {
-      alert("Region and title are required.");
+    if (!formData.region_id || !formData.title || !formData.store_id) {
+      alert("Store, region, and title are required.");
       return;
     }
 
@@ -114,7 +117,7 @@ const AdminStoreBrochure = () => {
 
       setShowForm(false);
       setFormData({
-        store_slug: storeSlug,
+        store_id: "",
         region_id: "",
         title: "",
         pdf: null,
@@ -130,11 +133,8 @@ const AdminStoreBrochure = () => {
 
   const handleDelete = async (flyerSlug) => {
     if (!window.confirm("Are you sure you want to delete this brochure?")) return;
-
     try {
-      await axios.delete(`${BASE_URL}/api/flyers/${flyerSlug}/delete/`, {
-        headers: { Authorization: `Token ${token}` },
-      });
+      await axios.delete(`${BASE_URL}/api/flyers/${flyerSlug}/delete/`);
       fetchBrochures();
     } catch (error) {
       console.error("Error deleting flyer:", error.response?.data || error.message);
@@ -146,9 +146,7 @@ const AdminStoreBrochure = () => {
     <div className="flyer-list-wrapper">
       <div className="table-header">
         <h2 className="dashboard-title">Store Brochures</h2>
-        <button className="add-provider-btn" onClick={handleFormToggle}>
-          + Add Brochure
-        </button>
+        <button className="add-provider-btn" onClick={handleFormToggle}>+ Add Brochure</button>
       </div>
 
       {showForm && (
@@ -160,16 +158,14 @@ const AdminStoreBrochure = () => {
               <label>
                 Store:
                 <select
-                  name="store_slug"
-                  value={formData.store_slug}
+                  name="store_id"
+                  value={formData.store_id}
                   onChange={handleFormChange}
                   required
-                  disabled
                 >
+                  <option value="">Select Store</option>
                   {storeOptions.map((store) => (
-                    <option key={store.id} value={store.slug}>
-                      {store.name}
-                    </option>
+                    <option key={store.id} value={store.id}>{store.name}</option>
                   ))}
                 </select>
               </label>
@@ -184,9 +180,7 @@ const AdminStoreBrochure = () => {
                 >
                   <option value="">Select Region</option>
                   {regionOptions.map((region) => (
-                    <option key={region.id} value={region.id}>
-                      {region.name}, {region.country?.name}
-                    </option>
+                    <option key={region.id} value={region.id}>{region.name}, {region.country?.name}</option>
                   ))}
                 </select>
               </label>
@@ -216,7 +210,6 @@ const AdminStoreBrochure = () => {
                   name="expires_at"
                   value={formData.expires_at}
                   onChange={handleFormChange}
-                  required
                 />
               </label>
 
@@ -255,10 +248,9 @@ const AdminStoreBrochure = () => {
                   ) : (
                     <p>No preview available</p>
                   )}
+
                   <div className="flyer-hover-overlay">
-                    <button className="flyer-hover-btn" onClick={() => handleDelete(brochure.slug)}>
-                      Delete
-                    </button>
+                    <button className="flyer-hover-btn" onClick={() => handleDelete(brochure.slug)}>Delete</button>
                   </div>
                 </div>
                 <span className="flyer-tag">📌 Brochure</span>
@@ -272,9 +264,7 @@ const AdminStoreBrochure = () => {
                     </span>
                   )}
                 </div>
-                <button className="flyer-view-btn" disabled>
-                  Explore →
-                </button>
+                <button className="flyer-view-btn" disabled>Explore →</button>
               </div>
             </div>
           ))}

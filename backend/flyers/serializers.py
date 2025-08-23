@@ -1,5 +1,8 @@
 from .models import Country, Region, Store, Flyer, Product, ProviderApplication, PendingFlyer
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
+
+User = get_user_model()
 
 # -------------------- COUNTRY --------------------
 class CountrySerializer(serializers.ModelSerializer):
@@ -38,10 +41,37 @@ class StoreSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'slug', 'logo', 'region', 'region_id', 'region_slug']
 
 
+# -------------------- STORE (BASIC for user profile or flyers) --------------------
+class StoreBasicSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Store
+        fields = ['id', 'name', 'slug']
+
+
+# -------------------- USER / PROVIDER --------------------
+class UserProfileSerializer(serializers.ModelSerializer):
+    # ✅ Nested stores with id + name + slug instead of just IDs
+    stores = StoreBasicSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = User
+        fields = [
+            'id',
+            'username',
+            'email',
+            'full_name',
+            'phone',
+            'gender',
+            'profile_photo',
+            'stores',
+        ]
+
+
 # -------------------- FLYER --------------------
 class FlyerSerializer(serializers.ModelSerializer):
     slug = serializers.SlugField(read_only=True)
-    store = StoreSerializer(read_only=True)
+
+    store = StoreBasicSerializer(read_only=True)  # ✅ always nested with name
     store_id = serializers.PrimaryKeyRelatedField(
         queryset=Store.objects.all(), write_only=True, source='store'
     )
@@ -74,14 +104,16 @@ class FlyerSerializer(serializers.ModelSerializer):
         ]
 
 
+# -------------------- FLYER (MINIMAL, for products etc.) --------------------
 class FlyerMinimalSerializer(serializers.ModelSerializer):
     slug = serializers.SlugField(read_only=True)
+    store = StoreBasicSerializer(read_only=True)  # ✅ includes store name
     image = serializers.ImageField(use_url=True, required=False, allow_null=True)
     pdf = serializers.FileField(use_url=True, required=False, allow_null=True)
 
     class Meta:
         model = Flyer
-        fields = ['id', 'slug', 'title', 'image', 'pdf']
+        fields = ['id', 'slug', 'title', 'image', 'pdf', 'store']
 
 
 # -------------------- PRODUCT --------------------
@@ -98,7 +130,7 @@ class ProductSerializer(serializers.ModelSerializer):
         return obj.flyer.store.slug if obj.flyer and obj.flyer.store else None
 
 
-# -------------------- PROVIDER --------------------
+# -------------------- PROVIDER APPLICATION --------------------
 class ProviderApplicationSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProviderApplication
@@ -119,7 +151,7 @@ class StoreWithFlyersSerializer(serializers.ModelSerializer):
 class PendingFlyerSerializer(serializers.ModelSerializer):
     slug = serializers.SlugField(read_only=True)
 
-    store = StoreSerializer(read_only=True)
+    store = StoreBasicSerializer(read_only=True)  # ✅ always include store name
     store_id = serializers.PrimaryKeyRelatedField(
         queryset=Store.objects.all(), write_only=True, source='store'
     )
@@ -167,5 +199,5 @@ class StoreWithPhoneSerializer(serializers.ModelSerializer):
         fields = ["id", "slug", "name", "phone"]
 
     def get_phone(self, obj):
-        provider = obj.provider_stores.first()  # get first provider linked to this store
+        provider = obj.provider_stores.first()
         return provider.phone if provider else None

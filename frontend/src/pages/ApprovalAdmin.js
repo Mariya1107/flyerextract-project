@@ -52,8 +52,8 @@ const ApprovalAdmin = () => {
 
     const formData = new FormData();
     formData.append("title", flyer.title);
-    formData.append("store_id", storeId);   // ✅ backend expects store_id
-    formData.append("region_id", regionId); // ✅ backend expects region_id
+    formData.append("store_id", storeId);   
+    formData.append("region_id", regionId); 
     formData.append("expires_at", flyer.expires_at || "2025-08-31");
 
     if (flyer.image && typeof flyer.image === "string") {
@@ -68,16 +68,16 @@ const ApprovalAdmin = () => {
 
     try {
       // ✅ Correct endpoint for flyer creation
-      await axios.post(`${BASE_URL}/api/flyers/`, formData, {
+      await axios.post(`${BASE_URL}/api/flyers/create/`, formData, {
         headers: {
           Authorization: `Token ${token}`,
           "Content-Type": "multipart/form-data",
         },
       });
 
-      // cleanup: remove from pending list
+      // Remove from pending list using slug
       try {
-        await axios.delete(`${BASE_URL}/api/reject-flyer/${flyer.id}/`, {
+        await axios.delete(`${BASE_URL}/api/reject-flyer/${flyer.slug}/`, {
           headers: { Authorization: `Token ${token}` },
         });
         alert("✅ Brochure approved and removed from pending list!");
@@ -93,12 +93,12 @@ const ApprovalAdmin = () => {
     }
   };
 
-  const handleReject = async (flyerId) => {
+  const handleReject = async (flyer) => {
     const confirmed = window.confirm('Are you sure you want to reject this flyer?');
     if (!confirmed) return;
 
     try {
-      await axios.delete(`${BASE_URL}/api/reject-flyer/${flyerId}/`, {
+      await axios.delete(`${BASE_URL}/api/reject-flyer/${flyer.slug}/`, {
         headers: { Authorization: `Token ${token}` },
       });
       alert("❌ Flyer rejected and removed.");
@@ -150,7 +150,7 @@ const ApprovalAdmin = () => {
                     </button>
                     <button
                       className="flyer-hover-btn"
-                      onClick={() => handleReject(flyer.id)}
+                      onClick={() => handleReject(flyer)}
                     >
                       Reject
                     </button>

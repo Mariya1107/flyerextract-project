@@ -1,5 +1,4 @@
 from django.db.models import Q
-from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 
@@ -35,7 +34,6 @@ from .serializers import (
     ProductSerializer,
     StoreSerializer,
     StoreWithPhoneSerializer,
-    StoreWithFlyersSerializer,
     PendingFlyerSerializer,
     ProviderApplicationSerializer,
 )
@@ -48,7 +46,7 @@ from django.conf import settings
 client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
 
-# --------------------------- COUNTRY / REGION APIs ---------------------------
+# --------------------------- COUNTRY / REGION ---------------------------
 
 class CountryList(generics.ListAPIView):
     queryset = Country.objects.all()
@@ -67,7 +65,7 @@ class RegionListByCountry(generics.ListAPIView):
         return Region.objects.filter(country__slug=self.kwargs["country_slug"])
 
 
-# --------------------------- STORE / FLYER APIs ---------------------------
+# --------------------------- STORE / FLYER ---------------------------
 
 class StoreListView(generics.ListAPIView):
     queryset = Store.objects.all()
@@ -83,6 +81,7 @@ class FlyersByStoreView(APIView):
 
 @api_view(["GET"])
 def flyers_by_store_slug(request, store_slug):
+    """Alternative function-based endpoint"""
     flyers = Flyer.objects.filter(store__slug=store_slug)
     serializer = FlyerSerializer(flyers, many=True)
     return Response(serializer.data)
@@ -99,8 +98,6 @@ class FlyerListAll(generics.ListAPIView):
     queryset = Flyer.objects.all()
     serializer_class = FlyerSerializer
 
-
-# --------------------------- FLYER DETAIL ---------------------------
 
 class FlyerDetail(generics.RetrieveAPIView):
     queryset = Flyer.objects.all()
@@ -131,6 +128,7 @@ def search_products(request):
 # --------------------------- GPT PRODUCT EXTRACTION ---------------------------
 
 def extract_with_gpt(image_file):
+    """Extract product name and price using GPT Vision"""
     print("🔍 Starting GPT Vision extraction...")
 
     image_bytes = image_file.read()
@@ -197,9 +195,7 @@ def upload_cropped_product(request):
 
     product = Product.objects.create(flyer=flyer, name=name, price=price, image=image_file)
 
-    return Response(
-        {"success": True, "product_id": product.id, "name": name, "price": price}
-    )
+    return Response({"success": True, "product_id": product.id, "name": name, "price": price})
 
 
 # --------------------------- PROVIDER APPLICATION ---------------------------
@@ -216,28 +212,20 @@ def submit_provider_application(request):
 
 @csrf_exempt
 def become_provider(request):
-    if request.method == "POST":
-        full_name = request.POST.get("full_name")
-        email = request.POST.get("email")
-        phone = request.POST.get("phone")
-        gender = request.POST.get("gender")
-        company_name = request.POST.get("company_name")
-        address = request.POST.get("address")
-        gst_number = request.POST.get("gst_number")
-        document = request.FILES.get("document")
+    if request.method != "POST":
+        return JsonResponse({"error": "Only POST allowed"}, status=405)
 
-        ProviderApplication.objects.create(
-            full_name=full_name,
-            email=email,
-            phone=phone,
-            gender=gender,
-            company_name=company_name,
-            address=address,
-            gst_number=gst_number,
-            document=document,
-        )
-        return JsonResponse({"message": "Application submitted successfully!"})
-    return JsonResponse({"error": "Only POST allowed"}, status=405)
+    ProviderApplication.objects.create(
+        full_name=request.POST.get("full_name"),
+        email=request.POST.get("email"),
+        phone=request.POST.get("phone"),
+        
+        company_name=request.POST.get("company_name"),
+        address=request.POST.get("address"),
+        gst_number=request.POST.get("gst_number"),
+        document=request.FILES.get("document"),
+    )
+    return JsonResponse({"message": "Application submitted successfully!"})
 
 
 # --------------------------- FLYER UPLOAD & MANAGEMENT ---------------------------
@@ -257,11 +245,12 @@ def upload_flyer(request):
 def flyers_by_provider(request):
     try:
         store = Store.objects.get(provider=request.user)
-        flyers = Flyer.objects.filter(store=store)
-        serializer = FlyerSerializer(flyers, many=True)
-        return Response(serializer.data)
     except Store.DoesNotExist:
         return Response({"error": "No store associated with this provider"}, status=404)
+
+    flyers = Flyer.objects.filter(store=store)
+    serializer = FlyerSerializer(flyers, many=True)
+    return Response(serializer.data)
 
 
 @api_view(["POST"])
@@ -314,23 +303,32 @@ def update_flyer(request, flyer_slug):
 
 
 # --------------------------- PENDING FLYERS ---------------------------
-
 @api_view(["POST"])
 @parser_classes([MultiPartParser, FormParser])
-@authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def upload_pending_flyer(request):
-    serializer = PendingFlyerSerializer(data=request.data)
+    try:
+        store = Store.objects.get(provider=request.user)
+    except Store.DoesNotExist:
+        return Response({"error": "No store for this provider"}, status=404)
+
+    # Prepare a dictionary including files
+    data = {
+        "title": request.data.get("title"),
+        "store": store.id,
+        "region": request.data.get("region"),
+        "expires_at": request.data.get("expires_at"),
+        "pdf": request.FILES.get("pdf"),       # file field
+        "image": request.FILES.get("image"),   # optional image
+    }
+
+    serializer = PendingFlyerSerializer(data=data)
+
     if serializer.is_valid():
         serializer.save()
-        return Response({"message": "Flyer submitted for approval"}, status=201)
+        return Response({"message": "Flyer uploaded successfully"}, status=201)
+
     return Response(serializer.errors, status=400)
-
-
-class PendingFlyerListView(generics.ListAPIView):
-    queryset = PendingFlyer.objects.all()
-    serializer_class = PendingFlyerSerializer
-    permission_classes = [IsAuthenticated, IsAdminUser]
 
 
 @api_view(["POST"])
@@ -338,7 +336,7 @@ class PendingFlyerListView(generics.ListAPIView):
 def approve_pending_flyer(request, flyer_slug):
     try:
         pending = PendingFlyer.objects.get(slug=flyer_slug)
-        flyer = Flyer.objects.create(
+        Flyer.objects.create(
             store=pending.store,
             region=pending.region,
             title=pending.title,
@@ -356,8 +354,8 @@ def approve_pending_flyer(request, flyer_slug):
 @permission_classes([IsAuthenticated, IsAdminUser])
 def reject_pending_flyer(request, flyer_slug):
     try:
-        flyer = PendingFlyer.objects.get(slug=flyer_slug)
-        flyer.delete()
+        pending = PendingFlyer.objects.get(slug=flyer_slug)
+        pending.delete()
         return Response({"message": "Flyer rejected and deleted"})
     except PendingFlyer.DoesNotExist:
         return Response({"error": "Pending flyer not found"}, status=404)
@@ -381,8 +379,7 @@ def dashboard_counts(request):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def provider_dashboard_counts(request):
-    user = request.user
-    store = Store.objects.filter(provider=user).first()
+    store = Store.objects.filter(provider=request.user).first()
     if not store:
         return Response({"detail": "Store not found for this provider."}, status=404)
 
@@ -404,11 +401,10 @@ class StoreSearchAPIView(generics.ListAPIView):
         query = self.request.query_params.get("search", "").strip()
         if not query:
             return Store.objects.none()
-
         return Store.objects.filter(
             Q(name__icontains=query)
-            | Q(flyer__region__name__icontains=query)
-            | Q(flyer__region__country__name__icontains=query)
+            | Q(flyer_regionname_icontains=query)
+            | Q(flyer_regioncountryname_icontains=query)
         ).distinct()
 
 
@@ -421,3 +417,94 @@ def store_by_name(request, name):
 
     serializer = StoreWithPhoneSerializer(store)
     return Response(serializer.data)
+
+
+# --------------------------- PROVIDER STORE ---------------------------
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def provider_store(request):
+    try:
+        store = Store.objects.get(provider=request.user)
+        serializer = StoreSerializer(store)
+        return Response(serializer.data)
+    except Store.DoesNotExist:
+        return Response({"error": "No store found for this provider"}, status=404)
+
+
+class PendingFlyerListView(generics.ListAPIView):
+    queryset = PendingFlyer.objects.all()
+    serializer_class = PendingFlyerSerializer
+    permission_classes = [IsAdminUser]
+
+
+
+@api_view(["PUT"])
+@parser_classes([MultiPartParser, FormParser])
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
+def update_flyer(request, flyer_id):
+    """
+    Update a flyer (PDF, image, title, expires_at, region).
+    Only the provider who owns the flyer can update it.
+    """
+    try:
+        flyer = Flyer.objects.get(id=flyer_id)
+    except Flyer.DoesNotExist:
+        return Response({"error": "Flyer not found"}, status=404)
+
+    # Check provider ownership
+    if flyer.store.provider != request.user:
+        return Response({"error": "You do not have permission to edit this flyer."}, status=403)
+
+    data = request.data.copy()
+
+    # Handle region update
+    region_id = data.get("region_id")
+    if region_id:
+        try:
+            region = Region.objects.get(id=region_id)
+            data["region"] = region.id
+        except Region.DoesNotExist:
+            return Response({"error": "Region not found."}, status=400)
+
+    # Clear old files if a new one is uploaded
+    if "pdf" in request.FILES:
+        if flyer.image:
+            flyer.image.delete(save=False)
+        flyer.image = None
+
+    if "image" in request.FILES:
+        if flyer.pdf:
+            flyer.pdf.delete(save=False)
+        flyer.pdf = None
+
+    serializer = FlyerSerializer(flyer, data=data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({"message": "Flyer updated successfully", "flyer": serializer.data})
+    return Response(serializer.errors, status=400)
+@api_view(["POST"])
+@parser_classes([MultiPartParser, FormParser])
+@permission_classes([IsAuthenticated])
+def upload_pending_flyer(request):
+    try:
+        store = Store.objects.get(provider=request.user)
+    except Store.DoesNotExist:
+        return Response({"error": "No store for this provider"}, status=404)
+
+    data = {
+        "title": request.data.get("title"),
+        "store_id": store.id,                  # ✅ must be store_id
+        "region_id": request.data.get("region_id"),  # ✅ must be region_id
+        "expires_at": request.data.get("expires_at"),
+        "pdf": request.FILES.get("pdf"),
+        "image": request.FILES.get("image"),
+    }
+
+    serializer = PendingFlyerSerializer(data=data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({"message": "Flyer uploaded successfully"}, status=201)
+
+    return Response(serializer.errors, status=400)

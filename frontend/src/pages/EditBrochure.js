@@ -25,13 +25,16 @@ const EditBrochure = () => {
   const providerId = localStorage.getItem('providerId');
 
   useEffect(() => {
+    // Fetch brochures for this provider
     if (providerId && token) {
       axios.get(`${BASE_URL}/api/accounts/brochures/${providerId}/pages/`, {
         headers: { Authorization: `Token ${token}` }
-      }).then(res => setBrochures(res.data))
-        .catch(err => console.error('Fetch error:', err));
+      })
+      .then(res => setBrochures(res.data))
+      .catch(err => console.error('Fetch error:', err));
     }
 
+    // Fetch region list
     axios.get(`${BASE_URL}/regions/`)
       .then(res => setRegionList(res.data))
       .catch(err => console.error('Region fetch error:', err));
@@ -52,42 +55,40 @@ const EditBrochure = () => {
     });
   };
 
-const handleSave = async (e) => {
-  e.preventDefault();
-  if (!editingId) return;
+  const handleSave = async (e) => {
+    e.preventDefault();
+    if (!editingId) return;
 
-  const updateData = new FormData();
-  updateData.append('title', formData.title);
-  updateData.append('expires_at', formData.expires_at);
-  updateData.append('region_id', parseInt(formData.region_id));
+    const updateData = new FormData();
+    updateData.append('title', formData.title);
+    updateData.append('expires_at', formData.expires_at);
+    updateData.append('region_id', parseInt(formData.region_id));
 
-  // If a new PDF is uploaded, include it and tell backend to delete image
-  if (formData.pdf) {
-    updateData.append('pdf', formData.pdf);
-    updateData.append('clear_image', 'true');
-  }
+    if (formData.pdf) {
+      updateData.append('pdf', formData.pdf);
+      updateData.append('clear_image', 'true');
+    }
 
-  // If a new image is uploaded, include it and tell backend to delete pdf
-  if (formData.image) {
-    updateData.append('image', formData.image);
-    updateData.append('clear_pdf', 'true');
-  }
+    if (formData.image) {
+      updateData.append('image', formData.image);
+      updateData.append('clear_pdf', 'true');
+    }
 
-  try {
-    await axios.put(`${BASE_URL}/flyers/${editingId}/edit/`, updateData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        Authorization: `Token ${token}`,
-      },
-    });
-    alert('Brochure updated!');
-    setEditingId(null);
-    window.location.reload();
-  } catch (err) {
-    console.error('Update error:', err);
-    alert('Failed to update brochure');
-  }
-};
+    try {
+      await axios.put(`${BASE_URL}/flyers/${editingId}/edit/`, updateData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Token ${token}`,
+        },
+      });
+      alert('Brochure updated!');
+      setEditingId(null);
+      window.location.reload();
+    } catch (err) {
+      console.error('Update error:', err);
+      alert('Failed to update brochure');
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -111,14 +112,23 @@ const handleSave = async (e) => {
               <div className="flyer-img-wrapper">
                 <div className="flyer-overlay-container">
                   {brochure.image ? (
-                    <img src={brochure.image} alt={brochure.title} className="flyer-img" />
+                    <img
+                      src={`${BASE_URL}${brochure.image}`}
+                      alt={brochure.title}
+                      className="flyer-img"
+                    />
                   ) : brochure.pdf ? (
                     <div className="pdf-container">
-                      <Document file={brochure.pdf} onLoadSuccess={(pdf) => onDocumentLoadSuccess(brochure.id, pdf)}>
+                      <Document
+                        file={`${BASE_URL}${brochure.pdf}`}
+                        onLoadSuccess={(pdf) => onDocumentLoadSuccess(brochure.id, pdf)}
+                      >
                         <Page pageNumber={1} width={240} />
                       </Document>
                     </div>
-                  ) : <p>No preview available</p>}
+                  ) : (
+                    <p>No preview available</p>
+                  )}
 
                   <div className="flyer-hover-overlay">
                     <button className="flyer-hover-btn" onClick={() => handleEditClick(brochure)}>View Details</button>
@@ -135,32 +145,33 @@ const handleSave = async (e) => {
         </div>
       )}
 
-{editingId && (
-  <div className="modal-overlay" onClick={() => setEditingId(null)}>
-    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-      <div className="form-header">
-        <h2>Edit Brochure</h2>
-        <button className="close-btn" onClick={() => setEditingId(null)}>&times;</button>
-      </div>
-      <form onSubmit={handleSave} className="upload-form">
-        <input type="text" name="title" placeholder="Title" value={formData.title} onChange={handleChange} required />
-        <select name="region_id" value={formData.region_id} onChange={handleChange} required>
-          <option value="">Select Region</option>
-          {regionList.map((region) => (
-            <option key={region.id} value={region.id}>{region.name}, {region.country.name}</option>
-          ))}
-        </select>
-        <input type="date" name="expires_at" value={formData.expires_at} onChange={handleChange} required />
-        <label>PDF File (optional)</label>
-        <input type="file" name="pdf" accept=".pdf" onChange={handleChange} />
-        <label>Image File (optional)</label>
-        <input type="file" name="image" accept="image/*" onChange={handleChange} />
-        <button type="submit">Save</button>
-      </form>
-    </div>
-  </div>
-)}
-
+      {editingId && (
+        <div className="modal-overlay" onClick={() => setEditingId(null)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="form-header">
+              <h2>Edit Brochure</h2>
+              <button className="close-btn" onClick={() => setEditingId(null)}>&times;</button>
+            </div>
+            <form onSubmit={handleSave} className="upload-form">
+              <input type="text" name="title" placeholder="Title" value={formData.title} onChange={handleChange} required />
+              <select name="region_id" value={formData.region_id} onChange={handleChange} required>
+                <option value="">Select Region</option>
+                {regionList.map((region) => (
+                  <option key={region.id} value={region.id}>
+                    {region.name}, {region.country.name}
+                  </option>
+                ))}
+              </select>
+              <input type="date" name="expires_at" value={formData.expires_at} onChange={handleChange} required />
+              <label>PDF File (optional)</label>
+              <input type="file" name="pdf" accept=".pdf" onChange={handleChange} />
+              <label>Image File (optional)</label>
+              <input type="file" name="image" accept="image/*" onChange={handleChange} />
+              <button type="submit">Save</button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

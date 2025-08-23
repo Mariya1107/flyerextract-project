@@ -13,7 +13,7 @@ from .serializers import (
     UserProfileSerializer, RegisterSerializer,
     CartSerializer, CartItemSerializer
 )
-from flyers.models import Store, Country, Region, ProviderApplication, Flyer, Product
+from flyers.models import Store, Country, Region, ProviderApplication, Flyer, PendingFlyer, Product
 from flyers.serializers import (
     StoreSerializer, CountrySerializer, RegionSerializer,
     ProviderApplicationSerializer, FlyerSerializer
@@ -90,9 +90,8 @@ def user_profile(request):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=400)
-    else:  # GET
-        serializer = UserProfileSerializer(instance=request.user)
-        return Response(serializer.data)
+    serializer = UserProfileSerializer(instance=request.user)
+    return Response(serializer.data)
 
 
 @api_view(['GET'])
@@ -113,9 +112,8 @@ def get_logged_in_user_info(request):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=400)
-    else:  # GET
-        serializer = UserProfileSerializer(instance=request.user)
-        return Response(serializer.data)
+    serializer = UserProfileSerializer(instance=request.user)
+    return Response(serializer.data)
 
 
 @api_view(['GET'])
@@ -326,24 +324,40 @@ def delete_provider_application(request, application_id):
     except ProviderApplication.DoesNotExist:
         return Response({"error": "Application not found"}, status=404)
 
-
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def provider_brochures_pages(request, provider_id):
-    flyers = Flyer.objects.filter(provider__id=provider_id)
-    serializer = FlyerSerializer(flyers, many=True)
-    return Response(serializer.data)
+    try:
+        flyers = Flyer.objects.filter(store__provider__id=provider_id)
+        serializer = FlyerSerializer(flyers, many=True)
+        return Response(serializer.data)
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)
+
+# ---------------- PENDING FLYER UPLOAD ---------------- #
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])
+def upload_pending_flyer(request, flyer_id):
+    try:
+        flyer = PendingFlyer.objects.get(id=flyer_id)
+    except PendingFlyer.DoesNotExist:
+        return Response({"error": "Pending flyer not found"}, status=404)
+
+    serializer = FlyerSerializer(instance=flyer, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=400)
 
 
-# ---------------- CART SYSTEM (AUTOGEN SLUGS) ---------------- #
+# ---------------- CART SYSTEM ---------------- #
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def get_cart(request, cart_slug=None):
-    try:
-        cart = Cart.objects.get(slug=cart_slug) if cart_slug else Cart.objects.get_or_create(user=request.user)[0]
-    except Cart.DoesNotExist:
-        return Response({"error": "Cart not found"}, status=404)
+    cart = Cart.objects.get(slug=cart_slug) if cart_slug else Cart.objects.get_or_create(user=request.user)[0]
     serializer = CartSerializer(cart)
     return Response(serializer.data)
 
@@ -353,7 +367,6 @@ def get_cart(request, cart_slug=None):
 def add_to_cart(request, cart_slug=None):
     product_id = request.data.get("product_id")
     quantity = int(request.data.get("quantity", 1))
-
     try:
         product = Product.objects.get(id=product_id)
     except Product.DoesNotExist:

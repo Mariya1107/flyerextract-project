@@ -12,7 +12,7 @@ const AdminLoginDashboard = () => {
   const [providersCount, setProvidersCount] = useState(0);
   const [flyersCount, setFlyersCount] = useState(0);
   const [pendingFlyersCount, setPendingFlyersCount] = useState(0);
-  const [serverStatus, setServerStatus] = useState(null);
+  const [serverStatus, setServerStatus] = useState('Loading...');
 
   useEffect(() => {
     const token = localStorage.getItem('adminToken');
@@ -26,9 +26,7 @@ const AdminLoginDashboard = () => {
     // Fetch admin info
     axios
       .get(`${BASE_URL}/api/accounts/me/`, { headers })
-      .then((res) => {
-        setAdminData(res.data);
-      })
+      .then((res) => setAdminData(res.data))
       .catch((err) => {
         console.error('Failed to fetch admin info:', err);
         alert('Session expired or invalid token. Please log in again.');
@@ -40,10 +38,10 @@ const AdminLoginDashboard = () => {
     axios
       .get(`${BASE_URL}/api/dashboard-counts/`, { headers })
       .then((res) => {
-        setUsersCount(res.data.users);
-        setProvidersCount(res.data.providers);
-        setFlyersCount(res.data.flyers);
-        setPendingFlyersCount(res.data.pending_flyers);
+        setUsersCount(res.data.users || 0);
+        setProvidersCount(res.data.providers || 0);
+        setFlyersCount(res.data.flyers || 0);
+        setPendingFlyersCount(res.data.pending_flyers || 0);
       })
       .catch((err) => {
         console.error('Failed to fetch dashboard counts:', err);
@@ -53,7 +51,11 @@ const AdminLoginDashboard = () => {
     axios
       .get(`${BASE_URL}/api/accounts/server-status/`, { headers })
       .then((res) => {
-        setServerStatus(res.data.status === 'online' ? 'Online' : 'Offline');
+        // Expecting response: { status: "online" } or { status: "offline" }
+        const status = res.data?.status?.toLowerCase();
+        if (status === 'online') setServerStatus('Online');
+        else if (status === 'offline') setServerStatus('Offline');
+        else setServerStatus('Unknown');
       })
       .catch((err) => {
         console.error('Failed to fetch server status:', err);
@@ -61,18 +63,17 @@ const AdminLoginDashboard = () => {
       });
   }, [navigate]);
 
-  // Convert to 12-hour format with AM/PM
   const formatDateTime = (datetimeStr) => {
+    if (!datetimeStr) return 'N/A';
     const date = new Date(datetimeStr);
-    const options = {
+    return date.toLocaleString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
       hour: 'numeric',
       minute: '2-digit',
       hour12: true,
-    };
-    return date.toLocaleString('en-US', options);
+    });
   };
 
   const adminCards = [
@@ -96,15 +97,10 @@ const AdminLoginDashboard = () => {
       <div className="admin-notes">
         <h3>System Summary</h3>
         <p>Admin: {adminData?.full_name || 'Loading...'}</p>
-        <p>
-          Last login:{' '}
-          {adminData?.last_login
-            ? formatDateTime(adminData.last_login)
-            : 'Fetching...'}
-        </p>
+        <p>Last login: {formatDateTime(adminData?.last_login)}</p>
         <p>
           Server status:{' '}
-          {serverStatus === 'Online' ? '✅ Online' : serverStatus === 'Offline' ? '❌ Offline' : '...'}
+          {serverStatus === 'Online' ? '✅ Online' : serverStatus === 'Offline' ? '❌ Offline' : '⚠️ Unknown'}
         </p>
       </div>
     </div>

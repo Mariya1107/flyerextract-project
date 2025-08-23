@@ -24,7 +24,7 @@ const BecomeShop = () => {
           <p className="lead mb-4">
             Grow your business by sharing your offers and flyers with thousands of customers.
           </p>
-          <button
+          <button style={{background: "#000 !important",border: "1px solid #000 !important"}}
             className="for_btn btn btn-lg"
             onClick={() => setShowProviderModal1(true)}
           >
@@ -54,21 +54,21 @@ const BecomeShop = () => {
           <div className="row g-4">
             <div className="col-md-4">
               <div className="feature-card p-4 text-center h-100 shadow-sm">
-                <FontAwesomeIcon icon={faBullhorn} size="2x" className="mb-3 text-primary" />
+                <FontAwesomeIcon icon={faBullhorn} size="2x" className="mb-3 " style={{color:"#000"}} />
                 <h5>Promote Your Offers</h5>
                 <p>Upload and share your flyers with thousands of customers.</p>
               </div>
             </div>
             <div className="col-md-4">
               <div className="feature-card p-4 text-center h-100 shadow-sm">
-                <FontAwesomeIcon icon={faShoppingCart} size="2x" className="mb-3 text-primary" />
+                <FontAwesomeIcon icon={faShoppingCart} size="2x" className="mb-3 " style={{color:"#000"}} />
                 <h5>Showcase Products</h5>
                 <p>Display your offers and products in real-time to attract buyers.</p>
               </div>
             </div>
             <div className="col-md-4">
               <div className="feature-card p-4 text-center h-100 shadow-sm">
-                <FontAwesomeIcon icon={faChartLine} size="2x" className="mb-3 text-primary" />
+                <FontAwesomeIcon icon={faChartLine} size="2x" className="mb-3 " style={{color:"#000"}} />
                 <h5>Grow Your Business</h5>
                 <p>Expand your reach and manage everything from a single dashboard.</p>
               </div>
@@ -78,31 +78,31 @@ const BecomeShop = () => {
       </section>
 
       {/* How It Works Section */}
-      <section className="how-it-works-section py-5">
+      <section className="how-it-works-section py-5" style={{background:"#f7f7f7"}}>
         <div className="container">
           <h2 className="text-center mb-5">How It Works</h2>
           <div className="row g-4">
             <div className="col-md-3 text-center">
               <div className="step-card p-3 h-100 shadow-sm">
-                <FontAwesomeIcon icon={faUser} size="2x" className="mb-2 text-primary" />
+                <FontAwesomeIcon icon={faUser} size="2x" className="mb-2" style={{color:"#000"}}/>
                 <h6>Create Account</h6>
               </div>
             </div>
             <div className="col-md-3 text-center">
               <div className="step-card p-3 h-100 shadow-sm">
-                <FontAwesomeIcon icon={faCogs} size="2x" className="mb-2 text-primary" />
+                <FontAwesomeIcon icon={faCogs} size="2x" className="mb-2 " style={{color:"#000"}}/>
                 <h6>Upload Flyers</h6>
               </div>
             </div>
             <div className="col-md-3 text-center">
               <div className="step-card p-3 h-100 shadow-sm">
-                <FontAwesomeIcon icon={faBullhorn} size="2x" className="mb-2 text-primary" />
+                <FontAwesomeIcon icon={faBullhorn} size="2x" className="mb-2 " style={{color:"#000"}}/>
                 <h6>Reach Customers</h6>
               </div>
             </div>
             <div className="col-md-3 text-center">
               <div className="step-card p-3 h-100 shadow-sm">
-                <FontAwesomeIcon icon={faChartLine} size="2x" className="mb-2 text-primary" />
+                <FontAwesomeIcon icon={faChartLine} size="2x" className="mb-2" style={{color:"#000"}} />
                 <h6>Manage Dashboard</h6>
               </div>
             </div>
@@ -111,7 +111,7 @@ const BecomeShop = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="cta-section text-center py-5 bg-primary text-white">
+      <section className="cta-section text-center py-5 text-white" style={{background:"#7d0d83"}}>
         <h3 className="mb-4">Ready to Grow Your Business?</h3>
         <button
           className="btn btn-light btn-lg"

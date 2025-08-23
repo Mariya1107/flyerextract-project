@@ -10,7 +10,8 @@ const Icon = ({ name }) => <div className="icon">{name.charAt(0)}</div>;
 const DashboardLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [storeName, setStoreName] = useState("");
+
+  const [storeName, setStoreName] = useState(localStorage.getItem("store_name") || "");
   const [providerData, setProviderData] = useState(null);
   const [showUploadSubmenu, setShowUploadSubmenu] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
@@ -27,13 +28,15 @@ const DashboardLayout = () => {
         headers: { Authorization: `Token ${token}` },
       })
       .then((res) => {
+        console.log("Provider data:", res.data);
         const storeList = res.data.stores || [];
         if (storeList.length > 0) {
-          const store = storeList[0];
-          localStorage.setItem("store_id", store.id);
-          setStoreName(store.name);
+          const storeId = storeList[0]; // it's just an ID for now
+          localStorage.setItem("store_id", storeId);
+          setStoreName(""); // no store name from API yet
         } else {
-          alert("No store assigned to this provider.");
+          console.warn("No store assigned to this provider.");
+          setStoreName("No store assigned");
         }
         setProviderData(res.data);
       })
@@ -41,6 +44,8 @@ const DashboardLayout = () => {
         console.error("Failed to fetch user info:", err);
         alert("Session expired or invalid credentials. Please login again.");
         localStorage.removeItem("providerToken");
+        localStorage.removeItem("store_id");
+        localStorage.removeItem("store_name");
         navigate("/");
       });
   }, [navigate]);
@@ -48,16 +53,8 @@ const DashboardLayout = () => {
   const handleLogout = () => {
     localStorage.removeItem("providerToken");
     localStorage.removeItem("store_id");
+    localStorage.removeItem("store_name");
     navigate("/");
-  }; 
-
-  const handleBrochureClick = () => {
-    const storeId = localStorage.getItem("store_id");
-    if (storeId) {
-      navigate(`/store/${storeId}/flyers`);
-    } else {
-      alert("Store not found.");
-    }
   };
 
   const isActive = (path) => location.pathname === path;
@@ -71,12 +68,12 @@ const DashboardLayout = () => {
   return (
     <div className="dashboard-wrapper">
       <div className="dashboard-container">
+        {/* Sidebar */}
         <aside className="sidebar">
           <div className="sidebar-header">
             <Link to="/" aria-label="Home">
-             <h2 className="logo">Gravity</h2>
-                        
-                      </Link>
+              <h2 className="logo">Gravity</h2>
+            </Link>
           </div>
 
           <nav className="sidebar-nav">
@@ -91,14 +88,12 @@ const DashboardLayout = () => {
                 </button>
               </li>
 
-
-            
-<li>
-  <Link to={`/provider-dashboard/brochures`}>
-    <Icon name="B" />
-    <span>Brochures</span>
-  </Link>
-</li>
+              <li>
+                <Link to={`/provider-dashboard/brochures`}>
+                  <Icon name="B" />
+                  <span>Brochures</span>
+                </Link>
+              </li>
 
               <li className="sidebar-item">
                 <button
@@ -124,12 +119,9 @@ const DashboardLayout = () => {
                     >
                       Edit Brochure
                     </li>
-                    
                   </ul>
                 )}
               </li>
-
-
 
               <li className="nav-separator"></li>
 
@@ -153,11 +145,18 @@ const DashboardLayout = () => {
           </nav>
         </aside>
 
+        {/* Main Content */}
         <main className="main-content">
           <div className="dashboard-main-header">
             <input type="text" className="search-bar" placeholder="Search..." />
+
+            {/* ✅ Fixed welcome text */}
             <h2 className="store-name-title">
-              {storeName ? `Welcome to ${storeName}` : "Loading store..."}
+              {providerData?.full_name
+                ? `Welcome ${providerData.full_name}`
+                : providerData?.username
+                ? `Welcome ${providerData.username}`
+                : "Welcome"}
             </h2>
 
             <div
@@ -165,54 +164,48 @@ const DashboardLayout = () => {
               onClick={() => setShowProfileDropdown(!showProfileDropdown)}
             >
               {profileImageUrl ? (
-                <img
-                  src={profileImageUrl}
-                  alt="Profile"
-                  className="profile-image"
-                />
+                <img src={profileImageUrl} alt="Profile" className="profile-image" />
               ) : (
                 providerData?.full_name?.charAt(0) || "P"
               )}
             </div>
 
-{showProfileDropdown && providerData && (
-  <div className="profile-dropdown">
-    <button
-      className="close-btn"
-      onClick={() => setShowProfileDropdown(false)}
-      style={{
-        position: "absolute",
-        top: "5px",
-        right: "10px",
-        background: "transparent",
-        border: "none",
-        fontSize: "18px",
-        cursor: "pointer",
-        color: "#333",
-      }}
-    >
-      ✖
-    </button>
+            {showProfileDropdown && providerData && (
+              <div className="profile-dropdown">
+                <button
+                  className="close-btn"
+                  onClick={() => setShowProfileDropdown(false)}
+                  style={{
+                    position: "absolute",
+                    top: "5px",
+                    right: "10px",
+                    background: "transparent",
+                    border: "none",
+                    fontSize: "18px",
+                    cursor: "pointer",
+                    color: "#333",
+                  }}
+                >
+                  ✖
+                </button>
 
-    {profileImageUrl && (
-      <img
-        src={profileImageUrl}
-        alt="Profile Large"
-        className="profile-image-large"
-      />
-    )}
-    <p><strong>{providerData.full_name}</strong></p>
-    <p>{providerData.email}</p>
-    <p>{providerData.phone}</p>
-    <p>{providerData.gender}</p>
-    <button onClick={() => navigate("/provider-dashboard/edit-profile")}>
-      Edit Profile
-    </button>
-    <button onClick={handleLogout}>Logout</button>
-  </div>
-)}
-
-
+                {profileImageUrl && (
+                  <img
+                    src={profileImageUrl}
+                    alt="Profile Large"
+                    className="profile-image-large"
+                  />
+                )}
+                <p><strong>{providerData.full_name}</strong></p>
+                <p>{providerData.email}</p>
+                <p>{providerData.phone}</p>
+                <p>{providerData.gender}</p>
+                <button onClick={() => navigate("/provider-dashboard/edit-profile")}>
+                  Edit Profile
+                </button>
+                <button onClick={handleLogout}>Logout</button>
+              </div>
+            )}
           </div>
 
           <Outlet />

@@ -12,22 +12,24 @@ const UploadBrochure = () => {
   const [regionList, setRegionList] = useState([]);
   const [regionId, setRegionId] = useState("");
   const [showForm, setShowForm] = useState(true);
+  const [store, setStore] = useState({ id: "", name: "" });
 
-  // ✅ Make sure we pull the correct token
-  const token =
-    localStorage.getItem("providerToken") || // <-- use providerToken first
-    localStorage.getItem("adminToken") ||
-    localStorage.getItem("token");
-
+  // ✅ Provider token
+  const token = localStorage.getItem("providerToken");
   const storeId = localStorage.getItem("store_id");
+  const storeName = localStorage.getItem("store_name"); // optional: store name saved
 
-  // fetch regions
+  // Preselect provider's store
+  useEffect(() => {
+    if (storeId) {
+      setStore({ id: storeId, name: storeName || "Your Store" });
+    }
+  }, [storeId, storeName]);
+
+  // Fetch regions
   useEffect(() => {
     const fetchRegions = async () => {
-      if (!token) {
-        console.error("⚠ No token found. Cannot fetch regions.");
-        return;
-      }
+      if (!token) return;
       try {
         const res = await axios.get(`${BASE_URL}/regions/`, {
           headers: { Authorization: `Token ${token}` },
@@ -35,36 +37,22 @@ const UploadBrochure = () => {
         setRegionList(res.data);
       } catch (err) {
         console.error("Region fetch error:", err.response?.data || err);
-        alert(
-          `⚠ Unable to fetch regions: ${
-            err.response?.data?.detail || err.message
-          }`
-        );
+        alert(`Unable to fetch regions: ${err.message}`);
       }
     };
     fetchRegions();
   }, [token]);
 
-  // handle form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!token) {
-      alert("⚠ You must be logged in to upload a brochure.");
-      return;
-    }
-    if (!storeId || !regionId) {
-      alert("⚠ Store and Region are required!");
-      return;
-    }
-    if (!pdfFile && !imageFile) {
-      alert("⚠ Please select at least a PDF or an Image file.");
-      return;
-    }
+    if (!token) return alert("You must be logged in to upload a brochure.");
+    if (!regionId || !title) return alert("Region and title are required!");
+    if (!pdfFile && !imageFile) return alert("Please select at least a PDF or an Image file.");
 
     const formData = new FormData();
     formData.append("title", title);
-    formData.append("store_id", parseInt(storeId));
+    formData.append("store_id", parseInt(store.id));
     formData.append("region_id", parseInt(regionId));
     formData.append("expires_at", expiryDate);
     if (pdfFile) formData.append("pdf", pdfFile);
@@ -72,14 +60,11 @@ const UploadBrochure = () => {
 
     try {
       await axios.post(`${BASE_URL}/flyers/upload_pending/`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Token ${token}`,
-        },
+        headers: { "Content-Type": "multipart/form-data", Authorization: `Token ${token}` },
       });
-
       alert("✅ Brochure uploaded successfully!");
-      // reset form
+
+      // Reset form
       setTitle("");
       setPdfFile(null);
       setImageFile(null);
@@ -89,7 +74,6 @@ const UploadBrochure = () => {
       console.error("Upload error:", err.response?.data || err);
       const message =
         err.response?.data?.detail ||
-        err.response?.data?.non_field_errors?.[0] ||
         JSON.stringify(err.response?.data) ||
         err.message;
       alert(`❌ Upload failed: ${message}`);
@@ -107,6 +91,23 @@ const UploadBrochure = () => {
         </button>
       </div>
       <form onSubmit={handleSubmit} className="upload-form">
+        <label>
+          Store:
+          <input type="text" value={store.name} disabled />
+        </label>
+
+        <label>
+          Region:
+          <select value={regionId} onChange={(e) => setRegionId(e.target.value)} required>
+            <option value="">Select Region</option>
+            {regionList.map((region) => (
+              <option key={region.id} value={region.id}>
+                {region.name}, {region.country?.name}
+              </option>
+            ))}
+          </select>
+        </label>
+
         <input
           type="text"
           placeholder="Title"
@@ -114,36 +115,19 @@ const UploadBrochure = () => {
           onChange={(e) => setTitle(e.target.value)}
           required
         />
-        <select
-          value={regionId}
-          onChange={(e) => setRegionId(e.target.value)}
-          required
-        >
-          <option value="">Select Region</option>
-          {regionList.map((region) => (
-            <option key={region.id} value={region.id}>
-              {region.name}, {region.country.name}
-            </option>
-          ))}
-        </select>
         <input
           type="date"
           value={expiryDate}
           onChange={(e) => setExpiryDate(e.target.value)}
           required
         />
+
         <label>PDF File (optional)</label>
-        <input
-          type="file"
-          accept=".pdf"
-          onChange={(e) => setPdfFile(e.target.files[0])}
-        />
+        <input type="file" accept=".pdf" onChange={(e) => setPdfFile(e.target.files[0])} />
+
         <label>Image File (optional)</label>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => setImageFile(e.target.files[0])}
-        />
+        <input type="file" accept="image/*" onChange={(e) => setImageFile(e.target.files[0])} />
+
         <button type="submit">Upload</button>
       </form>
     </div>
