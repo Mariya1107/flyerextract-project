@@ -1,6 +1,6 @@
 // src/pages/Home.js
 
-import React, { useEffect, useState } from "react";
+
 import { useNavigate, Link } from "react-router-dom";
 
 import ProviderLogin from "../components/ProviderLogin";
