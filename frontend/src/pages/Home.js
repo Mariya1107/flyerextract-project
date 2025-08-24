@@ -2,36 +2,28 @@
 
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-
-import ProviderLogin from "../components/ProviderLogin";
-import AdminLogin from "../components/AdminLogin";
-import PhoneInput from "react-phone-number-input";
-import "react-phone-number-input/style.css";
 import axios from "axios";
 import BASE_URL from "../config";
 
+import ProviderLogin from "../components/ProviderLogin";
+import AdminLogin from "../components/AdminLogin";
 import ProviderModal1 from "../components/ProviderModal1";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faSearch,
-  faMapPin,
-  faArrowRight,
-  faShoppingCart,
-} from "@fortawesome/free-solid-svg-icons";
+import { faSearch, faMapPin, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 
 import "./Home.css";
 import "./cursor.css";
-
 import Authorisation from "../components/Authorisation";
 
 const Home = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState("signup");
   const [userData, setUserData] = useState(
-    JSON.parse(localStorage.getItem("currentUser")) || null // ✅ use currentUser key
-  ); 
+    JSON.parse(localStorage.getItem("currentUser")) || null
+  );
   const [showProviderModal, setShowProviderModal] = useState(false);
+  const [showAllStores, setShowAllStores] = useState(false);
   const [showAdminModal, setShowAdminModal] = useState(false);
   const [showProviderModal1, setShowProviderModal1] = useState(false);
   const [formData, setFormData] = useState({
@@ -47,103 +39,17 @@ const Home = () => {
 
   const [stores, setStores] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [locationTerm, setLocationTerm] = useState(""); 
+  const [locationTerm, setLocationTerm] = useState("");
 
   const navigate = useNavigate();
 
+  // ✅ Fetch all stores
   useEffect(() => {
     axios
-      .get(`${BASE_URL}/stores/`)
+      .get(`${BASE_URL}/stores/`) // fixed with backticks
       .then((res) => setStores(res.data))
       .catch((err) => console.error("Error fetching stores", err));
   }, []);
-
-  useEffect(() => {
-    const jquery = document.createElement("script");
-    jquery.src = "https://code.jquery.com/jquery-3.6.0.min.js";
-    jquery.onload = () => {
-      const cursorJs = document.createElement("script");
-      cursorJs.src = `${process.env.PUBLIC_URL}/cursor.js`;
-      cursorJs.async = true;
-      cursorJs.defer = true;
-      document.body.appendChild(cursorJs);
-    };
-    document.body.appendChild(jquery);
-
-    return () => {
-      document
-        .querySelectorAll('script[src*="jquery"],script[src*="cursor.js"]')
-        .forEach((s) => s.remove());
-    };
-  }, []);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handlePhoneChange = (value) => {
-    setFormData((prev) => ({ ...prev, phone: value }));
-  };
-
-  const handleSignup = () => {
-    const { firstname, email, phone, username, password, gender } = formData;
-    if (!firstname || !email || !phone || !username || password.length < 8) {
-      alert("Please fill all fields correctly.");
-      return;
-    }
-
-    const newUser = {
-      firstname,
-      email,
-      phone,
-      gender,
-      username,
-      profileImage: null,
-    };
-
-    setUserData(newUser);
-    localStorage.setItem("currentUser", JSON.stringify(newUser)); // ✅ save currentUser
-
-    setShowAuthModal(false);
-    navigate("/cart"); 
-  };
-
-  const handleSignin = () => {
-    const { signinUser, signinPass } = formData;
-
-    if (!signinUser || signinPass.length < 8) {
-      alert("Invalid credentials.");
-      return;
-    }
-
-    const signedUser = {
-      firstname: signinUser,
-      email: "demo@example.com",
-      phone: "+123456789",
-      gender: "Not specified",
-      username: signinUser,
-      profileImage: null,
-    };
-
-    setUserData(signedUser);
-    localStorage.setItem("currentUser", JSON.stringify(signedUser)); // ✅ save currentUser
-
-    alert(`Logged in as ${signinUser}`);
-    setShowAuthModal(false);
-    navigate("/cart"); 
-  };
-
-  // ✅ Cart click requires login
-  const handleCartClick = () => {
-    if (!userData) {
-      alert("Please sign in to access your cart.");
-      setAuthMode("signin");
-      setShowAuthModal(true); 
-    } else {
-      navigate("/cart"); 
-    }
-  };
 
   // Filter stores based on search and location
   const filteredStores = stores.filter((store) => {
@@ -160,14 +66,33 @@ const Home = () => {
     );
   });
 
+  const displayedStores = showAllStores
+    ? filteredStores
+    : filteredStores.slice(0, 5);
+
+  // Unique regions for location dropdown
+  const uniqueRegions = stores
+    .map((store) => store.region?.name)
+    .filter((v, i, a) => v && a.indexOf(v) === i);
+
+  // Autocomplete supermarket suggestions
+  const supermarketSuggestions = stores
+    .map((store) => store.name)
+    .filter((v, i, a) => v && a.indexOf(v) === i)
+    .filter((name) => name.toLowerCase().includes(searchTerm.toLowerCase()));
+
+  const handleSelectSupermarket = (name) => {
+    setSearchTerm(name);
+  };
+
   return (
     <>
-      {/* HERO */}
+      {/* HERO SECTION */}
       <section
         className="py-5 bg-light"
         id="home"
         style={{
-          backgroundImage: `url("/slider.png")`,
+          backgroundImage: `url("/slider.png")`, // ✅ fixed with backticks
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
@@ -185,46 +110,65 @@ const Home = () => {
                 time.
               </p>
 
-              <form>
-                <div className="row g-2 justify-content-center">
-                  <div className="col-md-4">
-                    <div className="input-group">
-                      <span className="input-group-text">
-                        <FontAwesomeIcon icon={faSearch} />
-                      </span>
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Search for Supermarket"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                      />
-                    </div>
+              <div className="row g-2 justify-content-center">
+                {/* Supermarket Search Input */}
+                <div className="col-md-4 position-relative">
+                  <div className="input-group">
+                    <span className="input-group-text">
+                      <FontAwesomeIcon icon={faSearch} />
+                    </span>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Search for Supermarket"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
                   </div>
+                  {searchTerm && supermarketSuggestions.length > 0 && (
+                    <ul className="list-group position-absolute w-100 mt-1">
+                      {supermarketSuggestions.map((name, idx) => (
+                        <li
+                          key={idx}
+                          className="list-group-item list-group-item-action"
+                          style={{ cursor: "pointer" }}
+                          onClick={() => handleSelectSupermarket(name)}
+                        >
+                          {name}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
 
-                  <div className="col-md-4">
-                    <div className="input-group">
-                      <span className="input-group-text">
-                        <FontAwesomeIcon icon={faMapPin} />
-                      </span>
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Enter Location"
-                        value={locationTerm}
-                        onChange={(e) => setLocationTerm(e.target.value)}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="col-md-2 d-grid">
-                    <Link to="/search" className="btn for_btn for_signin">
-                      <FontAwesomeIcon icon={faSearch} className="me-2" />
-                      Search
-                    </Link>
+                {/* Location Dropdown */}
+                <div className="col-md-4">
+                  <div className="input-group">
+                    <span className="input-group-text">
+                      <FontAwesomeIcon icon={faMapPin} />
+                    </span>
+                    <select
+                      className="form-control"
+                      value={locationTerm}
+                      onChange={(e) => setLocationTerm(e.target.value)}
+                    >
+                      <option value="">Select Location</option>
+                      {uniqueRegions.map((region, idx) => (
+                        <option key={idx} value={region}>
+                          {region}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
-              </form>
+
+                <div className="col-md-2 d-grid">
+                  <Link to="/search" className="btn for_btn for_signin">
+                    <FontAwesomeIcon icon={faSearch} className="me-2" />
+                    Search
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -247,11 +191,11 @@ const Home = () => {
           </div>
 
           <div className="row g-4">
-            {filteredStores.map((store) => (
+            {displayedStores.map((store) => (
               <div
                 className="col-6 col-md-4 col-lg-2"
                 key={store.id}
-                onClick={() => navigate(`/store/${store.slug}/flyers`)}
+                onClick={() => navigate(`/store/${store.slug}/flyers`)} // ✅ fixed
                 style={{ cursor: "pointer" }}
               >
                 <div className="card text-center shadow-sm h-100">
@@ -260,7 +204,7 @@ const Home = () => {
                       src={
                         store.logo?.startsWith("http")
                           ? store.logo
-                          : `${BASE_URL}/${store.logo}`
+                          : `${BASE_URL}/${store.logo}` // ✅ fixed
                       }
                       alt={store.name}
                       className="img-fluid mb-3"
@@ -284,11 +228,17 @@ const Home = () => {
             )}
           </div>
 
-          <div className="text-center mt-4">
-            <Link to="/all-stores" className="btn btn-dark">
-              View All <FontAwesomeIcon icon={faArrowRight} className="ms-2" />
-            </Link>
-          </div>
+          {filteredStores.length > 5 && (
+            <div className="text-center mt-4">
+              <button
+                className="btn btn-dark"
+                onClick={() => setShowAllStores(!showAllStores)}
+              >
+                {showAllStores ? "Show Less" : "View All"}{" "}
+                <FontAwesomeIcon icon={faArrowRight} className="ms-2" />
+              </button>
+            </div>
+          )}
         </div>
       </section>
 
@@ -300,7 +250,7 @@ const Home = () => {
         setAuthMode={setAuthMode}
         setUserData={(user) => {
           setUserData(user);
-          localStorage.setItem("currentUser", JSON.stringify(user)); // ✅ consistent
+          localStorage.setItem("currentUser", JSON.stringify(user));
           navigate("/cart");
         }}
       />

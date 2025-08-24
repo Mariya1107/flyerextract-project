@@ -30,15 +30,37 @@ class RegionSerializer(serializers.ModelSerializer):
 # -------------------- STORE --------------------
 class StoreSerializer(serializers.ModelSerializer):
     slug = serializers.SlugField(read_only=True)
+
     region = RegionSerializer(read_only=True)
     region_id = serializers.PrimaryKeyRelatedField(
-        queryset=Region.objects.all(), write_only=True, source='region'
+        queryset=Region.objects.all(),
+        write_only=True,
+        source='region'
     )
     region_slug = serializers.SlugField(source="region.slug", read_only=True)
 
+    provider_id = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.filter(is_provider=True),
+        write_only=True,
+        source="provider",
+        required=False
+    )
+    provider = serializers.StringRelatedField(read_only=True)  # show provider name/email
+
     class Meta:
         model = Store
-        fields = ['id', 'name', 'slug', 'logo', 'region', 'region_id', 'region_slug']
+        fields = [
+            'id',
+            'name',
+            'slug',
+            'logo',
+            'region',
+            'region_id',
+            'region_slug',
+            'provider',
+            'provider_id',
+        ]
+
 
 
 # -------------------- STORE (BASIC for user profile or flyers) --------------------

@@ -6,7 +6,6 @@ import { faLock, faUser } from "@fortawesome/free-solid-svg-icons";
 
 const Header = ({
   setShowProviderModal,
-  setShowAdminModal,
   setAuthMode,
   setShowAuthModal,
 }) => {
@@ -19,29 +18,25 @@ const Header = ({
         </Navbar.Brand>
 
         <Navbar.Toggle aria-controls="navbar-nav" />
-        <Navbar.Collapse id="navbar-nav" style={{marginLeft:"3%"}}>
+        <Navbar.Collapse id="navbar-nav" style={{ marginLeft: "3%" }}>
           {/* Navigation Links */}
           <Nav className="me-auto">
-            <Nav.Link as={Link} to="/" style={{color:"black", fontWeight:"500", paddingLeft:"30px"}}>Home</Nav.Link>
-            <Nav.Link as={Link} to="/becomeshop"  style={{color:"black", fontWeight:"500", paddingLeft:"30px"}}>Become a Shop With Us</Nav.Link>
-            <Nav.Link href="#about-us"  style={{color:"black", fontWeight:"500", paddingLeft:"30px"}}>About Us</Nav.Link>
-            <Nav.Link style={{color:"black", fontWeight:"500", paddingLeft:"30px"}}
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                setShowAdminModal(true);
-              }}
-            >
-              Admin
+            <Nav.Link as={Link} to="/" style={{ color: "black", fontWeight: "500", paddingLeft: "30px" }}>
+              Home
+            </Nav.Link>
+            <Nav.Link as={Link} to="/becomeshop" style={{ color: "black", fontWeight: "500", paddingLeft: "30px" }}>
+              Become a Shop With Us
+            </Nav.Link>
+            <Nav.Link href="#about-us" style={{ color: "black", fontWeight: "500", paddingLeft: "30px" }}>
+              About Us
             </Nav.Link>
           </Nav>
 
           {/* Right Buttons */}
           <div className="d-flex">
-            <Button className="btn me-2 signin_btn" style={{background:"#fbbb12",
-    border: "1px solid #d89e05",
-    color: "#000"}}
-            
+            <Button
+              className="btn me-2 signin_btn"
+              style={{ background: "#fbbb12", border: "1px solid #d89e05", color: "#000" }}
               onClick={() => {
                 setAuthMode("signin");
                 setShowAuthModal(true);
@@ -50,8 +45,8 @@ const Header = ({
               <FontAwesomeIcon icon={faLock} /> Sign In
             </Button>
 
-            <Button className="for_btn btn-joinus"
-             
+            <Button
+              className="for_btn btn-joinus"
               onClick={() => {
                 setShowProviderModal(true);
               }}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import Home from "./pages/Home";
 import Layout from "./components/Layout";
 import FlyerDetail from "./pages/FlyerDetail";
@@ -19,9 +19,9 @@ import ProviderBrochureDash from "./pages/ProviderBrochureDash";
 
 // Admin Dashboard
 import AdminLoginDashboard from './pages/AdminLoginDashboard';
-import EditProfileAdmin from './pages/EditProfileAdmin';
-import UsersAdminDash from './pages/UsersAdminDash';
-import ProvidersAdminDash from './pages/ProvidersAdminDash';
+import EditProfileAdmin from "./pages/EditProfileAdmin";
+import UsersAdminDash from "./pages/UsersAdminDash";
+import ProvidersAdminDash from "./pages/ProvidersAdminDash";
 import CountryAdmin from "./components/CountryAdmin"; 
 import RegionAdmin from './components/RegionAdmin';
 import ProviderApplicationDash from "./pages/ProviderApplicationDash";
@@ -39,41 +39,45 @@ import DashboardLayoutWrapper2 from "./components/DashboardLayoutWrapper2";
 // 🛒 Cart Page
 import AddToCart from "./pages/AddToCart";
 
+// ---------------- Hidden Admin Modal Route ----------------
+const AdminModalRoute = ({ setShowAdminModal }) => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    setShowAdminModal(true); // Open admin modal
+    navigate("/");           // Redirect back to home after modal opens
+  }, [setShowAdminModal, navigate]);
+
+  return null;
+};
+
+// ---------------- App Component ----------------
 function App() {
   const [userData, setUserData] = useState(null);
+  const [showAdminModal, setShowAdminModal] = useState(false); // Admin modal state
 
   // Load user session from localStorage
   useEffect(() => {
     const storedUser = localStorage.getItem("userData");
-    if (storedUser) {
-      setUserData(JSON.parse(storedUser));
-    }
+    if (storedUser) setUserData(JSON.parse(storedUser));
   }, []);
 
   return (
     <Router>
       <Routes>
-
         {/* 🌐 Public Routes */}
-        <Route path="/" element={<Layout />}>
+        <Route path="/" element={<Layout showAdminModal={showAdminModal} setShowAdminModal={setShowAdminModal} />}>
           <Route index element={<Home />} />
-
-          {/* Flyers by Region */}
           <Route path="flyers/:region_slug" element={<FlyerList />} />
-
-          {/* Flyers by Store */}
           <Route path="store/:store_slug/flyers" element={<FlyerList />} />
-
-          {/* Flyer Details */}
           <Route path="flyers/:flyer_slug/detail" element={<FlyerDetail />} />
-
-          {/* Other Public Pages */}
           <Route path="brochure/:id" element={<BrochureViewer />} />
           <Route path="provider-login" element={<ProviderLogin />} />
           <Route path="becomeshop" element={<BecomeShop />} />
-
-          {/* 🛒 Cart now receives userData */}
           <Route path="cart" element={<AddToCart userData={userData} />} />
+
+          {/* Hidden admin login route */}
+          <Route path="admin-login" element={<AdminModalRoute setShowAdminModal={setShowAdminModal} />} />
         </Route>
 
         {/* 🧑‍💼 Provider Dashboard */}
@@ -102,7 +106,6 @@ function App() {
           <Route path="storebrochure-extracts" element={<AdminBrochureExtract />} />
           <Route path="store/:store_slug/brochure-extract" element={<AdminStoreBrochureExtract />} />
         </Route>
-
       </Routes>
     </Router>
   );

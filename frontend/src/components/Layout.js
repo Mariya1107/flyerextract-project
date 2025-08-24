@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
@@ -8,24 +8,26 @@ import AdminLogin from './AdminLogin';
 import ProviderModal1 from './ProviderModal1';
 import Authorisation from './Authorisation';
 
-const Layout = () => {
+const Layout = ({ showAdminModal: initialShowAdminModal = false, setShowAdminModal: setParentShowAdminModal }) => {
   const location = useLocation();
-  const hideLayoutRoutes = [
+  const hideLayoutRoutes = ['/provider-dashboard'];
 
-  '/provider-dashboard',
-  
-];
-
-const hideLayout = hideLayoutRoutes.includes(location.pathname);
-
+  const hideLayout = hideLayoutRoutes.includes(location.pathname);
 
   // 🔐 Centralized modal state
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState('signup');
   const [showProviderModal, setShowProviderModal] = useState(false);
   const [showProviderModal1, setShowProviderModal1] = useState(false);
-  const [showAdminModal, setShowAdminModal] = useState(false);
+  const [showAdminModal, setShowAdminModal] = useState(initialShowAdminModal);
   const [userData, setUserData] = useState(null);
+
+  // Sync with parent prop (for hidden /admin-login URL)
+  useEffect(() => {
+    if (setParentShowAdminModal) {
+      setShowAdminModal(initialShowAdminModal);
+    }
+  }, [initialShowAdminModal, setParentShowAdminModal]);
 
   return (
     <>
@@ -33,7 +35,7 @@ const hideLayout = hideLayoutRoutes.includes(location.pathname);
         <Header
           setShowProviderModal={setShowProviderModal}
           setShowProviderModal1={setShowProviderModal1}
-          setShowAdminModal={setShowAdminModal}
+          setShowAdminModal={setShowAdminModal} // header can still toggle modal if needed
           setAuthMode={setAuthMode}
           setShowAuthModal={setShowAuthModal}
         />

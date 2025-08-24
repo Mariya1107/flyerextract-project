@@ -35,6 +35,7 @@ path("provider/store/", views.provider_store, name="provider-store"),
     path("stores/", StoreListView.as_view(), name="store-list"),
     path("stores/search/", StoreSearchAPIView.as_view(), name="store-search"),
     path("stores/by-name/<slug:slug>/", store_by_name, name="store-by-name"),
+    path("stores/create/", views.create_store, name="create_store"),
 
     # 📄 Flyers (safe ordering: specific routes FIRST, generic slug LAST)
     path("flyers/all/", FlyerListAll.as_view(), name="flyers-all"),

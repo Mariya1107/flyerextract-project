@@ -7,45 +7,58 @@ import "./ProvidersAdminDash.css";
 
 const ProvidersAdminDash = () => {
   const [stores, setStores] = useState([]);
+  const [regions, setRegions] = useState([]);
   const [selectedStore, setSelectedStore] = useState(null);
-  const [editForm, setEditForm] = useState({ name: "", logo: null });
+  const [editForm, setEditForm] = useState({ name: "", logo: null, region: "" });
   const [message, setMessage] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
-  const [addForm, setAddForm] = useState({ name: "", logo: null });
+  const [addForm, setAddForm] = useState({ name: "", logo: null, region: "" });
   const [addMessage, setAddMessage] = useState("");
 
   const navigate = useNavigate();
   const token =
     localStorage.getItem("adminToken") || localStorage.getItem("token");
 
+  // Fetch all stores
   const fetchStores = async () => {
     if (!token) {
-      console.warn("⚠️ No token found, redirecting to login");
       navigate("/admin-login");
       return;
     }
-
     try {
       const res = await axios.get(`${BASE_URL}/api/accounts/stores/`, {
-        headers: {
-          Authorization: `Token ${token}`,
-        },
+        headers: { Authorization: `Token ${token}` },
       });
-
-      console.log("Stores API response:", res.data);
       setStores(res.data.results || res.data);
     } catch (err) {
       console.error("Error fetching stores", err);
     }
   };
 
+  // Fetch all regions for dropdown
+  const fetchRegions = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/api/accounts/regions/`, {
+        headers: { Authorization: `Token ${token}` },
+      });
+      setRegions(res.data.results || res.data);
+    } catch (err) {
+      console.error("Error fetching regions", err);
+    }
+  };
+
   useEffect(() => {
     fetchStores();
+    fetchRegions();
   }, []);
 
   const handleCardClick = (store) => {
     setSelectedStore(store);
-    setEditForm({ name: store.name, logo: null });
+    setEditForm({
+      name: store.name,
+      logo: null,
+      region: store.region?.id || "", // ✅ store id instead of object
+    });
     setMessage("");
   };
 
@@ -73,9 +86,8 @@ const ProvidersAdminDash = () => {
 
     const formData = new FormData();
     formData.append("name", editForm.name);
-    if (editForm.logo) {
-      formData.append("logo", editForm.logo);
-    }
+    formData.append("region_id", editForm.region); // ✅ fixed
+    if (editForm.logo) formData.append("logo", editForm.logo);
 
     try {
       const res = await axios.put(
@@ -94,10 +106,7 @@ const ProvidersAdminDash = () => {
       );
       setStores(updatedStores);
       setMessage("✅ Store updated successfully!");
-      setTimeout(() => {
-        setSelectedStore(null);
-        setMessage("");
-      }, 1000);
+      setTimeout(() => setSelectedStore(null), 1000);
     } catch (error) {
       console.error("Update failed", error);
       setMessage("❌ Update failed. Check console.");
@@ -109,9 +118,8 @@ const ProvidersAdminDash = () => {
 
     const formData = new FormData();
     formData.append("name", addForm.name);
-    if (addForm.logo) {
-      formData.append("logo", addForm.logo);
-    }
+    formData.append("region_id", addForm.region); // ✅ fixed
+    if (addForm.logo) formData.append("logo", addForm.logo);
 
     try {
       const res = await axios.post(
@@ -127,12 +135,8 @@ const ProvidersAdminDash = () => {
 
       setStores([...stores, res.data]);
       setAddMessage("✅ Store added successfully!");
-      setAddForm({ name: "", logo: null });
-
-      setTimeout(() => {
-        setShowAddModal(false);
-        setAddMessage("");
-      }, 1000);
+      setAddForm({ name: "", logo: null, region: "" });
+      setTimeout(() => setShowAddModal(false), 1000);
     } catch (error) {
       console.error("Add failed", error);
       setAddMessage("❌ Add failed. Check console.");
@@ -145,20 +149,13 @@ const ProvidersAdminDash = () => {
     try {
       const res = await axios.delete(
         `${BASE_URL}/api/accounts/stores/${selectedStore.id}/delete/`,
-        {
-          headers: {
-            Authorization: `Token ${token}`,
-          },
-        }
+        { headers: { Authorization: `Token ${token}` } }
       );
-
       if (res.status === 200) {
         alert("✅ Store deleted successfully!");
         setSelectedStore(null);
         fetchStores();
-      } else {
-        alert("❌ Failed to delete store");
-      }
+      } else alert("❌ Failed to delete store");
     } catch (error) {
       console.error("Delete error:", error);
       alert("❌ Something went wrong while deleting");
@@ -202,7 +199,7 @@ const ProvidersAdminDash = () => {
               />
             </div>
             <h6>{store.name}</h6>
-            <p>Edit Store</p>
+            <p>{store.region ? store.region.name : "No Region"}</p>
           </div>
         ))}
       </div>
@@ -230,6 +227,22 @@ const ProvidersAdminDash = () => {
                 />
               </label>
               <label>
+                Region:
+                <select
+                  name="region"
+                  value={editForm.region}
+                  onChange={handleInputChange}
+                  required
+                >
+                  <option value="">Select Region</option>
+                  {regions.map((r) => (
+                    <option key={r.id} value={r.id}>
+                      {r.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label>
                 Logo:
                 <input
                   type="file"
@@ -239,7 +252,6 @@ const ProvidersAdminDash = () => {
                 />
               </label>
               {message && <p className="status-msg">{message}</p>}
-
               <div
                 className="form-actions2"
                 style={{ display: "flex", gap: "20px", marginTop: "20px" }}
@@ -270,7 +282,6 @@ const ProvidersAdminDash = () => {
             >
               ✖
             </button>
-
             <h3>Add New Store</h3>
             <form onSubmit={handleAddSubmit}>
               <label>
@@ -282,6 +293,22 @@ const ProvidersAdminDash = () => {
                   onChange={handleAddInputChange}
                   required
                 />
+              </label>
+              <label>
+                Region:
+                <select
+                  name="region"
+                  value={addForm.region}
+                  onChange={handleAddInputChange}
+                  required
+                >
+                  <option value="">Select Region</option>
+                  {regions.map((r) => (
+                    <option key={r.id} value={r.id}>
+                      {r.name}
+                    </option>
+                  ))}
+                </select>
               </label>
               <label>
                 Logo:

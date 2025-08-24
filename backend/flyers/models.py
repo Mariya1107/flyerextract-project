@@ -32,10 +32,24 @@ class Region(models.Model):
 
 
 # ---------------- STORE ---------------- #
+# ---------------- STORE ---------------- #
 class Store(models.Model):
     name = models.CharField(max_length=255)
     logo = models.ImageField(upload_to='store_logos/', blank=True, null=True)
-    provider = models.ForeignKey('accounts.CustomUser', on_delete=models.CASCADE, related_name='provider_stores', null=True, blank=True)
+    provider = models.ForeignKey(
+        'accounts.CustomUser',
+        on_delete=models.CASCADE,
+        related_name='provider_stores',
+        null=True,
+        blank=True
+    )
+    region = models.ForeignKey(
+        Region,
+        on_delete=models.CASCADE,
+        related_name="stores",
+        null=True,  # Allow null initially to avoid migration issues
+        blank=True
+    )
     slug = models.SlugField(max_length=255, unique=True, blank=True, null=True)
 
     def __str__(self):

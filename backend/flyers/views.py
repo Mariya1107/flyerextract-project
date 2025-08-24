@@ -508,3 +508,27 @@ def upload_pending_flyer(request):
         return Response({"message": "Flyer uploaded successfully"}, status=201)
 
     return Response(serializer.errors, status=400)
+
+
+# --------------------------- CREATE STORE ---------------------------
+
+@api_view(["POST"])
+@parser_classes([MultiPartParser, FormParser])
+@permission_classes([IsAuthenticated])
+def create_store(request):
+    """
+    Create a store for a provider.
+    Admins can create for any provider by passing provider_id,
+    normal providers will automatically be linked to their user account.
+    """
+    data = request.data.copy()
+
+    # If provider_id is not passed and user is a provider → set automatically
+    if not data.get("provider_id"):
+        data["provider_id"] = request.user.id
+
+    serializer = StoreSerializer(data=data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=201)
+    return Response(serializer.errors, status=400)
