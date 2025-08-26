@@ -357,29 +357,43 @@ def upload_pending_flyer(request, flyer_id):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def get_cart(request, cart_slug=None):
-    cart = Cart.objects.get(slug=cart_slug) if cart_slug else Cart.objects.get_or_create(user=request.user)[0]
-    serializer = CartSerializer(cart)
+    cart = get_or_create_cart(request.user, cart_slug)
+    serializer = CartSerializer(cart, context={'request': request})
     return Response(serializer.data)
+
 
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def add_to_cart(request, cart_slug=None):
     product_id = request.data.get("product_id")
-    quantity = int(request.data.get("quantity", 1))
+    force_new = request.data.get("force_new_cart", False)
+
     try:
         product = Product.objects.get(id=product_id)
     except Product.DoesNotExist:
         return Response({"error": "Product not found"}, status=404)
 
-    cart = Cart.objects.get(slug=cart_slug) if cart_slug else Cart.objects.get_or_create(user=request.user)[0]
-    cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
-    cart_item.quantity += quantity if not created else quantity
+    cart = get_or_create_cart(request.user, cart_slug, force_new=force_new)
+
+    cart_item, created = CartItem.objects.get_or_create(
+        cart=cart,
+        product=product,
+        defaults={"quantity": 1}
+    )
+
+    if not created:
+        cart_item.quantity = 1
+
     if not cart_item.slug:
-        cart_item.slug = slugify(f"{cart_item.product.name}-{cart_item.cart.user.username}-{int(timezone.now().timestamp())}")
+        cart_item.slug = slugify(
+            f"{cart_item.product.name}-{cart_item.cart.user.username}-{int(timezone.now().timestamp())}"
+        )
+
     cart_item.save()
 
-    return Response(CartSerializer(cart).data, status=201)
+    serializer = CartSerializer(cart, context={'request': request})
+    return Response(serializer.data, status=201)
 
 
 @api_view(["PUT"])
@@ -390,13 +404,20 @@ def update_cart_item(request, item_slug):
     except CartItem.DoesNotExist:
         return Response({"error": "Item not found"}, status=404)
 
-    quantity = int(request.data.get("quantity", 1))
+    try:
+        quantity = int(request.data.get("quantity", 1))
+    except (ValueError, TypeError):
+        quantity = 1
+
     if quantity <= 0:
         item.delete()
     else:
         item.quantity = quantity
         item.save()
-    return Response(CartSerializer(item.cart).data)
+
+    serializer = CartSerializer(item.cart, context={'request': request})
+    return Response(serializer.data)
+
 
 
 @api_view(["DELETE"])
@@ -406,21 +427,71 @@ def remove_from_cart(request, item_slug):
         item = CartItem.objects.get(slug=item_slug, cart__user=request.user)
         cart = item.cart
         item.delete()
-        return Response(CartSerializer(cart).data)
+        serializer = CartSerializer(cart, context={'request': request})
+        return Response(serializer.data)
     except CartItem.DoesNotExist:
         return Response({"error": "Item not found"}, status=404)
+
 
 
 @api_view(["DELETE"])
 @permission_classes([IsAuthenticated])
 def clear_cart(request, cart_slug=None):
-    cart = Cart.objects.get(slug=cart_slug) if cart_slug else Cart.objects.get_or_create(user=request.user)[0]
+    cart = get_or_create_cart(request.user, cart_slug)
     cart.items.all().delete()
-    return Response(CartSerializer(cart).data)
-
+    serializer = CartSerializer(cart, context={'request': request})
+    return Response(serializer.data)
 
 # ---------------- SERVER STATUS ---------------- #
 
 @api_view(['GET'])
 def server_status(request):
     return Response({"status": "Server running OK"})
+from django.utils.crypto import get_random_string
+
+
+
+from django.utils.crypto import get_random_string
+from django.utils import timezone
+from .models import Cart
+def get_or_create_cart(user, cart_slug=None, force_new=False):
+    """
+    Returns a cart for the user:
+    - If force_new=True, always create a new cart.
+    - If cart_slug is provided, tries to fetch that cart for the user.
+    - Otherwise, returns the user's existing cart or creates a new one.
+    """
+    if force_new:
+        return Cart.objects.create(
+            user=user,
+            slug=f"cart-{int(timezone.now().timestamp())}-{get_random_string(4)}"
+        )
+
+    if cart_slug:
+        try:
+            return Cart.objects.get(slug=cart_slug, user=user)
+        except Cart.DoesNotExist:
+            pass
+
+    # Fetch the user's latest cart if exists
+    cart = Cart.objects.filter(user=user).order_by('-created_at').first()
+    if cart:
+        return cart
+
+    # Otherwise, create a new cart
+    return Cart.objects.create(
+        user=user,
+        slug=f"cart-{int(timezone.now().timestamp())}-{get_random_string(4)}"
+    )
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_new_cart(request):
+    """
+    Create a fresh cart for the logged-in user.
+    Optional: accept cart_slug from frontend
+    """
+    cart_slug = request.data.get("cart_slug")
+    cart = get_or_create_cart(request.user, cart_slug=cart_slug, force_new=True)
+    serializer = CartSerializer(cart, context={'request': request})
+    return Response(serializer.data, status=201)

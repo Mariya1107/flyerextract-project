@@ -41,13 +41,25 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 # ---------------- PRODUCT ---------------- #
 class ProductSerializer(serializers.ModelSerializer):
-    store_name = serializers.CharField(source='store.name', read_only=True)
-    store_slug = serializers.CharField(source='store.slug', read_only=True)
+    store_name = serializers.SerializerMethodField()
+    store_slug = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField()  # <-- use this
 
     class Meta:
         model = Product
         fields = ['id', 'name', 'price', 'image', 'store_name', 'store_slug']
 
+    def get_store_name(self, obj):
+        return obj.flyer.store.name if obj.flyer and obj.flyer.store else "Unknown"
+
+    def get_store_slug(self, obj):
+        return obj.flyer.store.slug if obj.flyer and obj.flyer.store else "unknown"
+
+    def get_image(self, obj):
+        request = self.context.get("request")
+        if obj.image:
+            return request.build_absolute_uri(obj.image.url) if request else obj.image.url
+        return None
 
 # ---------------- CART ITEM ---------------- #
 class CartItemSerializer(serializers.ModelSerializer):
@@ -59,30 +71,48 @@ class CartItemSerializer(serializers.ModelSerializer):
         write_only=True
     )
     total_price = serializers.SerializerMethodField()
+    store_name = serializers.SerializerMethodField()
+    store_slug = serializers.SerializerMethodField()
 
     class Meta:
         model = CartItem
-        fields = ['id', 'slug', 'product', 'product_id', 'quantity', 'total_price']
+        fields = [
+            'id', 'slug', 'product', 'product_id',
+            'quantity', 'total_price', 'store_name', 'store_slug'
+        ]
 
     def get_total_price(self, obj):
-        if obj.product:
-            return obj.quantity * obj.product.price
-        return 0
+        return obj.quantity * obj.product.price if obj.product else 0
+
+    def get_store_name(self, obj):
+        if obj.product and obj.product.flyer and obj.product.flyer.store:
+            return obj.product.flyer.store.name
+        return "Unknown"
+
+    def get_store_slug(self, obj):
+        if obj.product and obj.product.flyer and obj.product.flyer.store:
+            return obj.product.flyer.store.slug
+        return "unknown"
 
 
 # ---------------- CART ---------------- #
+
 class CartSerializer(serializers.ModelSerializer):
-    items = CartItemSerializer(many=True, read_only=True, source='cartitem_set')
+    items = CartItemSerializer(many=True, read_only=True)
     total_price = serializers.SerializerMethodField()
+    user = serializers.PrimaryKeyRelatedField(read_only=True)  # won't auto-fetch existing cart
 
     class Meta:
         model = Cart
         fields = ['id', 'user', 'items', 'total_price', 'created_at']
-        read_only_fields = ['user', 'total_price', 'created_at']
+        read_only_fields = ['total_price', 'created_at', 'user']
 
     def get_total_price(self, obj):
-        return sum(
-            item.quantity * item.product.price
-            for item in obj.cartitem_set.all()
-            if item.product is not None
-        )
+        return sum(item.quantity * (item.product.price if item.product else 0) for item in obj.items.all())
+
+    # Ensure a new cart is created even if the user already has one
+    def create(self, validated_data):
+        request = self.context.get("request")
+        user = request.user if request else None
+        return Cart.objects.create(user=user)
+

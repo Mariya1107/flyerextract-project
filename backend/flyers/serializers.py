@@ -139,17 +139,31 @@ class FlyerMinimalSerializer(serializers.ModelSerializer):
 
 
 # -------------------- PRODUCT --------------------
+from rest_framework import serializers
+from .models import Product, Flyer
+
+class FlyerMinimalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Flyer
+        fields = ['id', 'title', 'slug']  # minimal fields for nested display
+
 class ProductSerializer(serializers.ModelSerializer):
     flyer = FlyerMinimalSerializer(read_only=True)
+    store_name = serializers.SerializerMethodField()
     store_slug = serializers.SerializerMethodField()
     image = serializers.ImageField(use_url=True, required=False, allow_null=True)
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'price', 'image', 'flyer', 'store_slug']
+        fields = ['id', 'name', 'price', 'image', 'flyer', 'store_name', 'store_slug']
+
+    def get_store_name(self, obj):
+        # Check flyer and store existence
+        return obj.flyer.store.name if obj.flyer and obj.flyer.store else "Unknown Store"
 
     def get_store_slug(self, obj):
-        return obj.flyer.store.slug if obj.flyer and obj.flyer.store else None
+        return obj.flyer.store.slug if obj.flyer and obj.flyer.store else "unknown-store"
+
 
 
 # -------------------- PROVIDER APPLICATION --------------------

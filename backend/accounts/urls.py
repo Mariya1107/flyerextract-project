@@ -11,7 +11,7 @@ from .views import (
     delete_provider_application, provider_brochures_pages,
     server_status,
     # Cart views
-    get_cart, add_to_cart, update_cart_item, remove_from_cart, clear_cart
+    get_cart, add_to_cart, update_cart_item, remove_from_cart, clear_cart, create_new_cart,
 )
 
 urlpatterns = [
@@ -58,12 +58,24 @@ urlpatterns = [
     path('brochures/<int:provider_id>/pages/', provider_brochures_pages),
 
     # ---------------- CART SYSTEM ---------------- #
+    # Get cart
     path('cart/', get_cart, name='get-cart'),
     path('cart/<slug:cart_slug>/', get_cart, name='get-cart-slug'),
+
+    # Add to cart
     path('cart/add/', add_to_cart, name='add-to-cart'),
     path('cart/<slug:cart_slug>/add/', add_to_cart, name='add-to-cart-slug'),
+
+    # Update cart item
     path('cart/item/<slug:item_slug>/update/', update_cart_item, name='update-cart-item'),
+
+    # Remove cart item
     path('cart/item/<slug:item_slug>/remove/', remove_from_cart, name='remove-cart-item'),
+
+    # Clear cart
     path('cart/clear/', clear_cart, name='clear-cart'),
     path('cart/<slug:cart_slug>/clear/', clear_cart, name='clear-cart-slug'),
+
+    # Create new cart
+    path('cart/new/', create_new_cart, name='create-new-cart'),
 ]
