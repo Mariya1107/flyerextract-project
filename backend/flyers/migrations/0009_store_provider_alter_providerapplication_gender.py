@@ -18,9 +18,5 @@ class Migration(migrations.Migration):
             name='provider',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='provider_stores', to=settings.AUTH_USER_MODEL),
         ),
-        migrations.AlterField(
-            model_name='providerapplication',
-            name='gender',
-            field=models.CharField(blank=True, choices=[('male', 'Male'), ('female', 'Female')], max_length=10),
-        ),
+       
     ]

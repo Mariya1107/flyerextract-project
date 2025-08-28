@@ -60,7 +60,6 @@ const UsersAdminDash = () => {
               <th>Email</th>
               <th>Full Name</th>
               <th>Phone</th>
-              <th>Gender</th>
               <th>Profile Photo</th>
               <th>Is Provider</th>
               <th>Is Staff</th>
@@ -76,7 +75,6 @@ const UsersAdminDash = () => {
                 <td>{user.email || '-'}</td>
                 <td>{user.full_name || '-'}</td>
                 <td>{user.phone || '-'}</td>
-                <td>{user.gender || '-'}</td>
                 <td>
                   <img
                     src={user.profile_photo ? `${BASE_URL}${user.profile_photo}` : '/default-avatar.png'}

@@ -9,7 +9,6 @@ const AddUserModal = ({ onClose, onUserAdded }) => {
     email: "",
     full_name: "",
     phone: "",
-    gender: "",
     password: "",
     is_active: false,
     is_provider: false,
@@ -89,12 +88,6 @@ const AddUserModal = ({ onClose, onUserAdded }) => {
           <input name="email" placeholder="Email" type="email" onChange={handleChange} />
           <input name="full_name" placeholder="Full Name" onChange={handleChange} />
           <input name="phone" placeholder="Phone" onChange={handleChange} />
-          <select name="gender" onChange={handleChange}>
-            <option value="">Select Gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
-          </select>
           <input name="password" placeholder="Password" type="password" onChange={handleChange} required />
 
           <label>

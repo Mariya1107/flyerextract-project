@@ -24,7 +24,6 @@ class Migration(migrations.Migration):
                 ('username', models.CharField(max_length=150, unique=True)),
                 ('full_name', models.CharField(max_length=255)),
                 ('phone', models.CharField(max_length=20)),
-                ('gender', models.CharField(choices=[('male', 'Male'), ('female', 'Female'), ('other', 'Other')], max_length=10)),
                 ('role', models.CharField(choices=[('user', 'User'), ('provider', 'Provider'), ('admin', 'Admin')], default='user', max_length=20)),
                 ('is_active', models.BooleanField(default=True)),
                 ('is_staff', models.BooleanField(default=False)),

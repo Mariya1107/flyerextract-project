@@ -7,16 +7,16 @@ from .models import CustomUser, Cart, CartItem
 class CustomUserAdmin(UserAdmin):
     model = CustomUser
     list_display = (
-        "username", "email", "full_name", "phone", "gender",
+        "username", "email", "full_name", "phone", 
         "profile_photo", "is_provider", "is_staff", "is_superuser"
     )
-    list_filter = ("is_staff", "is_superuser", "gender", "is_provider")
+    list_filter = ("is_staff", "is_superuser",  "is_provider")
 
     fieldsets = (
         (None, {"fields": ("username", "password")}),
         ("Personal info", {
             "fields": (
-                "full_name", "email", "phone", "gender",
+                "full_name", "email", "phone", 
                 "is_provider", "stores", "profile_photo"
             )
         }),
@@ -34,7 +34,7 @@ class CustomUserAdmin(UserAdmin):
             "classes": ("wide",),
             "fields": (
                 "username", "password1", "password2",
-                "full_name", "email", "phone", "gender",
+                "full_name", "email", "phone", 
                 "is_provider", "stores", "profile_photo",
                 "is_staff", "is_superuser"
             ),

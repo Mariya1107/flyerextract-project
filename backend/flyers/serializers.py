@@ -83,7 +83,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'email',
             'full_name',
             'phone',
-            'gender',
             'profile_photo',
             'stores',
         ]

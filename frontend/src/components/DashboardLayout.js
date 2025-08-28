@@ -199,7 +199,6 @@ const DashboardLayout = () => {
                 <p><strong>{providerData.full_name}</strong></p>
                 <p>{providerData.email}</p>
                 <p>{providerData.phone}</p>
-                <p>{providerData.gender}</p>
                 <button onClick={() => navigate("/provider-dashboard/edit-profile")}>
                   Edit Profile
                 </button>

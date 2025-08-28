@@ -20,40 +20,35 @@ const AddToCart = () => {
   const [phoneInput, setPhoneInput] = useState("");
   const [showPhoneInput, setShowPhoneInput] = useState(false);
 
-  // ---------------- Define CART_SLUG ----------------
-  let CART_SLUG = localStorage.getItem("cartSlug");
+  // ---------------- Helpers for CART_SLUG ----------------
+  const getCartSlug = () => localStorage.getItem("cartSlug");
+  const setCartSlug = (slug) => localStorage.setItem("cartSlug", slug);
+
+  let CART_SLUG = getCartSlug();
   if (!CART_SLUG) {
     CART_SLUG = `cart-${Date.now()}`;
-    localStorage.setItem("cartSlug", CART_SLUG);
+    setCartSlug(CART_SLUG);
   }
 
   // ---------------- Load cart from localStorage ----------------
   useEffect(() => {
-    const cartSent = localStorage.getItem("cartSent");
-    if (cartSent === "true") {
-      setCartItems([]); // permanently clear frontend cart
-      return;
-    }
-
     const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
     setCartItems(savedCart);
   }, []);
 
   // ---------------- Fetch cart from backend ----------------
   useEffect(() => {
-    const cartSent = localStorage.getItem("cartSent");
-    if (cartSent === "true") return;
-
     const fetchCartFromDB = async () => {
       if (!currentUser || !token) return;
 
       try {
-        const res = await fetch(`${BASE_URL}/api/accounts/cart/${CART_SLUG}/`, {
+        const latestSlug = getCartSlug();
+        const res = await fetch(`${BASE_URL}/api/accounts/cart/${latestSlug}/`, {
           headers: { Authorization: `Token ${token}` },
         });
         if (res.ok) {
           const data = await res.json();
-          const mappedItems = data.items.map((item) => ({
+          const mappedItems = (data.items || []).map((item) => ({
             slug: item.slug,
             id: item.product?.id,
             name: item.product?.name || "Unnamed Product",
@@ -61,8 +56,8 @@ const AddToCart = () => {
             quantity: item.quantity,
             total_price:
               item.total_price || item.quantity * (item.product?.price || 0),
-            store_name: item.product?.store_name || "Unknown",
-            store_slug: item.product?.store_slug || "unknown",
+            store_name: item.store_name || "Unknown",
+            store_slug: item.store_slug || "unknown",
             image: item.product?.image || "https://via.placeholder.com/150",
           }));
           setCartItems(mappedItems);
@@ -98,17 +93,6 @@ const AddToCart = () => {
   };
 
   const addToCart = (product) => {
-    const cartSent = localStorage.getItem("cartSent");
-
-    if (cartSent === "true") {
-      setCartItems([]);
-      localStorage.removeItem("cart");
-      localStorage.removeItem("cartSent");
-      const NEW_CART_SLUG = `cart-${Date.now()}`;
-      localStorage.setItem("cartSlug", NEW_CART_SLUG);
-      CART_SLUG = NEW_CART_SLUG;
-    }
-
     const prod = {
       ...product,
       slug: generateSlug(product),
@@ -130,7 +114,8 @@ const AddToCart = () => {
       saveCart(updatedCart);
 
       if (currentUser && token) {
-        syncCartItemToDB(prod, 1);
+        // Always use the latest slug from localStorage
+        syncCartItemToDB(prod, 1, getCartSlug());
       }
       return updatedCart;
     });
@@ -169,9 +154,9 @@ const AddToCart = () => {
   };
 
   // ---------------- API Calls ----------------
-  const syncCartItemToDB = async (product, qty) => {
+  const syncCartItemToDB = async (product, qty, cartSlug) => {
     try {
-      await fetch(`${BASE_URL}/api/accounts/cart/${CART_SLUG}/add/`, {
+      await fetch(`${BASE_URL}/api/accounts/cart/${cartSlug}/add/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -217,9 +202,44 @@ const AddToCart = () => {
 
   const syncLocalCartToDB = async () => {
     if (!currentUser || !token) return;
+    const latestSlug = getCartSlug();
     for (const item of cartItems) {
-      await syncCartItemToDB(item, item.quantity);
+      await syncCartItemToDB(item, item.quantity, latestSlug);
     }
+  };
+
+  const checkoutAndCreateNewCart = async () => {
+    // If logged in, tell backend to checkout current cart and return a fresh cart
+    if (currentUser && token) {
+      try {
+        const latestSlug = getCartSlug();
+        const res = await fetch(
+          `${BASE_URL}/api/accounts/cart/${latestSlug}/checkout/`,
+          {
+            method: "POST",
+            headers: { Authorization: `Token ${token}` },
+          }
+        );
+        if (res.ok) {
+          const data = await res.json();
+          const newSlug =
+            data?.new_cart?.slug || `cart-${Date.now()}`; // fallback
+          setCartSlug(newSlug);
+          return newSlug;
+        }
+      } catch (e) {
+        console.error("Checkout failed, falling back to local slug", e);
+      }
+    }
+    // Guest users (or on failure): just roll a new local slug
+    const fallback = `cart-${Date.now()}`;
+    setCartSlug(fallback);
+    return fallback;
+  };
+
+  const resetLocalCart = () => {
+    setCartItems([]);
+    localStorage.removeItem("cart");
   };
 
   // ---------------- Subtotal & Grouping ----------------
@@ -267,7 +287,7 @@ const AddToCart = () => {
       return;
     }
 
-    setShowPhoneInput(true); // show phone input instead of direct WhatsApp
+    setShowPhoneInput(true);
   };
 
   const confirmSendWhatsApp = async () => {
@@ -276,16 +296,19 @@ const AddToCart = () => {
       return;
     }
 
-    // Sync to backend
+    // 1) Sync local cart to backend (safe-guard)
     await syncLocalCartToDB();
 
-    // Clear frontend cart
-    setCartItems([]);
-    localStorage.removeItem("cart");
-    localStorage.setItem("cartSent", "true");
+    // 2) Deactivate old cart and create a fresh one; store new slug
+    await checkoutAndCreateNewCart();
 
-    // Open WhatsApp
+    // 3) Clear local cart state/storage
+    resetLocalCart();
+
+    // 4) Open WhatsApp
     window.open(buildWhatsAppLink(phoneInput), "_blank");
+
+    // 5) UI reset
     setShowPhoneInput(false);
     setPhoneInput("");
   };

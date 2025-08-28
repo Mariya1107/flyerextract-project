@@ -8,47 +8,43 @@ const EditProfile = () => {
     full_name: "",
     email: "",
     phone: "",
-    gender: "",
-    store: "",
     profile_photo: null,
   });
 
   const [isEditing, setIsEditing] = useState(false);
   const token = localStorage.getItem("providerToken");
 
-useEffect(() => {
-  const fetchProfile = async () => {
-    try {
-      const response = await axios.get(`${BASE_URL}/api/accounts/me/`, {
-        headers: { Authorization: `Token ${token}` },
-      });
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/api/accounts/me/`, {
+          headers: { Authorization: `Token ${token}` },
+        });
 
-      const data = response.data;
+        const data = response.data;
 
-      setFormData({
-        full_name: data.full_name || "",
-        email: data.email || "",
-        phone: data.phone || "",
-        gender: data.gender || "",
-        store: data.stores?.[0]?.name || "", // Safe fallback
-        profile_photo: null, // Always null initially
-      });
-    } catch (err) {
-      console.error("Failed to fetch profile:", err.response?.data || err.message);
-      alert(
-        err.response?.status === 401
-          ? "Unauthorized: Please log in again."
-          : "Error loading profile. Check console for details."
-      );
+        setFormData({
+          full_name: data.full_name || "",
+          email: data.email || "",
+          phone: data.phone || "",
+          profile_photo: null, // Always null initially
+        });
+      } catch (err) {
+        console.error("Failed to fetch profile:", err.response?.data || err.message);
+        alert(
+          err.response?.status === 401
+            ? "Unauthorized: Please log in again."
+            : "Error loading profile. Check console for details."
+        );
+      }
+    };
+
+    if (token) {
+      fetchProfile();
+    } else {
+      alert("No token found. Please log in.");
     }
-  };
-
-  if (token) {
-    fetchProfile();
-  } else {
-    alert("No token found. Please log in.");
-  }
-}, [token]);
+  }, [token]);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -61,13 +57,13 @@ useEffect(() => {
   const handleSave = () => {
     const data = new FormData();
     for (const key in formData) {
-      if (formData[key] && key !== "store") {
+      if (formData[key]) {
         data.append(key, formData[key]);
       }
     }
 
     axios
-  .put(`${BASE_URL}/api/accounts/me/`, data, {
+      .put(`${BASE_URL}/api/accounts/me/`, data, {
         headers: {
           Authorization: `Token ${token}`,
           "Content-Type": "multipart/form-data",
@@ -76,18 +72,16 @@ useEffect(() => {
       .then((res) => {
         alert("Profile updated successfully.");
         setIsEditing(false);
-        // Update form data with new values
         setFormData((prev) => ({
           ...prev,
           ...res.data,
-          store: prev.store, // preserve store info
           profile_photo: null, // reset file input
         }));
       })
-.catch((err) => {
-  console.error("Update error:", err.response?.data || err.message);
-  alert("Failed to update: " + JSON.stringify(err.response?.data));
-});
+      .catch((err) => {
+        console.error("Update error:", err.response?.data || err.message);
+        alert("Failed to update: " + JSON.stringify(err.response?.data));
+      });
   };
 
   return (
@@ -136,25 +130,6 @@ useEffect(() => {
             onChange={handleChange}
             disabled={!isEditing}
           />
-        </label>
-
-<label>
-  Gender:
-  <select
-    name="gender"
-    value={formData.gender}
-    onChange={handleChange}
-    disabled={!isEditing}
-  >
-    <option value="">Select</option>
-    <option value="male">Male</option>
-    <option value="female">Female</option>
-  </select>
-</label>
-
-        <label>
-          Store:
-          <input type="text" value={formData.store} disabled readOnly />
         </label>
 
         <div className="form-actions" style={{ display: "flex", gap: "20px" }}>

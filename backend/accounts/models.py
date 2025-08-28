@@ -32,11 +32,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     full_name = models.CharField(max_length=255, blank=True)
     email = models.EmailField(unique=False, blank=True, null=True)
     phone = models.CharField(max_length=20, blank=True)
-    gender = models.CharField(
-        max_length=10,
-        choices=[('male', 'Male'), ('female', 'Female'), ('other', 'Other')],
-        blank=True
-    )
+   
     username = models.CharField(max_length=150, unique=True)
     is_provider = models.BooleanField(default=False)
     stores = models.ManyToManyField(Store, blank=True, related_name="providers")
@@ -56,9 +52,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
 # ---------------- CART SYSTEM ---------------- #
 class Cart(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name="cart")
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="carts")  # 👈 changed
     created_at = models.DateTimeField(auto_now_add=True)
     slug = models.SlugField(max_length=255, unique=True, blank=True)
+    is_active = models.BooleanField(default=True)  # 👈 track current cart
+
 
     def __str__(self):
         return f"Cart of {self.user.username}"
@@ -92,9 +90,4 @@ class CartItem(models.Model):
         return self.product.price * self.quantity
 
 
-# ---------------- SIGNALS ---------------- #
-@receiver(post_save, sender=CustomUser)
-def create_cart_for_user(sender, instance, created, **kwargs):
-    """Automatically create a Cart whenever a new user is created."""
-    if created:
-        Cart.objects.create(user=instance)
+

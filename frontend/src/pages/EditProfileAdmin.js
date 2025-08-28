@@ -9,7 +9,6 @@ const EditProfileAdmin = () => {
     full_name: "",
     email: "",
     phone: "",
-    gender: "",
     profile_photo: null,
   });
 
@@ -29,7 +28,6 @@ const EditProfileAdmin = () => {
           full_name: data.full_name || "",
           email: data.email || "",
           phone: data.phone || "",
-          gender: data.gender || "",
           profile_photo: null,
         });
       } catch (err) {
@@ -133,20 +131,6 @@ const EditProfileAdmin = () => {
             onChange={handleChange}
             disabled={!isEditing}
           />
-        </label>
-
-        <label>
-          Gender:
-          <select
-            name="gender"
-            value={formData.gender}
-            onChange={handleChange}
-            disabled={!isEditing}
-          >
-            <option value="">Select</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-          </select>
         </label>
 
         <div className="form-actions" style={{ display: "flex", gap: "20px" }}>

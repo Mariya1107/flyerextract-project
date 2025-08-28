@@ -8,7 +8,6 @@ const EditIconUserAdmin = ({ userId, onClose, onUpdated }) => {
     full_name: "",
     email: "",
     phone: "",
-    gender: "",
     profile_photo: null,
     is_active: true,
     is_provider: false,
@@ -36,7 +35,6 @@ const EditIconUserAdmin = ({ userId, onClose, onUpdated }) => {
           full_name: user.full_name || "",
           email: user.email || "",
           phone: user.phone || "",
-          gender: user.gender || "",
           profile_photo: null,
           is_active: user.is_active,
           is_provider: user.is_provider,
@@ -128,14 +126,6 @@ const EditIconUserAdmin = ({ userId, onClose, onUpdated }) => {
             <input name="phone" value={formData.phone} onChange={handleChange} />
           </label>
 
-          <label>
-            Gender:
-            <select name="gender" value={formData.gender} onChange={handleChange}>
-              <option value="">Select</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-            </select>
-          </label>
 
           <label>
             Profile Photo:

@@ -18,7 +18,6 @@ class Migration(migrations.Migration):
                 ('company_name', models.CharField(blank=True, max_length=100)),
                 ('email', models.EmailField(max_length=254)),
                 ('phone', models.CharField(max_length=20)),
-                ('gender', models.CharField(choices=[('male', 'Male'), ('female', 'Female')], max_length=10)),
                 ('has_website', models.BooleanField(default=False)),
                 ('company_size', models.CharField(choices=[('self-employed', 'Self-employed'), ('2-10', '2–10'), ('11-50', '11–50'), ('51-200', '51–200'), ('200+', '200+')], max_length=20)),
                 ('city', models.CharField(max_length=100)),

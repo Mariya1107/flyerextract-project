@@ -38,7 +38,6 @@ def register_user(request):
         password=data['password'],
         full_name=data.get('full_name', ''),
         phone=data.get('phone', ''),
-        gender=data.get('gender', ''),
         is_provider=data.get('is_provider', False)
     )
     token, _ = Token.objects.get_or_create(user=user)
@@ -457,13 +456,17 @@ from .models import Cart
 def get_or_create_cart(user, cart_slug=None, force_new=False):
     """
     Returns a cart for the user:
-    - If force_new=True, always create a new cart.
-    - If cart_slug is provided, tries to fetch that cart for the user.
-    - Otherwise, returns the user's existing cart or creates a new one.
+    - If force_new=True, always create a new active cart.
+    - If cart_slug is provided, tries to fetch that active cart for the user.
+    - Otherwise, returns the user's active cart or creates a new one.
     """
     if force_new:
+        # Deactivate any existing active carts
+        user.carts.filter(is_active=True).update(is_active=False)
+
         return Cart.objects.create(
             user=user,
+            is_active=True,
             slug=f"cart-{int(timezone.now().timestamp())}-{get_random_string(4)}"
         )
 
@@ -473,21 +476,40 @@ def get_or_create_cart(user, cart_slug=None, force_new=False):
         except Cart.DoesNotExist:
             pass
 
-    # Fetch the user's latest cart if exists
-    cart = Cart.objects.filter(user=user).order_by('-created_at').first()
+    # Fetch the user's active cart if exists
+    cart = user.carts.filter(is_active=True).order_by('-created_at').first()
     if cart:
         return cart
 
-    # Otherwise, create a new cart
+    # Otherwise, create a new active cart
     return Cart.objects.create(
         user=user,
+        is_active=True,
         slug=f"cart-{int(timezone.now().timestamp())}-{get_random_string(4)}"
     )
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_new_cart(request):
-    cart_slug = request.data.get("cart_slug")
-    cart = get_or_create_cart(request.user, cart_slug=cart_slug, force_new=True)
+    # Always force a new active cart (deactivate previous)
+    cart = get_or_create_cart(request.user, force_new=True)
     serializer = CartSerializer(cart, context={'request': request})
     return Response(serializer.data, status=201)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def checkout_cart(request, cart_slug=None):
+    try:
+        cart = get_or_create_cart(request.user, cart_slug)
+        cart.is_active = False
+        cart.save()
+        # Create a new empty cart for next session
+        new_cart = get_or_create_cart(request.user, force_new=True)
+        serializer = CartSerializer(new_cart, context={'request': request})
+        return Response({
+            "message": "Checkout complete. New cart created.",
+            "new_cart": serializer.data
+        }, status=200)
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)

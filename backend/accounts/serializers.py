@@ -8,7 +8,7 @@ from flyers.models import Product
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['full_name', 'username', 'email', 'phone', 'gender', 'password']
+        fields = ['full_name', 'username', 'email', 'phone',  'password']
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
@@ -34,7 +34,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = [
-            'username', 'email', 'full_name', 'phone', 'gender',
+            'username', 'email', 'full_name', 'phone', 
             'profile_photo', 'stores', 'last_login'
         ]
 
@@ -100,19 +100,30 @@ class CartItemSerializer(serializers.ModelSerializer):
 class CartSerializer(serializers.ModelSerializer):
     items = CartItemSerializer(many=True, read_only=True)
     total_price = serializers.SerializerMethodField()
-    user = serializers.PrimaryKeyRelatedField(read_only=True)  # won't auto-fetch existing cart
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = Cart
-        fields = ['id', 'user', 'items', 'total_price', 'created_at']
-        read_only_fields = ['total_price', 'created_at', 'user']
+        fields = ['id', 'user', 'items', 'total_price', 'created_at', 'is_active']
+        read_only_fields = ['total_price', 'created_at', 'user', 'is_active']
 
     def get_total_price(self, obj):
         return sum(item.quantity * (item.product.price if item.product else 0) for item in obj.items.all())
 
+
     # Ensure a new cart is created even if the user already has one
-    def create(self, validated_data):
-        request = self.context.get("request")
-        user = request.user if request else None
-        return Cart.objects.create(user=user)
+def create(self, validated_data):
+    request = self.context.get("request")
+    user = request.user if request else None
+    if not user:
+        raise serializers.ValidationError("User is required")
+
+    # return active cart if one exists
+    active_cart = user.carts.filter(is_active=True).first()
+    if active_cart:
+        return active_cart
+
+    # otherwise create new cart
+    return Cart.objects.create(user=user, **validated_data)
+
 

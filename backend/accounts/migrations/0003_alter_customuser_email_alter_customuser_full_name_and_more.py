@@ -22,11 +22,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterField(
             model_name='customuser',
-            name='gender',
-            field=models.CharField(blank=True, choices=[('male', 'Male'), ('female', 'Female'), ('other', 'Other')], max_length=10),
-        ),
-        migrations.AlterField(
-            model_name='customuser',
             name='phone',
             field=models.CharField(blank=True, max_length=20),
         ),

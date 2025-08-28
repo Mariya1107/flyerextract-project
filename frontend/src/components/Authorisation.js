@@ -16,7 +16,6 @@ const Authorisation = ({
     firstname: "",
     email: "",
     phone: "",
-    gender: "",
     username: "",
     password: "",
     signinUser: "",
@@ -36,14 +35,13 @@ const Authorisation = ({
         password: formData.password,
         full_name: formData.firstname,
         phone: formData.phone,
-        gender: formData.gender,
+       
       });
 
       const newUser = {
         firstname: formData.firstname,
         email: formData.email,
         phone: formData.phone,
-        gender: formData.gender,
         username: formData.username,
       };
 
@@ -73,7 +71,6 @@ const Authorisation = ({
         firstname: formData.signinUser, // 👈 replace with real API user info if available
         email: "demo@example.com",
         phone: "+123456789",
-        gender: "Not specified",
         username: formData.signinUser,
       };
 
@@ -193,20 +190,7 @@ const Authorisation = ({
                 />
               </div>
 
-              <div className="auth-field">
-                <label className="auth-label">Gender</label>
-                <select
-                  name="gender"
-                  value={formData.gender || ""}
-                  onChange={handleChange}
-                  className="auth-input"
-                >
-                  <option value="">Select</option>
-                  <option value="female">Female</option>
-                  <option value="male">Male</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
+              
 
               <div className="auth-field">
                 <label className="auth-label">Username</label>

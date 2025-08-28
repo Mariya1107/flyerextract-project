@@ -11,7 +11,7 @@ from .views import (
     delete_provider_application, provider_brochures_pages,
     server_status,
     # Cart views
-    get_cart, add_to_cart, update_cart_item, remove_from_cart, clear_cart
+    get_cart, add_to_cart, update_cart_item, remove_from_cart, clear_cart, checkout_cart, create_new_cart
 )
 
 urlpatterns = [
@@ -75,4 +75,10 @@ urlpatterns = [
     # Clear cart
     path('cart/clear/', clear_cart, name='clear-cart'),
     path('cart/<slug:cart_slug>/clear/', clear_cart, name='clear-cart-slug'),
+
+        # Create a brand new cart (deactivates old one)
+    path('cart/new/', create_new_cart, name='create-new-cart'),
+
+    path('cart/checkout/', checkout_cart, name='checkout-cart'),
+    path('cart/<slug:cart_slug>/checkout/', checkout_cart, name='checkout-cart-slug'),
 ]

@@ -59,11 +59,7 @@ class Migration(migrations.Migration):
             name='company_size',
             field=models.CharField(blank=True, max_length=50),
         ),
-        migrations.AlterField(
-            model_name='providerapplication',
-            name='gender',
-            field=models.CharField(blank=True, max_length=10),
-        ),
+       
         migrations.AlterField(
             model_name='providerapplication',
             name='phone',

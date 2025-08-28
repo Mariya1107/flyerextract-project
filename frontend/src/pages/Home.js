@@ -30,7 +30,6 @@ const Home = () => {
     firstname: "",
     email: "",
     phone: "",
-    gender: "",
     username: "",
     password: "",
     signinUser: "",
