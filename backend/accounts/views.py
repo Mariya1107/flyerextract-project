@@ -487,10 +487,6 @@ def get_or_create_cart(user, cart_slug=None, force_new=False):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_new_cart(request):
-    """
-    Create a fresh cart for the logged-in user.
-    Optional: accept cart_slug from frontend
-    """
     cart_slug = request.data.get("cart_slug")
     cart = get_or_create_cart(request.user, cart_slug=cart_slug, force_new=True)
     serializer = CartSerializer(cart, context={'request': request})

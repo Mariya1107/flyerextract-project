@@ -16,6 +16,10 @@ const AddToCart = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState("signin");
 
+  // WhatsApp phone number state
+  const [phoneInput, setPhoneInput] = useState("");
+  const [showPhoneInput, setShowPhoneInput] = useState(false);
+
   // ---------------- Define CART_SLUG ----------------
   let CART_SLUG = localStorage.getItem("cartSlug");
   if (!CART_SLUG) {
@@ -35,7 +39,7 @@ const AddToCart = () => {
     setCartItems(savedCart);
   }, []);
 
-  // ---------------- Only fetch from backend if cart not sent ----------------
+  // ---------------- Fetch cart from backend ----------------
   useEffect(() => {
     const cartSent = localStorage.getItem("cartSent");
     if (cartSent === "true") return;
@@ -96,14 +100,13 @@ const AddToCart = () => {
   const addToCart = (product) => {
     const cartSent = localStorage.getItem("cartSent");
 
-    // If cart was already sent, reset everything for new cart
     if (cartSent === "true") {
       setCartItems([]);
       localStorage.removeItem("cart");
       localStorage.removeItem("cartSent");
       const NEW_CART_SLUG = `cart-${Date.now()}`;
       localStorage.setItem("cartSlug", NEW_CART_SLUG);
-      CART_SLUG = NEW_CART_SLUG; // update local CART_SLUG variable
+      CART_SLUG = NEW_CART_SLUG;
     }
 
     const prod = {
@@ -236,8 +239,7 @@ const AddToCart = () => {
   }, {});
 
   // ---------------- WhatsApp ----------------
-  const WHATSAPP_NUMBER = "918547409237";
-  const buildWhatsAppLink = () => {
+  const buildWhatsAppLink = (number) => {
     let message = "🛒 Order Summary\n\n";
 
     Object.entries(groupedByStore).forEach(([storeSlug, products]) => {
@@ -254,7 +256,7 @@ const AddToCart = () => {
       currentUser?.username || "Guest"
     }`;
 
-    return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+    return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
   };
 
   // ---------------- Checkout ----------------
@@ -265,44 +267,27 @@ const AddToCart = () => {
       return;
     }
 
+    setShowPhoneInput(true); // show phone input instead of direct WhatsApp
+  };
+
+  const confirmSendWhatsApp = async () => {
+    if (!phoneInput) {
+      alert("Please enter a valid WhatsApp number");
+      return;
+    }
+
     // Sync to backend
     await syncLocalCartToDB();
 
-    // Clear frontend cart permanently
+    // Clear frontend cart
     setCartItems([]);
     localStorage.removeItem("cart");
-    localStorage.setItem("cartSent", "true"); // prevents reload
-
-    // ---------------- Create new cart on backend ----------------
-    try {
-      const newCartRes = await fetch(`${BASE_URL}/api/accounts/cart/new/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Token ${token}`,
-        },
-        body: JSON.stringify({
-          cart_slug: `cart-${Date.now()}`, // optional, backend can generate if not sent
-        }),
-      });
-
-      if (newCartRes.ok) {
-        const data = await newCartRes.json();
-        localStorage.setItem("cartSlug", data.slug); // update frontend cart slug
-      } else {
-        console.error("Failed to create new cart on backend", newCartRes.status);
-        // fallback: generate local cart slug
-        const NEW_CART_SLUG = `cart-${Date.now()}`;
-        localStorage.setItem("cartSlug", NEW_CART_SLUG);
-      }
-    } catch (err) {
-      console.error("Error creating new cart", err);
-      const NEW_CART_SLUG = `cart-${Date.now()}`;
-      localStorage.setItem("cartSlug", NEW_CART_SLUG);
-    }
+    localStorage.setItem("cartSent", "true");
 
     // Open WhatsApp
-    window.open(buildWhatsAppLink(), "_blank");
+    window.open(buildWhatsAppLink(phoneInput), "_blank");
+    setShowPhoneInput(false);
+    setPhoneInput("");
   };
 
   // ---------------- Render ----------------
@@ -363,9 +348,25 @@ const AddToCart = () => {
             <h3>Order Summary</h3>
             <p>Total Items: {cartItems.length}</p>
             <h3>Subtotal: ₹ {subtotal}</h3>
-            <button className="checkout-btn" onClick={handleCheckout}>
-              Send Order via WhatsApp
-            </button>
+
+            {!showPhoneInput ? (
+              <button className="checkout-btn" onClick={handleCheckout}>
+                Send Order via WhatsApp
+              </button>
+            ) : (
+              <div className="whatsapp-input-box">
+                <input
+                  type="text"
+                  placeholder="Enter WhatsApp Number (e.g., 918547409237)"
+                  value={phoneInput}
+                  onChange={(e) => setPhoneInput(e.target.value)}
+                  className="phone-input"
+                />
+                <button className="checkout-btn" onClick={confirmSendWhatsApp}>
+                  Confirm & Send
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
