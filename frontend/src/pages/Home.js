@@ -1,6 +1,7 @@
 // src/pages/Home.js
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react"; // ✅ added useRef
+
 import { useNavigate } from "react-router-dom"; // ✅ removed Link
 import axios from "axios";
 import BASE_URL from "../config";
@@ -30,6 +31,8 @@ const Home = () => {
   const [stores, setStores] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [locationTerm, setLocationTerm] = useState("");
+  const categoriesRef = useRef(null); // Ref for the "Explore Categories" section
+
 
   const navigate = useNavigate();
 
@@ -152,16 +155,22 @@ const Home = () => {
                 </div>
 
                 {/* Search Button */}
-                <div className="col-md-2 d-grid">
-                  <button
-                    type="button"
-                    className="btn for_btn for_signin"
-                    onClick={() => { /* no navigation, filtering already works */ }}
-                  >
-                    <FontAwesomeIcon icon={faSearch} className="me-2" />
-                    Search
-                  </button>
-                </div>
+               <div className="col-md-2 d-grid">
+  <button
+    type="button"
+    className="btn for_btn for_signin"
+    onClick={() => {
+      // Scroll to the categories section smoothly
+      if (categoriesRef.current) {
+        categoriesRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    }}
+  >
+    <FontAwesomeIcon icon={faSearch} className="me-2" />
+    Search
+  </button>
+</div>
+
               </div>
             </div>
           </div>
@@ -172,6 +181,7 @@ const Home = () => {
       <section
         className="py-5 bg-light"
         style={{ background: "linear-gradient(to bottom, #f7f9fc, #e3e8f4)" }}
+        ref={categoriesRef} 
       >
         <div className="container">
           <div className="text-center mb-4">
