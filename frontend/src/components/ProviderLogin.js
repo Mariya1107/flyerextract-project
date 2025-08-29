@@ -4,45 +4,43 @@ import "./ProviderLogin.css";
 import BASE_URL from '../config';
 
 const ProviderLogin = ({ setShowProviderModal }) => {
-  const [credentials, setCredentials] = useState({ username: "", password: "" });
-  
+  const [credentials, setCredentials] = useState({ identifier: "", password: "" });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
     setCredentials((prev) => ({ ...prev, [name]: value }));
   };
 
-const handleLogin = async (e) => {
-  e.preventDefault();
+  const handleLogin = async (e) => {
+    e.preventDefault();
 
-  try {
-    const res = await axios.post(
-      `${BASE_URL}/api/accounts/login/provider/`,
-      credentials,
-      { headers: { "Content-Type": "application/json" } }
-    );
+    try {
+      const res = await axios.post(
+        `${BASE_URL}/api/accounts/login/provider/`,
+        {
+          identifier: credentials.identifier, // username OR phone
+          password: credentials.password,
+        },
+        { headers: { "Content-Type": "application/json" } }
+      );
 
-    console.log("Login response:", res.data); // 🔍 Check this
+      console.log("Login response:", res.data); // 🔍 Debug
 
-    const token = res.data.token;
-    const providerId = res.data.user?.id || res.data.id;
+      const token = res.data.token;
+      const providerId = res.data.user?.id || res.data.id;
 
+      localStorage.setItem("providerToken", token);
+      localStorage.setItem("providerId", providerId);
 
-
-    localStorage.setItem("providerToken", token);
-    localStorage.setItem("providerId", providerId);
-
-    alert("Provider login successful");
-    setShowProviderModal(false);
-    window.location.href = "/provider-dashboard";
-  }catch (err) {
-  console.error("Login failed - full error object:", err);
-  console.error("Login failed - response data:", err.response?.data);
-  alert("Login failed. Invalid credentials.");
-}
-};
-
+      alert("Provider login successful");
+      setShowProviderModal(false);
+      window.location.href = "/provider-dashboard";
+    } catch (err) {
+      console.error("Login failed - full error object:", err);
+      console.error("Login failed - response data:", err.response?.data);
+      alert("Login failed. Invalid credentials.");
+    }
+  };
 
   return (
     <div className="provider-modal-overlay">
@@ -52,11 +50,11 @@ const handleLogin = async (e) => {
         </button>
         <h2>Provider Login</h2>
         <form onSubmit={handleLogin} className="provider-login-form">
-          <label>Username</label>
+          <label>Username or Phone</label>
           <input
             type="text"
-            name="username"
-            value={credentials.username}
+            name="identifier"
+            value={credentials.identifier}
             onChange={handleChange}
             required
           />

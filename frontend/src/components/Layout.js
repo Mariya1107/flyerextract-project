@@ -1,3 +1,5 @@
+// src/components/Layout.js
+
 import React, { useState, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Header from './Header';
@@ -10,17 +12,17 @@ import Authorisation from './Authorisation';
 
 const Layout = ({ showAdminModal: initialShowAdminModal = false, setShowAdminModal: setParentShowAdminModal }) => {
   const location = useLocation();
-  const hideLayoutRoutes = ['/provider-dashboard'];
 
-  const hideLayout = hideLayoutRoutes.includes(location.pathname);
+  // Hide layout for ALL dashboard routes
+  const hideLayout = location.pathname.startsWith('/provider-dashboard') 
+                  || location.pathname.startsWith('/admin-dashboard');
 
-  // 🔐 Centralized modal state
+  // Centralized modal state
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState('signup');
   const [showProviderModal, setShowProviderModal] = useState(false);
   const [showProviderModal1, setShowProviderModal1] = useState(false);
   const [showAdminModal, setShowAdminModal] = useState(initialShowAdminModal);
-  const [userData, setUserData] = useState(null);
 
   // Sync with parent prop (for hidden /admin-login URL)
   useEffect(() => {
@@ -30,28 +32,41 @@ const Layout = ({ showAdminModal: initialShowAdminModal = false, setShowAdminMod
   }, [initialShowAdminModal, setParentShowAdminModal]);
 
   return (
-    <>
+    <div
+      className="app-layout"
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100vh', // Full viewport height
+      }}
+    >
       {!hideLayout && (
         <Header
           setShowProviderModal={setShowProviderModal}
           setShowProviderModal1={setShowProviderModal1}
-          setShowAdminModal={setShowAdminModal} // header can still toggle modal if needed
+          setShowAdminModal={setShowAdminModal} 
           setAuthMode={setAuthMode}
           setShowAuthModal={setShowAuthModal}
         />
       )}
 
-      <main>
+      {/* Main content grows to push footer down */}
+      <main
+        className="app-content"
+        style={{
+          flex: 1, // Takes remaining space
+        }}
+      >
         <Outlet />
       </main>
 
-      {/* 🔐 Global Modals */}
+      {/* Global Modals */}
       <Authorisation
         showAuthModal={showAuthModal}
         setShowAuthModal={setShowAuthModal}
         authMode={authMode}
         setAuthMode={setAuthMode}
-        setUserData={setUserData}
+        setUserData={() => {}}
       />
 
       {showProviderModal && (
@@ -67,12 +82,14 @@ const Layout = ({ showAdminModal: initialShowAdminModal = false, setShowAdminMod
         />
       )}
 
-      {showAdminModal && (
-        <AdminLogin setShowAdminModal={setShowAdminModal} />
-      )}
+      {showAdminModal && <AdminLogin setShowAdminModal={setShowAdminModal} />}
 
-      {!hideLayout && <Footer />}
-    </>
+      {!hideLayout && (
+        <div style={{ marginTop: 'auto' }}>
+          <Footer />
+        </div>
+      )}
+    </div>
   );
 };
 

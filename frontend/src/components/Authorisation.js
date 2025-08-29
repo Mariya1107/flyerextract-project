@@ -35,17 +35,16 @@ const Authorisation = ({
         password: formData.password,
         full_name: formData.firstname,
         phone: formData.phone,
-       
       });
 
+      // ✅ Use real data from backend response
       const newUser = {
-        firstname: formData.firstname,
-        email: formData.email,
-        phone: formData.phone,
-        username: formData.username,
+        fullname: res.data.full_name,
+        email: res.data.email,
+        phone: res.data.phone,
+        username: res.data.username,
       };
 
-      // ✅ Save user in state + localStorage
       setUserData(newUser);
       localStorage.setItem("userData", JSON.stringify(newUser));
 
@@ -57,24 +56,25 @@ const Authorisation = ({
     }
   };
 
-  // ✅ Signin
+  // ✅ Signin (username or phone)
   const handleSignin = async () => {
     try {
       const res = await axios.post(`${BASE_URL}/api/accounts/login/`, {
-        username: formData.signinUser,
+        identifier: formData.signinUser, // 👈 username OR phone
         password: formData.signinPass,
       });
 
       localStorage.setItem("token", res.data.token);
 
+      // ✅ Use real user info returned from backend
       const loggedInUser = {
-        firstname: formData.signinUser, // 👈 replace with real API user info if available
-        email: "demo@example.com",
-        phone: "+123456789",
-        username: formData.signinUser,
+        fullname: res.data.full_name,
+        email: res.data.email,
+        phone: res.data.phone,
+        username: res.data.username,
+        is_provider: res.data.is_provider,
       };
 
-      // ✅ Save user in state + localStorage
       setUserData(loggedInUser);
       localStorage.setItem("userData", JSON.stringify(loggedInUser));
 
@@ -101,11 +101,11 @@ const Authorisation = ({
 
               <h2 className="auth-title">Welcome</h2>
               <p className="auth-subtitle">
-                Enter your credentials to access your account
+                Enter your username or phone number and password
               </p>
 
               <div className="auth-field">
-                <label className="auth-label">User Name</label>
+                <label className="auth-label">Username or Phone</label>
                 <input
                   type="text"
                   name="signinUser"
@@ -134,9 +134,7 @@ const Authorisation = ({
 
               <p className="signup-redirect">
                 Don’t have an account?{" "}
-                <span onClick={() => setAuthMode("signup")}>
-                  Join us Today
-                </span>
+                <span onClick={() => setAuthMode("signup")}>Join us Today</span>
               </p>
             </>
           ) : (
@@ -189,8 +187,6 @@ const Authorisation = ({
                   className="auth-input"
                 />
               </div>
-
-              
 
               <div className="auth-field">
                 <label className="auth-label">Username</label>

@@ -5,13 +5,15 @@
 }
 
 .flyer-list-wrapper {
+  flex: 1;   /* ✅ take available space inside layout */
   padding: 60px 20px;
-  /* background: linear-gradient(-55deg, #ea9dd0, #e5eafa, #e9f4ff, #ddf6e7); */
-  background:linear-gradient(to bottom, #f7f9fc, #e3e8f4);
+  background: linear-gradient(to bottom, #f7f9fc, #e3e8f4);
   background-size: 400% 400%;
   animation: aurora 8s ease infinite;
-  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
+
 
 .flyer-title {
   text-align: center;

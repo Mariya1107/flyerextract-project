@@ -1,8 +1,9 @@
 from rest_framework import serializers
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, get_user_model
 from .models import CustomUser, Cart, CartItem
 from flyers.models import Product
 
+User = get_user_model()
 
 # ---------------- REGISTER ---------------- #
 class RegisterSerializer(serializers.ModelSerializer):
@@ -17,14 +18,31 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 # ---------------- LOGIN ---------------- #
 class LoginSerializer(serializers.Serializer):
-    username = serializers.CharField()
-    password = serializers.CharField()
+    identifier = serializers.CharField()  # <-- username or phone
+    password = serializers.CharField(write_only=True)
 
     def validate(self, data):
-        user = authenticate(**data)
-        if user and user.is_active:
-            return user
-        raise serializers.ValidationError("Invalid credentials")
+        identifier = data.get("identifier")
+        password = data.get("password")
+
+        user = None
+
+        # If identifier looks like a phone (all digits), try phone first
+        if identifier.isdigit():
+            try:
+                user_obj = User.objects.get(phone=identifier)
+                user = authenticate(username=user_obj.username, password=password)
+            except User.DoesNotExist:
+                raise serializers.ValidationError("Invalid phone number or password")
+        else:
+            # Otherwise, treat as username
+            user = authenticate(username=identifier, password=password)
+
+        if not user or not user.is_active:
+            raise serializers.ValidationError("Invalid credentials")
+
+        data["user"] = user
+        return data
 
 
 # ---------------- USER PROFILE ---------------- #
@@ -125,5 +143,7 @@ def create(self, validated_data):
 
     # otherwise create new cart
     return Cart.objects.create(user=user, **validated_data)
+
+
 
 

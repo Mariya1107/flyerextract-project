@@ -7,7 +7,7 @@ from django.contrib.auth import get_user_model, authenticate
 from rest_framework.authtoken.models import Token
 from django.utils.text import slugify
 from django.utils import timezone
-
+from .serializers import LoginSerializer
 from .models import CustomUser, Cart, CartItem
 from .serializers import (
     UserProfileSerializer, RegisterSerializer,
@@ -43,26 +43,39 @@ def register_user(request):
     token, _ = Token.objects.get_or_create(user=user)
     return Response({"token": token.key, "message": "User registered successfully"})
 
-
 @api_view(['POST'])
 def login_user(request):
-    username = request.data.get("username")
-    password = request.data.get("password")
-    user = authenticate(username=username, password=password)
-    if user:
-        token, _ = Token.objects.get_or_create(user=user)
-        return Response({"token": token.key, "message": "Login successful", "is_provider": user.is_provider})
-    return Response({"error": "Invalid credentials"}, status=400)
+    serializer = LoginSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
 
+    user = serializer.validated_data["user"]   # ✅ FIXED
+
+    token, _ = Token.objects.get_or_create(user=user)
+    return Response({
+        "token": token.key,
+        "message": "Login successful",
+        "is_provider": user.is_provider,
+        "username": user.username,
+        "phone": user.phone,
+        "email": user.email,
+        "full_name": user.full_name,
+    })
 
 @api_view(['POST'])
 def login_provider(request):
-    username = request.data.get("username")
-    password = request.data.get("password")
-    user = authenticate(username=username, password=password)
-    if user and user.is_provider:
+    serializer = LoginSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+
+    user = serializer.validated_data["user"]   # ✅ FIXED
+    if user.is_provider:
         token, _ = Token.objects.get_or_create(user=user)
-        return Response({"token": token.key, "message": "Provider login successful", "id": user.id})
+        return Response({
+            "token": token.key,
+            "message": "Provider login successful",
+            "id": user.id,
+            "username": user.username,
+            "phone": user.phone,
+        })
     return Response({"error": "Invalid credentials or not a provider"}, status=403)
 
 

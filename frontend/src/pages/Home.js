@@ -1,7 +1,7 @@
 // src/pages/Home.js
 
 import React, { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom"; // ✅ removed Link
 import axios from "axios";
 import BASE_URL from "../config";
 
@@ -19,22 +19,13 @@ import Authorisation from "../components/Authorisation";
 const Home = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState("signup");
-  const [userData, setUserData] = useState(
+  const [, setUserData] = useState(
     JSON.parse(localStorage.getItem("currentUser")) || null
-  );
+  ); // ✅ keep only setter
   const [showProviderModal, setShowProviderModal] = useState(false);
   const [showAllStores, setShowAllStores] = useState(false);
   const [showAdminModal, setShowAdminModal] = useState(false);
   const [showProviderModal1, setShowProviderModal1] = useState(false);
-  const [formData, setFormData] = useState({
-    firstname: "",
-    email: "",
-    phone: "",
-    username: "",
-    password: "",
-    signinUser: "",
-    signinPass: "",
-  });
 
   const [stores, setStores] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -45,7 +36,7 @@ const Home = () => {
   // ✅ Fetch all stores
   useEffect(() => {
     axios
-      .get(`${BASE_URL}/stores/`) // fixed with backticks
+      .get(`${BASE_URL}/stores/`)
       .then((res) => setStores(res.data))
       .catch((err) => console.error("Error fetching stores", err));
   }, []);
@@ -91,7 +82,7 @@ const Home = () => {
         className="py-5 bg-light"
         id="home"
         style={{
-          backgroundImage: `url("/slider.png")`, // ✅ fixed with backticks
+          backgroundImage: `url("/slider.png")`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
@@ -105,8 +96,7 @@ const Home = () => {
                 Connect with Nearby Shops
               </h1>
               <p className="text-light mb-4 fs-5">
-                We can connect you to the supermarket, first time and every
-                time.
+                We can connect you to the supermarket, first time and every time.
               </p>
 
               <div className="row g-2 justify-content-center">
@@ -161,11 +151,16 @@ const Home = () => {
                   </div>
                 </div>
 
+                {/* Search Button */}
                 <div className="col-md-2 d-grid">
-                  <Link to="/search" className="btn for_btn for_signin">
+                  <button
+                    type="button"
+                    className="btn for_btn for_signin"
+                    onClick={() => { /* no navigation, filtering already works */ }}
+                  >
                     <FontAwesomeIcon icon={faSearch} className="me-2" />
                     Search
-                  </Link>
+                  </button>
                 </div>
               </div>
             </div>
@@ -184,8 +179,7 @@ const Home = () => {
               Explore our <span className="text-primary">Categories</span>
             </h2>
             <p className="text-muted">
-              Service categories help organize and structure the offerings on a
-              marketplace.
+              Service categories help organize and structure the offerings on a marketplace.
             </p>
           </div>
 
@@ -194,7 +188,7 @@ const Home = () => {
               <div
                 className="col-6 col-md-4 col-lg-2"
                 key={store.id}
-                onClick={() => navigate(`/store/${store.slug}/flyers`)} // ✅ fixed
+                onClick={() => navigate(`/store/${store.slug}/flyers`)}
                 style={{ cursor: "pointer" }}
               >
                 <div className="card text-center shadow-sm h-100">
@@ -203,7 +197,7 @@ const Home = () => {
                       src={
                         store.logo?.startsWith("http")
                           ? store.logo
-                          : `${BASE_URL}/${store.logo}` // ✅ fixed
+                          : `${BASE_URL}/${store.logo}`
                       }
                       alt={store.name}
                       className="img-fluid mb-3"

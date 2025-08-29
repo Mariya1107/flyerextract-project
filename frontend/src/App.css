@@ -1,3 +1,33 @@
+/* Make sure root elements stretch full height */
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* 🔹 Layout wrapper: flex column fills screen */
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* full height of viewport */
+}
+
+/* 🔹 Content area grows to push footer down */
+.app-content {
+  flex: 1;
+}
+
+/* 🔹 Footer stays pinned to bottom */
+footer {
+  margin-top: auto;
+}
+
+/* ---------------------------- */
+/* Existing styles you had */
+/* ---------------------------- */
+
 .App {
   text-align: center;
 }
@@ -13,9 +43,10 @@
   }
 }
 
+/* ⚡ Removed min-height: 100vh (was breaking footer) */
 .App-header {
   background-color: #282c34;
-  min-height: 100vh;
+  padding: 20px; /* no full height */
   display: flex;
   flex-direction: column;
   align-items: center;
