@@ -2,7 +2,7 @@
 let BASE_URL;
 
 if (process.env.NODE_ENV === "production") {
-  BASE_URL = "https://lookmydeals.com/api";   // 👈 live backend
+  BASE_URL = "https://lookmydeals.com";   // 👈 live backend
 } else {
   BASE_URL = "http://localhost:8000/";        // 👈 local backend
 }
